@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import com.thoughtworks.xstream.XStream;
@@ -58,7 +59,7 @@ public class RbacUtils {
 		return pol.getRole().contains(rol);
 	}
 
-	boolean permissionExists(RbacPolicy pol, Permission pr){
+	public boolean permissionExists(RbacPolicy pol, Permission pr){
 		return pol.getPermission().contains(pr);
 	}
 
@@ -111,23 +112,6 @@ public class RbacUtils {
 		return null;
 	}
 
-	boolean activateRole(RbacPolicy pol, User usr, Role rol){
-		boolean userExists = userExists(pol, usr);
-		boolean roleExists = roleExists(pol, rol); 
-		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
-		boolean userRoleActive = userRoleActive(pol,usr,rol);
-		
-		if(		userExists &&
-				roleExists &&
-				userRoleAssigned &&
-				!userRoleActive
-				){
-			pol.getUserRoleAssignment().add(new UserRoleAssignment(usr,rol));
-			return true;
-		}
-		return false;
-	}
-
 	boolean deactivateRole(RbacPolicy pol, User usr, Role rol){
 		boolean userExists = userExists(pol, usr);
 		boolean roleExists = roleExists(pol, rol); 
@@ -148,7 +132,9 @@ public class RbacUtils {
 
 	public boolean userRoleActive(RbacPolicy pol, User usr, Role rol) {
 		UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
-		if(ur.getActiveRoles().contains(rol)){
+		if(
+				ur!=null && //TODO check with findbugs 
+				ur.getActiveRoles().contains(rol)){
 			return true;
 		}
 		return false;
@@ -175,13 +161,61 @@ public class RbacUtils {
 		return false;
 	}
 
-	private PermissionRoleAssignment getPermissionRoleAssignment(RbacPolicy pol, Permission pr, Role rol) {
+	public PermissionRoleAssignment getPermissionRoleAssignment(RbacPolicy pol, Permission pr, Role rol) {
 		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
 			if(el.getPermission().equals(pr) && el.getRole().equals(rol)){
 				return el;
 			}
 		}
 		return null;
+	}
+
+	public boolean afterAssignSuIsValid(RbacPolicy policy, User user, Role role) {
+		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
+		int total=0;
+		for (UserRoleAssignment ur : urList) {
+			if(ur.getUser().equals(user)) total++;
+		}
+		return total<=user.getStaticCardinality();
+	}
+	
+	public boolean afterAssignSrIsValid(RbacPolicy policy, User user, Role role) {
+		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
+		int total=0;
+		for (UserRoleAssignment ur : urList) {
+			if(ur.getRole().equals(role)) total++;
+		}
+		return total<=user.getStaticCardinality();
+	}
+
+	public boolean afterActivateDuIsValid(RbacPolicy policy, User user, Role role) {
+		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
+		int total=0;
+		for (UserRoleAssignment ur : urList) {
+			if(ur.getUser().equals(user)) total+=ur.getActiveRoles().size();
+		}
+		return total<=user.getDynamicCardinality();
+	}
+	
+	public boolean afterActivateDrIsValid(RbacPolicy policy, User user, Role role) {
+		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
+		int total=0;
+		for (UserRoleAssignment ur : urList) {
+			if(ur.getActiveRoles().contains(role)) total++;
+		}
+		return total<=role.getDynamicCardinality();
+	}
+
+	public boolean afterAssignSsodIsValid(RbacPolicy policy, User user,
+			Role role) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	public boolean afterAssignDsodIsValid(RbacPolicy policy, User user,
+			Role role) {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 }
