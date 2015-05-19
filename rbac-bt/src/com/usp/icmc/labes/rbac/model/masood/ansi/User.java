@@ -85,6 +85,6 @@ public class User implements RbacElement{
 
 	@Override
 	public String toString() {
-		return "user("+name+","+staticCardinality+dynamicCardinality+")";
+		return "user("+name+","+staticCardinality+","+dynamicCardinality+")";
 	}
 }
