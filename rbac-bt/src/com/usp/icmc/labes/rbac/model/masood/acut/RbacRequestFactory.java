@@ -13,11 +13,6 @@ public class RbacRequestFactory {
 	public static final String ASSIGN_PR    	= "ASSIGN_PR";
 	public static final String DEASSIGN_PR    	= "DEASSIGN_PR";
 
-	private String type;
-	private User user;
-	private Role role;
-	private Permission permission;
-
 	private static RbacRequestFactory instance ; 
 
 
@@ -42,15 +37,5 @@ public class RbacRequestFactory {
 		if(type.equals(ASSIGN_PR)) 		result = new RbacRequestAssignPR(type, p, r);
 		if(type.equals(DEASSIGN_PR))	result = new RbacRequestDeassignPR(type, p, r);
 		return result;
-	}
-	
-	@Override
-	public String toString() {
-		String output = null;
-		if(user!=null && permission==null) 
-			output = type+"("+user.getName()+","+role.getName()+")";
-		if(user==null && permission!=null) 
-			output = type+"("+permission.getName()+","+role.getName()+")";
-		return output;
 	}
 }

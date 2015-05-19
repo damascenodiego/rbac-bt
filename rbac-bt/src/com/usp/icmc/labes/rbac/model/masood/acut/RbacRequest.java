@@ -9,6 +9,8 @@ public abstract class RbacRequest {
 	private Role role;
 	private Permission permission;
 
+	public RbacRequest() { }
+	
 	public String getType() {
 		return type;
 	}
