@@ -1,4 +1,7 @@
-package com.usp.icmc.labes.rbac.model;
+package com.usp.icmc.labes.rbac.model.masood.ansi;
+
+import com.usp.icmc.labes.rbac.model.RbacElement;
+
 
 public class PermissionRoleAssignment implements RbacElement {
 	

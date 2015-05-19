@@ -1,9 +1,12 @@
-package com.usp.icmc.labes.rbac.model;
+package com.usp.icmc.labes.rbac.model.masood.ansi;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import com.usp.icmc.labes.rbac.model.RbacElement;
+
 public class SSoDConstraint implements RbacElement {
+
 	int cardinality;
 	Set<Role> sodSet;
 
@@ -19,7 +22,7 @@ public class SSoDConstraint implements RbacElement {
 		}
 		this.cardinality = card;
 	}
-	
+
 	public String getName() {
 		return String.join(", ", (CharSequence[]) this.sodSet.toArray());
 	}

@@ -1,11 +1,14 @@
-package com.usp.icmc.labes.rbac.model;
+package com.usp.icmc.labes.rbac.model.masood.ansi;
 
-public class InheritanceHierarchy implements RbacElement {
+import com.usp.icmc.labes.rbac.model.RbacElement;
+
+
+public class ActivationHierarchy implements RbacElement {
 	
 	private Role senior;
 	private Role junior;
 	
-	public InheritanceHierarchy(Role sr, Role jr) {
+	public ActivationHierarchy(Role sr, Role jr) {
 		this.senior = sr;
 		this.junior = jr;
 	}
@@ -38,9 +41,9 @@ public class InheritanceHierarchy implements RbacElement {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof InheritanceHierarchy))
+		if (!(obj instanceof ActivationHierarchy))
 			return false;
-		InheritanceHierarchy other = (InheritanceHierarchy) obj;
+		ActivationHierarchy other = (ActivationHierarchy) obj;
 		if (junior == null) {
 			if (other.junior != null)
 				return false;

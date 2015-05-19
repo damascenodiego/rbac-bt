@@ -1,25 +1,28 @@
-package com.usp.icmc.labes.rbac.model;
+package com.usp.icmc.labes.rbac.model.masood.ansi;
 
-public class Role implements RbacElement{
-	
-	/* role name */
+import com.usp.icmc.labes.rbac.model.RbacElement;
+
+
+public class User implements RbacElement{
+
+	/* user name */
 	private String name;
 	/* static cardinality */
 	private int staticCardinality;
 	/* dynamic cardinality */
 	private int dynamicCardinality;
 	
-	public Role() {
+	public User() {
 		staticCardinality = 0;
 		dynamicCardinality = 0;
 	}
 	
-	public Role(String name) {
+	public User(String name) {
 		this();
 		this.name = name;
 	}
-
-	public Role(String name, int staticCard, int dynamicCard) {
+	
+	public User(String name, int staticCard, int dynamicCard) {
 		this(name);
 		this.staticCardinality = staticCard;
 		this.dynamicCardinality = dynamicCard;
@@ -65,9 +68,9 @@ public class Role implements RbacElement{
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof Role))
+		if (!(obj instanceof User))
 			return false;
-		Role other = (Role) obj;
+		User other = (User) obj;
 		if (dynamicCardinality != other.dynamicCardinality)
 			return false;
 		if (name == null) {

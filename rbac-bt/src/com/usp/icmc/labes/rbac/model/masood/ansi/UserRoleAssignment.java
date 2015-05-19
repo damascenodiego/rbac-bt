@@ -1,7 +1,9 @@
-package com.usp.icmc.labes.rbac.model;
+package com.usp.icmc.labes.rbac.model.masood.ansi;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.usp.icmc.labes.rbac.model.RbacElement;
 
 public class UserRoleAssignment implements RbacElement {
 

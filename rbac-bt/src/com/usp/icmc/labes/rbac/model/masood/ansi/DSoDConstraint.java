@@ -1,7 +1,9 @@
-package com.usp.icmc.labes.rbac.model;
+package com.usp.icmc.labes.rbac.model.masood.ansi;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import com.usp.icmc.labes.rbac.model.RbacElement;
 
 public class DSoDConstraint implements RbacElement {
 

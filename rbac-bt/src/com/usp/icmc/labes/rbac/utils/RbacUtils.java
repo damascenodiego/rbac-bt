@@ -10,17 +10,15 @@ import java.util.Set;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.usp.icmc.labes.rbac.model.RbacPolicy;
-
-import com.usp.icmc.labes.rbac.model.User;
-import com.usp.icmc.labes.rbac.model.Role;
-import com.usp.icmc.labes.rbac.model.Permission;
-
-import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
-import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.masood.ansi.Permission;
+import com.usp.icmc.labes.rbac.model.masood.ansi.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.masood.ansi.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.masood.ansi.Role;
+import com.usp.icmc.labes.rbac.model.masood.ansi.User;
+import com.usp.icmc.labes.rbac.model.masood.ansi.UserRoleAssignment;
 
 public class RbacUtils {
-
+	
 	private XStream xstream;
 
 	static RbacUtils instance;
@@ -65,18 +63,15 @@ public class RbacUtils {
 	}
 
 
-	boolean addPermission(RbacPolicy pol, Permission prm){
-		if(	!permissionExists(pol, prm)){
-			pol.getPermission().add(prm);
-			return true;
-		}
-		return false;
-	}
-
 	boolean assignUser(RbacPolicy pol, User usr, Role rol){
-		if(		userExists(pol, usr) &&
-				roleExists(pol, rol) &&
-				!userRoleAssigned(pol,usr,rol)
+		boolean userExists = userExists(pol, usr);
+		boolean roleExists = roleExists(pol, rol); 
+		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
+//		boolean commandIsValid = nextStateUserCardinality
+		
+		if(		userExists &&
+				roleExists &&
+				!userRoleAssigned 
 				){
 			pol.getUserRoleAssignment().add(new UserRoleAssignment(usr,rol));
 			return true;
@@ -85,9 +80,13 @@ public class RbacUtils {
 	}
 
 	boolean deassignUser(RbacPolicy pol, User usr, Role rol){
-		if(		userExists(pol, usr) &&
-				roleExists(pol, rol) &&
-				userRoleAssigned(pol,usr,rol)
+		boolean userExists = userExists(pol, usr);
+		boolean roleExists = roleExists(pol, rol); 
+		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
+		
+		if(		userExists &&
+				roleExists &&
+				userRoleAssigned 
 				){
 			UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
 			pol.getUserRoleAssignment().remove(ur);
@@ -96,8 +95,7 @@ public class RbacUtils {
 		return false;
 	}
 
-
-	public boolean userRoleAssigned(RbacPolicy pol, User usr, Role rol) {
+	public boolean userRoleAssignmentExists(RbacPolicy pol, User usr, Role rol) {
 		if(getUserRoleAssignment(pol, usr, rol) != null){
 			return true;
 		}
@@ -114,10 +112,15 @@ public class RbacUtils {
 	}
 
 	boolean activateRole(RbacPolicy pol, User usr, Role rol){
-		if(		userExists(pol, usr) &&
-				roleExists(pol, rol) &&
-				userRoleAssigned(pol,usr,rol) &&
-				!userRoleActive(pol,usr,rol)
+		boolean userExists = userExists(pol, usr);
+		boolean roleExists = roleExists(pol, rol); 
+		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
+		boolean userRoleActive = userRoleActive(pol,usr,rol);
+		
+		if(		userExists &&
+				roleExists &&
+				userRoleAssigned &&
+				!userRoleActive
 				){
 			pol.getUserRoleAssignment().add(new UserRoleAssignment(usr,rol));
 			return true;
@@ -126,10 +129,15 @@ public class RbacUtils {
 	}
 
 	boolean deactivateRole(RbacPolicy pol, User usr, Role rol){
-		if(		userExists(pol, usr) &&
-				roleExists(pol, rol) &&
-				userRoleAssigned(pol,usr,rol) &&
-				userRoleActive(pol,usr,rol)
+		boolean userExists = userExists(pol, usr);
+		boolean roleExists = roleExists(pol, rol); 
+		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
+		boolean userRoleActive = userRoleActive(pol,usr,rol);
+
+		if(		userExists &&
+				roleExists &&
+				userRoleAssigned &&
+				userRoleActive
 				){
 			UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
 			ur.getActiveRoles().remove(usr);
@@ -147,16 +155,20 @@ public class RbacUtils {
 	}
 
 	public boolean grantPermission(RbacPolicy pol, Permission pr, Role rol) {
-		if(		roleExists(pol, rol) &&
-				permissionExists(pol, pr) &&
-				!permissionGranted(pol,pr,rol)
+		boolean permissionExists = permissionExists(pol, pr);
+		boolean roleExists = roleExists(pol, rol);
+		boolean permissionRoleAssigned = permissionRoleAssignmentExists(pol,pr,rol);
+
+		if(		permissionExists &&
+				roleExists &&
+				!permissionRoleAssigned
 				){
 			pol.getPermissionRoleAssignment().add(new PermissionRoleAssignment(pr,rol));
 			return true;
 		}
 		return false;
 	}
-	public boolean permissionGranted(RbacPolicy pol, Permission pr, Role rol) {
+	public boolean permissionRoleAssignmentExists(RbacPolicy pol, Permission pr, Role rol) {
 		if(getPermissionRoleAssignment(pol, pr, rol) != null){
 			return true;
 		}
