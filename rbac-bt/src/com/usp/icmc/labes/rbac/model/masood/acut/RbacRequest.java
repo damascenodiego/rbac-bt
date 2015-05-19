@@ -3,6 +3,15 @@ package com.usp.icmc.labes.rbac.model.masood.acut;
 import com.usp.icmc.labes.rbac.model.masood.ansi.*;
 
 public abstract class RbacRequest {
+	
+	public static final String ASSIGN_UR    	= "ASSIGN_UR";
+	public static final String DEASSIGN_UR    	= "DEASSIGN_UR";
+
+	public static final String ACTIVATE_UR    	= "ACTIVATE_UR";
+	public static final String DEACTIVATE_UR    = "DEACTIVATE_UR";
+
+	public static final String ASSIGN_PR    	= "ASSIGN_PR";
+	public static final String DEASSIGN_PR    	= "DEASSIGN_PR";
 
 	private String type;
 	private User user;
