@@ -137,9 +137,11 @@ public class RbacAdministrativeCommands {
 	}
 	// hierarchical rbac
 	public boolean addActivationHierarchy(RbacPolicy policy, Role senior, Role junior){
-		List<Role> jrs = utils.getSeniorsActivation(policy, senior);
-		List<Role> srs = utils.getJuniorsActivation(policy,senior);
+		List<Role> srs = utils.getSeniorsActivation(policy, senior);
+		List<Role> jrs = utils.getJuniorsActivation(policy,senior);
 		List<ActivationHierarchy> ahs = utils.getActivationHierarchyWithSenior(policy, senior);
+		ActivationHierarchy ahSrJr = utils.getActivationHierarchy(policy, senior,junior);
+		ahs.remove(ahSrJr);
 		
 		boolean isJuniorOfSenior 	= jrs.contains(junior);
 		boolean isSeniorOfSenior 	= srs.contains(junior);;

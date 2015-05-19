@@ -276,4 +276,14 @@ public class RbacUtils {
 		}
 		return result;
 	}
+
+	public ActivationHierarchy getActivationHierarchy(RbacPolicy policy,
+			Role senior, Role junior) {
+		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
+			if(ah.getSenior().equals(senior) && ah.getJunior().equals(junior)){
+				return ah;
+			}
+		}
+		return null;
+	}
 }

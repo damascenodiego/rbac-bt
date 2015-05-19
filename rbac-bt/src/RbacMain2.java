@@ -40,6 +40,7 @@ public class RbacMain2 {
 		User mary = new User("mary",2,2);
 		//create role
 		Role revi = new Role("reviewer",2,1);
+		Role clone = new Role("clone",2,1);
 		Role auth = new Role("author",2,1);
 		//create permissions
 
@@ -49,6 +50,7 @@ public class RbacMain2 {
 		//add role to policy
 		rbac.getRole().add(revi);
 		rbac.getRole().add(auth);
+		rbac.getRole().add(clone);
 
 		//create UR relationships
 		UserRoleAssignment ur1 = new UserRoleAssignment(john, revi);
@@ -83,6 +85,7 @@ public class RbacMain2 {
 		User mary = new User("mary",2,2);
 		//create role
 		Role revi = new Role("reviewer",2,1);
+		Role clone = new Role("clone",2,1);
 		Role auth = new Role("author",2,1);
 
 		//add users to policy
@@ -91,13 +94,17 @@ public class RbacMain2 {
 		//add role to policy
 		RbacAdministrativeCommands.getInstance().addRole(rbac,revi);
 		RbacAdministrativeCommands.getInstance().addRole(rbac,auth);
+		RbacAdministrativeCommands.getInstance().addRole(rbac,clone);
 
 		//create UR relationships
 		RbacAdministrativeCommands.getInstance().assignUser(rbac, john, revi);
 		RbacAdministrativeCommands.getInstance().assignUser(rbac, mary, auth);
 
 		//activation hierarchy
-		RbacAdministrativeCommands.getInstance().addActivationHierarchy(rbac, revi, auth);
+		System.out.println(RbacAdministrativeCommands.getInstance().addActivationHierarchy(rbac, revi, auth));
+		System.out.println(RbacAdministrativeCommands.getInstance().addActivationHierarchy(rbac, revi, clone));
+		System.out.println(RbacAdministrativeCommands.getInstance().addActivationHierarchy(rbac, revi, auth));
+		System.out.println(RbacAdministrativeCommands.getInstance().addActivationHierarchy(rbac, auth, revi));
 
 
 		try {

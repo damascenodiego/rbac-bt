@@ -23,28 +23,33 @@
       <staticCardinality>2</staticCardinality>
       <dynamicCardinality>1</dynamicCardinality>
     </com.usp.icmc.labes.rbac.model.masood.ansi.Role>
+    <com.usp.icmc.labes.rbac.model.masood.ansi.Role id="8">
+      <name>clone</name>
+      <staticCardinality>2</staticCardinality>
+      <dynamicCardinality>1</dynamicCardinality>
+    </com.usp.icmc.labes.rbac.model.masood.ansi.Role>
   </role>
-  <permission id="8"/>
-  <userRoleAssignment id="9">
-    <com.usp.icmc.labes.rbac.model.masood.ansi.UserRoleAssignment id="10">
+  <permission id="9"/>
+  <userRoleAssignment id="10">
+    <com.usp.icmc.labes.rbac.model.masood.ansi.UserRoleAssignment id="11">
       <user reference="3"/>
       <role reference="6"/>
-      <activeRoles id="11"/>
+      <activeRoles id="12"/>
     </com.usp.icmc.labes.rbac.model.masood.ansi.UserRoleAssignment>
-    <com.usp.icmc.labes.rbac.model.masood.ansi.UserRoleAssignment id="12">
+    <com.usp.icmc.labes.rbac.model.masood.ansi.UserRoleAssignment id="13">
       <user reference="4"/>
       <role reference="7"/>
-      <activeRoles id="13"/>
+      <activeRoles id="14"/>
     </com.usp.icmc.labes.rbac.model.masood.ansi.UserRoleAssignment>
   </userRoleAssignment>
-  <permissionRoleAssignment id="14"/>
-  <ssodConstraint id="15"/>
-  <dsodConstraint id="16"/>
-  <activationHierarchy id="17">
-    <com.usp.icmc.labes.rbac.model.masood.ansi.ActivationHierarchy id="18">
+  <permissionRoleAssignment id="15"/>
+  <ssodConstraint id="16"/>
+  <dsodConstraint id="17"/>
+  <activationHierarchy id="18">
+    <com.usp.icmc.labes.rbac.model.masood.ansi.ActivationHierarchy id="19">
       <senior reference="6"/>
       <junior reference="7"/>
     </com.usp.icmc.labes.rbac.model.masood.ansi.ActivationHierarchy>
   </activationHierarchy>
-  <inheritanceHierarchy id="19"/>
+  <inheritanceHierarchy id="20"/>
 </com.usp.icmc.labes.rbac.model.masood.ansi.RbacPolicy>
