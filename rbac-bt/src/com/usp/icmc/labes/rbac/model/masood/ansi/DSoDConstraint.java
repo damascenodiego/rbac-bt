@@ -1,6 +1,8 @@
 package com.usp.icmc.labes.rbac.model.masood.ansi;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.usp.icmc.labes.rbac.model.RbacElement;
@@ -23,6 +25,15 @@ public class DSoDConstraint implements RbacElement {
 		this.cardinality = card;
 	}
 
+	public DSoDConstraint(Collection<Role> set, int card) {
+		this();
+		Iterator<Role> roles = set.iterator();
+		while(roles.hasNext()) {
+			sodSet.add(roles.next());
+		}
+		this.cardinality = card;
+	}
+	
 	public String getName() {
 		return String.join(", ", (CharSequence[]) this.sodSet.toArray());
 	}
