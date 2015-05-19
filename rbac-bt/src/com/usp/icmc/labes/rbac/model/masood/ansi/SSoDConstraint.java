@@ -24,7 +24,7 @@ public class SSoDConstraint implements RbacElement {
 		}
 		this.cardinality = card;
 	}
-	
+
 	public SSoDConstraint(Collection<Role> set, int card) {
 		this();
 		Iterator<Role> roles = set.iterator();
@@ -56,5 +56,10 @@ public class SSoDConstraint implements RbacElement {
 
 	public void setSodSet(Set<Role> sodSet) {
 		this.sodSet = sodSet;
+	}
+	
+	@Override
+	public String toString() {
+		return "SSoD({"+sodSet+"},"+cardinality+")";
 	}
 }

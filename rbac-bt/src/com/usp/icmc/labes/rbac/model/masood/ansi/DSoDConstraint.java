@@ -57,4 +57,9 @@ public class DSoDConstraint implements RbacElement {
 	public void setSodSet(Set<Role> sodSet) {
 		this.sodSet = sodSet;
 	}
+	
+	@Override
+	public String toString() {
+		return "DSoD({"+sodSet+"},"+cardinality+")";
+	}
 }

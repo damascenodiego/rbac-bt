@@ -24,6 +24,8 @@ public class Permission implements RbacElement {
 		this.name = name;
 	}
 
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -49,4 +51,8 @@ public class Permission implements RbacElement {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "permission("+name+")";
+	}
 }

@@ -27,6 +27,9 @@ public class InheritanceHierarchy implements RbacElement {
 	public void setJunior(Role junior) {
 		this.junior = junior;
 	}
+	
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -56,6 +59,8 @@ public class InheritanceHierarchy implements RbacElement {
 			return false;
 		return true;
 	}
-
-	
+	@Override
+	public String toString() {
+		return "<I("+senior+">"+junior+")";
+	}
 }

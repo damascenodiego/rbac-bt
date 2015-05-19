@@ -3,7 +3,7 @@ package com.usp.icmc.labes.rbac.model.masood.ansi;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.usp.icmc.labes.rbac.model.*;
+import com.usp.icmc.labes.rbac.model.RbacElement;
 
 public class RbacPolicy implements RbacElement{
 	
@@ -212,6 +212,8 @@ public class RbacPolicy implements RbacElement{
 			return false;
 		return true;
 	}
+
+	
 
 	
 }

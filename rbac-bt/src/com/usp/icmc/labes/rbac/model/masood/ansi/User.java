@@ -11,17 +11,17 @@ public class User implements RbacElement{
 	private int staticCardinality;
 	/* dynamic cardinality */
 	private int dynamicCardinality;
-	
+
 	public User() {
 		staticCardinality = 0;
 		dynamicCardinality = 0;
 	}
-	
+
 	public User(String name) {
 		this();
 		this.name = name;
 	}
-	
+
 	public User(String name, int staticCard, int dynamicCard) {
 		this(name);
 		this.staticCardinality = staticCard;
@@ -83,4 +83,8 @@ public class User implements RbacElement{
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "user("+name+","+staticCardinality+dynamicCardinality+")";
+	}
 }
