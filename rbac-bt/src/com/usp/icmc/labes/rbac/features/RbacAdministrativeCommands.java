@@ -1,12 +1,13 @@
 package com.usp.icmc.labes.rbac.features;
 
+import java.util.List;
 import java.util.Set;
 
 import com.usp.icmc.labes.rbac.model.masood.ansi.*;
 import com.usp.icmc.labes.rbac.utils.RbacUtils;
 
 public class RbacAdministrativeCommands {
-	
+
 	private RbacUtils utils = RbacUtils.getInstance();
 	private static RbacAdministrativeCommands instance;
 
@@ -65,14 +66,14 @@ public class RbacAdministrativeCommands {
 	public boolean assignUser(RbacPolicy policy, User user, Role role){
 		boolean userExists 			= utils.userExists(policy, user);
 		boolean roleExists 			= utils.roleExists(policy,role); 
-		
+
 		boolean userAssignedtoRole 	= utils.userRoleAssignmentExists(policy, user, role);
-		
+
 		boolean nextSuIsValid 		= utils.afterAssignSuIsValid(policy, user, role);
 		boolean nextSrIsValid 		= utils.afterAssignSrIsValid(policy, user, role);
 
 		boolean nextSSoDIsValid 	= utils.afterAssignSsodIsValid(policy, user, role);
-		
+
 		if(		userExists &&
 				roleExists &&
 				nextSuIsValid &&
@@ -102,13 +103,13 @@ public class RbacAdministrativeCommands {
 		return false;
 
 	}
-	
+
 	public boolean grantPermission(RbacPolicy policy, Permission permission, Role role){
-		
+
 		boolean roleExists = utils.roleExists(policy, role);
 		boolean permissionExists = utils.permissionExists(policy, permission);
 		boolean prmsAssignedToRole = utils.permissionRoleAssignmentExists(policy, permission, role);
-		
+
 		if(		roleExists &&
 				permissionExists &&
 				!prmsAssignedToRole){
@@ -117,9 +118,9 @@ public class RbacAdministrativeCommands {
 		}
 		return false;
 	}
-	
+
 	public boolean revokePermission(RbacPolicy policy, Role role, Permission permission){
-		
+
 		boolean roleExists = utils.roleExists(policy, role);
 		boolean permissionExists = utils.permissionExists(policy, permission);
 		PermissionRoleAssignment pr = utils.getPermissionRoleAssignment(policy,permission,role);
@@ -135,18 +136,38 @@ public class RbacAdministrativeCommands {
 
 	}
 	// hierarchical rbac
-	public void addInheritance(RbacPolicy policy, Role r_asc, Role r_desc){
-
+	public boolean addActivationHierarchy(RbacPolicy policy, Role senior, Role junior){
+		List<Role> jrs = utils.getSeniorsActivation(policy, senior);
+		List<Role> srs = utils.getJuniorsActivation(policy,senior);
+		List<ActivationHierarchy> ahs = utils.getActivationHierarchyWithSenior(policy, senior);
+		
+		boolean isJuniorOfSenior 	= jrs.contains(junior);
+		boolean isSeniorOfSenior 	= srs.contains(junior);;
+		boolean multipleInheritance = !ahs.isEmpty();
+		
+		if(		!isJuniorOfSenior&&
+				!isSeniorOfSenior&&
+				!multipleInheritance
+				){
+			policy.getActivationHierarchy().add(new ActivationHierarchy(senior, junior));
+			return true;
+		}
+		return false;
 	}
-	public void deleteInheritance(RbacPolicy policy, Role r_asc, Role r_desc){
 
-	}
-	public void addAscendant(RbacPolicy policy, Role r_asc, Role r_desc){
 
+	public boolean deleteActivationHierarchy(RbacPolicy policy, Role senior, Role junior){
+		return false;
 	}
-	public void addDescendant(RbacPolicy policy, Role r_asc, Role r_desc){
 
+	public boolean addInheritanceHierarchy(RbacPolicy policy, Role senior, Role junior){
+		return false;
 	}
+
+	public boolean deleteInheritanceHierarchy(RbacPolicy policy, Role senior, Role junior){
+		return false;
+	}
+
 	// static SoD
 	public void createSsodSet(RbacPolicy policy, String name , Set<Role> set, int set_card){
 

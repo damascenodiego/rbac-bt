@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.usp.icmc.labes.rbac.model.masood.ansi.ActivationHierarchy;
 import com.usp.icmc.labes.rbac.model.masood.ansi.Permission;
 import com.usp.icmc.labes.rbac.model.masood.ansi.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.masood.ansi.RbacPolicy;
@@ -19,7 +21,7 @@ import com.usp.icmc.labes.rbac.model.masood.ansi.User;
 import com.usp.icmc.labes.rbac.model.masood.ansi.UserRoleAssignment;
 
 public class RbacUtils {
-	
+
 	private XStream xstream;
 
 	static RbacUtils instance;
@@ -68,8 +70,8 @@ public class RbacUtils {
 		boolean userExists = userExists(pol, usr);
 		boolean roleExists = roleExists(pol, rol); 
 		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
-//		boolean commandIsValid = nextStateUserCardinality
-		
+		//		boolean commandIsValid = nextStateUserCardinality
+
 		if(		userExists &&
 				roleExists &&
 				!userRoleAssigned 
@@ -84,7 +86,7 @@ public class RbacUtils {
 		boolean userExists = userExists(pol, usr);
 		boolean roleExists = roleExists(pol, rol); 
 		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
-		
+
 		if(		userExists &&
 				roleExists &&
 				userRoleAssigned 
@@ -178,7 +180,7 @@ public class RbacUtils {
 		}
 		return total<=user.getStaticCardinality();
 	}
-	
+
 	public boolean afterAssignSrIsValid(RbacPolicy policy, User user, Role role) {
 		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
 		int total=0;
@@ -196,7 +198,7 @@ public class RbacUtils {
 		}
 		return total<=user.getDynamicCardinality();
 	}
-	
+
 	public boolean afterActivateDrIsValid(RbacPolicy policy, User user, Role role) {
 		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
 		int total=0;
@@ -218,4 +220,60 @@ public class RbacUtils {
 		return true;
 	}
 
+	public List<Role> getSeniorsActivation(RbacPolicy policy, Role role) {
+		List<Role> toCheck = new ArrayList<Role>();
+		List<Role> sr = new ArrayList<Role>();
+		toCheck.add(role);
+		Role current = null;
+		while(!toCheck.isEmpty()){
+			current = toCheck.get(0);
+			for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
+				if(ah.getJunior().equals(current)){
+					toCheck.add(ah.getSenior());
+					sr.add(ah.getSenior());
+				}
+			}
+			toCheck.remove(current);
+		}
+		return sr;
+	}
+
+	public List<Role> getJuniorsActivation(RbacPolicy policy, Role role) {
+		List<Role> toCheck = new ArrayList<Role>();
+		List<Role> jr = new ArrayList<Role>();
+		toCheck.add(role);
+		Role current = null;
+		while(!toCheck.isEmpty()){
+			current = toCheck.get(0);
+			for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
+				if(ah.getSenior().equals(current)){
+					toCheck.add(ah.getJunior());
+					jr.add(ah.getJunior());
+				}
+			}
+			toCheck.remove(current);
+		}
+		return jr;
+	}
+
+
+	public List<ActivationHierarchy> getActivationHierarchiesWithJunior(RbacPolicy policy, Role role) {
+		List<ActivationHierarchy> result = new ArrayList<ActivationHierarchy>();
+		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
+			if(ah.getJunior().equals(role)){
+				result.add(ah);
+			}
+		}
+		return result;
+	}
+	
+	public List<ActivationHierarchy> getActivationHierarchyWithSenior(RbacPolicy policy, Role role) {
+		List<ActivationHierarchy> result = new ArrayList<ActivationHierarchy>();
+		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
+			if(ah.getSenior().equals(role)){
+				result.add(ah);
+			}
+		}
+		return result;
+	}
 }
