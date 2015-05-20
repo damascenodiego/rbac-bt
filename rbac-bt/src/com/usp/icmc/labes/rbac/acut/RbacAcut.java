@@ -31,6 +31,7 @@ public class RbacAcut implements RbacElement{
 	public RbacAcut(RbacPolicy p) { 
 		policy = p;
 		saveState(p);
+		currentState = new RbacState(policy);
 	}
 
 	private void saveState(RbacPolicy p) {
@@ -71,9 +72,6 @@ public class RbacAcut implements RbacElement{
 	}
 
 	public RbacState getCurrentState() {
-		if(currentState == null){
-			currentState = new RbacState(policy);
-		}
 		return currentState;
 	}
 
@@ -104,23 +102,28 @@ public class RbacAcut implements RbacElement{
 		return stateName;
 	}
 
-	public void request(RbacRequest rq) {
+	public boolean request(RbacRequest rq) {
+		String transition = getCurrentState().toString();
+		boolean output = true;
 		if(rq instanceof RbacRequestAssignUR){
-			admin.assignUser(policy, rq.getUser(), rq.getRole());
+			output = admin.assignUser(policy, rq.getUser(), rq.getRole());
 		}else if(rq instanceof RbacRequestDeassignUR){
-			admin.deassignUser(policy, rq.getUser(), rq.getRole());
+			output = admin.deassignUser(policy, rq.getUser(), rq.getRole());
 		}else if(rq instanceof RbacRequestActivateUR){
-			sys.addActiveRole(policy, rq.getUser(), rq.getRole());
+			output = sys.addActiveRole(policy, rq.getUser(), rq.getRole());
 		}else if(rq instanceof RbacRequestDeactivateUR){
-			sys.dropActiveRole(policy, rq.getUser(), rq.getRole());
+			output = sys.dropActiveRole(policy, rq.getUser(), rq.getRole());
 		}else if(rq instanceof RbacRequestAssignPR){
-			admin.grantPermission(policy, rq.getPermission(), rq.getRole());
+			output = admin.grantPermission(policy, rq.getPermission(), rq.getRole());
 		}else if(rq instanceof RbacRequestDeassignPR){
-			admin.revokePermission(policy, rq.getPermission(), rq.getRole());
+			output = admin.revokePermission(policy, rq.getPermission(), rq.getRole());
 		}
 
 		currentState = null;
 		currentState = new RbacState(policy);
+		//transition +="--"+rq.toString()+"/"+(output ? "granted": "denied")+"-->"+getCurrentState().toString();
+//		transition +=" -> "+getCurrentState().toString()+"  [ label=\""+rq.toString()+"/"+(output ? "granted": "denied")+"\"];";
+		return output;
 	}
 
 	@Override
