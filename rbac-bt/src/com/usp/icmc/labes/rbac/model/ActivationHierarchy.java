@@ -2,7 +2,7 @@ package com.usp.icmc.labes.rbac.model;
 
 
 
-public class ActivationHierarchy implements RbacElement {
+public class ActivationHierarchy implements RbacElement, Hierarchy {
 	
 	private Role senior;
 	private Role junior;

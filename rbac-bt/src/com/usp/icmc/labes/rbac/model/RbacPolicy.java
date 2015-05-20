@@ -11,10 +11,8 @@ public class RbacPolicy implements RbacElement{
 	private List<Permission> permission;
 	private List<UserRoleAssignment> userRoleAssignment;
 	private List<PermissionRoleAssignment> permissionRoleAssignment;
-	private List<SSoDConstraint> ssodConstraint;
-	private List<DSoDConstraint> dsodConstraint;
-	private List<ActivationHierarchy> activationHierarchy;
-	private List<InheritanceHierarchy> inheritanceHierarchy;
+	private List<SoDConstraint> sodConstraint;
+	private List<Hierarchy> hierarchy;
 	
 	
 	public RbacPolicy() {
@@ -23,10 +21,8 @@ public class RbacPolicy implements RbacElement{
 		permission = new ArrayList<Permission>();
 		userRoleAssignment = new ArrayList<UserRoleAssignment>();
 		permissionRoleAssignment = new ArrayList<PermissionRoleAssignment>();
-		ssodConstraint = new ArrayList<SSoDConstraint>();
-		dsodConstraint = new ArrayList<DSoDConstraint>();
-		activationHierarchy = new ArrayList<ActivationHierarchy>();
-		inheritanceHierarchy = new ArrayList<InheritanceHierarchy>();
+		sodConstraint = new ArrayList<SoDConstraint>();
+		hierarchy = new ArrayList<Hierarchy>();
 	}
 
 	public RbacPolicy(String name) {
@@ -83,54 +79,29 @@ public class RbacPolicy implements RbacElement{
 		this.permissionRoleAssignment = permissionRoleAssignment;
 	}
 
-	public List<SSoDConstraint> getSsodConstraint() {
-		return ssodConstraint;
+	public List<SoDConstraint> getSodConstraint() {
+		return sodConstraint;
 	}
 
-	public void setSsodConstraint(List<SSoDConstraint> ssodConstraint) {
-		this.ssodConstraint = ssodConstraint;
+	public void setSodConstraint(List<SoDConstraint> sodConstraint) {
+		this.sodConstraint = sodConstraint;
 	}
 
-	public List<DSoDConstraint> getDsodConstraint() {
-		return dsodConstraint;
+	public List<Hierarchy> getHierarchy() {
+		return hierarchy;
 	}
 
-	public void setDsodConstraint(List<DSoDConstraint> dsodConstraint) {
-		this.dsodConstraint = dsodConstraint;
-	}
-
-	public List<ActivationHierarchy> getActivationHierarchy() {
-		return activationHierarchy;
-	}
-
-	public void setActivationHierarchy(List<ActivationHierarchy> activationHierarchy) {
-		this.activationHierarchy = activationHierarchy;
-	}
-
-	public List<InheritanceHierarchy> getInheritanceHierarchy() {
-		return inheritanceHierarchy;
-	}
-
-	public void setInheritanceHierarchy(
-			List<InheritanceHierarchy> inheritanceHierarchy) {
-		this.inheritanceHierarchy = inheritanceHierarchy;
+	public void setHierarchy(List<Hierarchy> hierarchy) {
+		this.hierarchy = hierarchy;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((activationHierarchy == null) ? 0 : activationHierarchy
-						.hashCode());
 		result = prime * result
-				+ ((dsodConstraint == null) ? 0 : dsodConstraint.hashCode());
-		result = prime
-				* result
-				+ ((inheritanceHierarchy == null) ? 0 : inheritanceHierarchy
-						.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+				+ ((hierarchy == null) ? 0 : hierarchy.hashCode());
+//		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result
 				+ ((permission == null) ? 0 : permission.hashCode());
 		result = prime
@@ -139,7 +110,7 @@ public class RbacPolicy implements RbacElement{
 						: permissionRoleAssignment.hashCode());
 		result = prime * result + ((role == null) ? 0 : role.hashCode());
 		result = prime * result
-				+ ((ssodConstraint == null) ? 0 : ssodConstraint.hashCode());
+				+ ((sodConstraint == null) ? 0 : sodConstraint.hashCode());
 		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		result = prime
 				* result
@@ -157,26 +128,16 @@ public class RbacPolicy implements RbacElement{
 		if (!(obj instanceof RbacPolicy))
 			return false;
 		RbacPolicy other = (RbacPolicy) obj;
-		if (activationHierarchy == null) {
-			if (other.activationHierarchy != null)
+		if (hierarchy == null) {
+			if (other.hierarchy != null)
 				return false;
-		} else if (!activationHierarchy.equals(other.activationHierarchy))
+		} else if (!hierarchy.equals(other.hierarchy))
 			return false;
-		if (dsodConstraint == null) {
-			if (other.dsodConstraint != null)
-				return false;
-		} else if (!dsodConstraint.equals(other.dsodConstraint))
-			return false;
-		if (inheritanceHierarchy == null) {
-			if (other.inheritanceHierarchy != null)
-				return false;
-		} else if (!inheritanceHierarchy.equals(other.inheritanceHierarchy))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
+//		if (name == null) {
+//			if (other.name != null)
+//				return false;
+//		} else if (!name.equals(other.name))
+//			return false;
 		if (permission == null) {
 			if (other.permission != null)
 				return false;
@@ -193,10 +154,10 @@ public class RbacPolicy implements RbacElement{
 				return false;
 		} else if (!role.equals(other.role))
 			return false;
-		if (ssodConstraint == null) {
-			if (other.ssodConstraint != null)
+		if (sodConstraint == null) {
+			if (other.sodConstraint != null)
 				return false;
-		} else if (!ssodConstraint.equals(other.ssodConstraint))
+		} else if (!sodConstraint.equals(other.sodConstraint))
 			return false;
 		if (user == null) {
 			if (other.user != null)
@@ -210,8 +171,5 @@ public class RbacPolicy implements RbacElement{
 			return false;
 		return true;
 	}
-
-	
-
 	
 }

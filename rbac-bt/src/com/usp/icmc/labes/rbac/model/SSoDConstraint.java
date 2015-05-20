@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class SSoDConstraint implements RbacElement {
+public class SSoDConstraint implements RbacElement, SoDConstraint  {
 
 	int cardinality;
 	Set<Role> sodSet;
