@@ -1,0 +1,54 @@
+<com.usp.icmc.labes.rbac.model.RbacPolicy id="1">
+  <name>rbacViaModelMethods</name>
+  <user id="2">
+    <com.usp.icmc.labes.rbac.model.User id="3">
+      <name>u1</name>
+      <staticCardinality>1</staticCardinality>
+      <dynamicCardinality>1</dynamicCardinality>
+    </com.usp.icmc.labes.rbac.model.User>
+    <com.usp.icmc.labes.rbac.model.User id="4">
+      <name>u2</name>
+      <staticCardinality>1</staticCardinality>
+      <dynamicCardinality>1</dynamicCardinality>
+    </com.usp.icmc.labes.rbac.model.User>
+  </user>
+  <role id="5">
+    <com.usp.icmc.labes.rbac.model.Role id="6">
+      <name>r1</name>
+      <staticCardinality>2</staticCardinality>
+      <dynamicCardinality>1</dynamicCardinality>
+    </com.usp.icmc.labes.rbac.model.Role>
+  </role>
+  <permission id="7">
+    <com.usp.icmc.labes.rbac.model.Permission id="8">
+      <name>p1</name>
+    </com.usp.icmc.labes.rbac.model.Permission>
+    <com.usp.icmc.labes.rbac.model.Permission id="9">
+      <name>p2</name>
+    </com.usp.icmc.labes.rbac.model.Permission>
+  </permission>
+  <userRoleAssignment id="10">
+    <com.usp.icmc.labes.rbac.model.UserRoleAssignment id="11">
+      <user reference="3"/>
+      <role reference="6"/>
+      <activeRoles id="12"/>
+    </com.usp.icmc.labes.rbac.model.UserRoleAssignment>
+    <com.usp.icmc.labes.rbac.model.UserRoleAssignment id="13">
+      <user reference="4"/>
+      <role reference="6"/>
+      <activeRoles id="14"/>
+    </com.usp.icmc.labes.rbac.model.UserRoleAssignment>
+  </userRoleAssignment>
+  <permissionRoleAssignment id="15">
+    <com.usp.icmc.labes.rbac.model.PermissionRoleAssignment id="16">
+      <permission reference="8"/>
+      <role reference="6"/>
+    </com.usp.icmc.labes.rbac.model.PermissionRoleAssignment>
+    <com.usp.icmc.labes.rbac.model.PermissionRoleAssignment id="17">
+      <permission reference="9"/>
+      <role reference="6"/>
+    </com.usp.icmc.labes.rbac.model.PermissionRoleAssignment>
+  </permissionRoleAssignment>
+  <sodConstraint id="18"/>
+  <hierarchy id="19"/>
+</com.usp.icmc.labes.rbac.model.RbacPolicy>
