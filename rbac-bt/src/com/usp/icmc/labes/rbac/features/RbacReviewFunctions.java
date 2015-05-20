@@ -12,9 +12,9 @@ import com.usp.icmc.labes.rbac.utils.RbacUtils;
 
 public class RbacReviewFunctions {
 
-	private RbacReviewFunctions instance;
+	private static RbacReviewFunctions instance;
 
-	public RbacReviewFunctions getInstance() {
+	public static RbacReviewFunctions getInstance() {
 		if(instance==null){
 			instance = new RbacReviewFunctions();
 		}

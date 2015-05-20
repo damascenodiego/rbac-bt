@@ -13,9 +13,9 @@ import com.usp.icmc.labes.rbac.utils.RbacUtils;
 public class RbacAdvancedReviewFunctions {
 
 	private RbacUtils utils = RbacUtils.getInstance();
-	private RbacAdvancedReviewFunctions instance;
+	static private RbacAdvancedReviewFunctions instance;
 
-	public RbacAdvancedReviewFunctions getInstance() {
+	public static RbacAdvancedReviewFunctions getInstance() {
 		if(instance==null){
 			instance = new RbacAdvancedReviewFunctions();
 		}

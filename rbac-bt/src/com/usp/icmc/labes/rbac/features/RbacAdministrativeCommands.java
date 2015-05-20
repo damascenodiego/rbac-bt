@@ -136,7 +136,7 @@ public class RbacAdministrativeCommands {
 		return false;
 	}
 
-	public boolean revokePermission(RbacPolicy policy, Role role, Permission permission){
+	public boolean revokePermission(RbacPolicy policy, Permission permission, Role role){
 
 		boolean roleExists = utils.roleExists(policy, role);
 		boolean permissionExists = utils.permissionExists(policy, permission);

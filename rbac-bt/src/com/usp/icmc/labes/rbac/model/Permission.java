@@ -2,7 +2,7 @@ package com.usp.icmc.labes.rbac.model;
 
 
 
-public class Permission implements RbacElement {
+public class Permission implements RbacElement, RoleAssignable {
 	
 	/* permission name */
 	private String name;

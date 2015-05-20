@@ -136,21 +136,23 @@ public class RbacUtils {
 	}
 
 	public boolean afterAssignSuIsValid(RbacPolicy policy, User user, Role role) {
+		if(user.getStaticCardinality()==0) return false;
 		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
 		int total=0;
 		for (UserRoleAssignment ur : urList) {
 			if(ur.getUser().equals(user)) total++;
 		}
-		return total<=user.getStaticCardinality();
+		return total<=user.getStaticCardinality() ;
 	}
 
 	public boolean afterAssignSrIsValid(RbacPolicy policy, User user, Role role) {
+		if(role.getStaticCardinality()==0) return false;
 		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
 		int total=0;
 		for (UserRoleAssignment ur : urList) {
 			if(ur.getRole().equals(role)) total++;
 		}
-		return total<=user.getStaticCardinality();
+		return total<=role.getStaticCardinality();
 	}
 
 	public boolean afterActivateDuIsValid(RbacPolicy policy, User user, Role role) {

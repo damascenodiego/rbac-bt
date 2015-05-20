@@ -2,7 +2,7 @@ package com.usp.icmc.labes.rbac.model;
 
 
 
-public class User implements RbacElement{
+public class User implements RbacElement, RoleAssignable{
 
 	/* user name */
 	private String name;
