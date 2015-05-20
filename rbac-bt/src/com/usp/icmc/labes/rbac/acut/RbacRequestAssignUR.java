@@ -1,4 +1,4 @@
-package com.usp.icmc.labes.rbac.model.acut;
+package com.usp.icmc.labes.rbac.acut;
 
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
