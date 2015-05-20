@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 
-import javax.rmi.CORBA.Util;
-
 import org.junit.Test;
 
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
