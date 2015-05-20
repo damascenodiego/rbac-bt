@@ -1,6 +1,5 @@
-package com.usp.icmc.labes.rbac.model.masood.ansi;
+package com.usp.icmc.labes.rbac.model;
 
-import com.usp.icmc.labes.rbac.model.RbacElement;
 
 
 public class ActivationHierarchy implements RbacElement {

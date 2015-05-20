@@ -1,6 +1,7 @@
-package com.usp.icmc.labes.rbac.model.masood.acut;
+package com.usp.icmc.labes.rbac.model.acut;
 
-import com.usp.icmc.labes.rbac.model.masood.ansi.*;
+import com.usp.icmc.labes.rbac.model.Permission;
+import com.usp.icmc.labes.rbac.model.Role;
 
 public class RbacRequestDeassignPR extends RbacRequest{
 

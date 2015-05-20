@@ -1,4 +1,4 @@
-package com.usp.icmc.labes.rbac.model.masood.ansi;
+package com.usp.icmc.labes.rbac.model;
 
 public interface Hierarchy {
 	Role getSenior();

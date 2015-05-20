@@ -12,13 +12,13 @@ import java.util.Set;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.usp.icmc.labes.rbac.model.masood.ansi.ActivationHierarchy;
-import com.usp.icmc.labes.rbac.model.masood.ansi.Permission;
-import com.usp.icmc.labes.rbac.model.masood.ansi.PermissionRoleAssignment;
-import com.usp.icmc.labes.rbac.model.masood.ansi.RbacPolicy;
-import com.usp.icmc.labes.rbac.model.masood.ansi.Role;
-import com.usp.icmc.labes.rbac.model.masood.ansi.User;
-import com.usp.icmc.labes.rbac.model.masood.ansi.UserRoleAssignment;
+import com.usp.icmc.labes.rbac.model.ActivationHierarchy;
+import com.usp.icmc.labes.rbac.model.Permission;
+import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 
 public class RbacUtils {
 
@@ -49,10 +49,6 @@ public class RbacUtils {
 		xstream.toXML(rbacPol, fos);
 	}
 
-	//////////////////////////////////////////////////////
-	// check existance of user, roles and permissions	// 
-	//////////////////////////////////////////////////////
-
 	public boolean userExists(RbacPolicy pol, User usr){
 		return pol.getUser().contains(usr);
 	}
@@ -65,38 +61,6 @@ public class RbacUtils {
 		return pol.getPermission().contains(pr);
 	}
 
-
-	boolean assignUser(RbacPolicy pol, User usr, Role rol){
-		boolean userExists = userExists(pol, usr);
-		boolean roleExists = roleExists(pol, rol); 
-		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
-		//		boolean commandIsValid = nextStateUserCardinality
-
-		if(		userExists &&
-				roleExists &&
-				!userRoleAssigned 
-				){
-			pol.getUserRoleAssignment().add(new UserRoleAssignment(usr,rol));
-			return true;
-		}
-		return false;
-	}
-
-	boolean deassignUser(RbacPolicy pol, User usr, Role rol){
-		boolean userExists = userExists(pol, usr);
-		boolean roleExists = roleExists(pol, rol); 
-		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
-
-		if(		userExists &&
-				roleExists &&
-				userRoleAssigned 
-				){
-			UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
-			pol.getUserRoleAssignment().remove(ur);
-			return true;
-		}
-		return false;
-	}
 
 	public boolean userRoleAssignmentExists(RbacPolicy pol, User usr, Role rol) {
 		if(getUserRoleAssignment(pol, usr, rol) != null){
@@ -114,48 +78,26 @@ public class RbacUtils {
 		return null;
 	}
 
-	boolean deactivateRole(RbacPolicy pol, User usr, Role rol){
-		boolean userExists = userExists(pol, usr);
-		boolean roleExists = roleExists(pol, rol); 
-		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
-		boolean userRoleActive = userRoleActive(pol,usr,rol);
-
-		if(		userExists &&
-				roleExists &&
-				userRoleAssigned &&
-				userRoleActive
-				){
-			UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
-			ur.getActiveRoles().remove(usr);
-			return true;
+	public Set<UserRoleAssignment> getUserRoleAssignmentsWithUser(RbacPolicy pol, User usr) {
+		Set<UserRoleAssignment> result = new HashSet<UserRoleAssignment>(); 
+		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
+			if(el.getUser().equals(usr)){
+				result.add(el);
+			}
 		}
-		return false;
+		return result;
+	}
+	
+	public Set<UserRoleAssignment> getUserRoleAssignmentsWithRole(RbacPolicy pol, Role rol) {
+		Set<UserRoleAssignment> result = new HashSet<UserRoleAssignment>(); 
+		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
+			if(el.getRole().equals(rol)){
+				result.add(el);
+			}
+		}
+		return result;
 	}
 
-	public boolean userRoleActive(RbacPolicy pol, User usr, Role rol) {
-		UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
-		if(
-				ur!=null && //TODO check with findbugs 
-				ur.getActiveRoles().contains(rol)){
-			return true;
-		}
-		return false;
-	}
-
-	public boolean grantPermission(RbacPolicy pol, Permission pr, Role rol) {
-		boolean permissionExists = permissionExists(pol, pr);
-		boolean roleExists = roleExists(pol, rol);
-		boolean permissionRoleAssigned = permissionRoleAssignmentExists(pol,pr,rol);
-
-		if(		permissionExists &&
-				roleExists &&
-				!permissionRoleAssigned
-				){
-			pol.getPermissionRoleAssignment().add(new PermissionRoleAssignment(pr,rol));
-			return true;
-		}
-		return false;
-	}
 	public boolean permissionRoleAssignmentExists(RbacPolicy pol, Permission pr, Role rol) {
 		if(getPermissionRoleAssignment(pol, pr, rol) != null){
 			return true;
@@ -164,12 +106,33 @@ public class RbacUtils {
 	}
 
 	public PermissionRoleAssignment getPermissionRoleAssignment(RbacPolicy pol, Permission pr, Role rol) {
+		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
 		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
 			if(el.getPermission().equals(pr) && el.getRole().equals(rol)){
 				return el;
 			}
 		}
 		return null;
+	}
+
+	public Set<PermissionRoleAssignment> getPermissionRoleAssignmentsWithRole(RbacPolicy pol, Role rol) {
+		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
+		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
+			if(el.getRole().equals(rol)){
+				result.add(el);
+			}
+		}
+		return result;
+	}
+
+	public Set<PermissionRoleAssignment> getPermissionRoleAssignmentsWithPermission(RbacPolicy pol, Permission pr) {
+		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
+		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
+			if(el.getPermission().equals(pr)){
+				result.add(el);
+			}
+		}
+		return result;
 	}
 
 	public boolean afterAssignSuIsValid(RbacPolicy policy, User user, Role role) {
@@ -208,82 +171,181 @@ public class RbacUtils {
 		return total<=role.getDynamicCardinality();
 	}
 
-	public boolean afterAssignSsodIsValid(RbacPolicy policy, User user,
-			Role role) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	public boolean afterAssignDsodIsValid(RbacPolicy policy, User user,
-			Role role) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	public List<Role> getSeniorsActivation(RbacPolicy policy, Role role) {
-		List<Role> toCheck = new ArrayList<Role>();
-		List<Role> sr = new ArrayList<Role>();
-		toCheck.add(role);
-		Role current = null;
-		while(!toCheck.isEmpty()){
-			current = toCheck.get(0);
-			for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
-				if(ah.getJunior().equals(current)){
-					toCheck.add(ah.getSenior());
-					sr.add(ah.getSenior());
-				}
-			}
-			toCheck.remove(current);
-		}
-		return sr;
-	}
-
-	public List<Role> getJuniorsActivation(RbacPolicy policy, Role role) {
-		List<Role> toCheck = new ArrayList<Role>();
-		List<Role> jr = new ArrayList<Role>();
-		toCheck.add(role);
-		Role current = null;
-		while(!toCheck.isEmpty()){
-			current = toCheck.get(0);
-			for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
-				if(ah.getSenior().equals(current)){
-					toCheck.add(ah.getJunior());
-					jr.add(ah.getJunior());
-				}
-			}
-			toCheck.remove(current);
-		}
-		return jr;
-	}
-
-
-	public List<ActivationHierarchy> getActivationHierarchiesWithJunior(RbacPolicy policy, Role role) {
-		List<ActivationHierarchy> result = new ArrayList<ActivationHierarchy>();
-		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
-			if(ah.getJunior().equals(role)){
-				result.add(ah);
-			}
-		}
-		return result;
-	}
-	
-	public List<ActivationHierarchy> getActivationHierarchyWithSenior(RbacPolicy policy, Role role) {
-		List<ActivationHierarchy> result = new ArrayList<ActivationHierarchy>();
-		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
-			if(ah.getSenior().equals(role)){
-				result.add(ah);
-			}
+	public Set<Role> getRolesAssignedToUser(RbacPolicy pol, User usr){
+		Set<Role> result = new HashSet<Role>();
+		List<UserRoleAssignment> userRoleAssignments = pol.getUserRoleAssignment();
+		for (UserRoleAssignment ur : userRoleAssignments) {
+			if(ur.getUser().equals(usr))
+				result.add(ur.getRole());
 		}
 		return result;
 	}
 
-	public ActivationHierarchy getActivationHierarchy(RbacPolicy policy,
-			Role senior, Role junior) {
-		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
-			if(ah.getSenior().equals(senior) && ah.getJunior().equals(junior)){
-				return ah;
+	public boolean isRoleActiveByUser(RbacPolicy pol, Role rol, User usr){
+		for (UserRoleAssignment el: getUserRoleAssignmentsWithUser(pol, usr)) {
+			if(el.getActiveRoles().contains(rol)){
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
+
+	//	boolean assignUser(RbacPolicy pol, User usr, Role rol){
+	//		boolean userExists = userExists(pol, usr);
+	//		boolean roleExists = roleExists(pol, rol); 
+	//		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
+	//		//		boolean commandIsValid = nextStateUserCardinality
+	//
+	//		if(		userExists &&
+	//				roleExists &&
+	//				!userRoleAssigned 
+	//				){
+	//			pol.getUserRoleAssignment().add(new UserRoleAssignment(usr,rol));
+	//			return true;
+	//		}
+	//		return false;
+	//	}
+	//
+	//	boolean deassignUser(RbacPolicy pol, User usr, Role rol){
+	//		boolean userExists = userExists(pol, usr);
+	//		boolean roleExists = roleExists(pol, rol); 
+	//		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
+	//
+	//		if(		userExists &&
+	//				roleExists &&
+	//				userRoleAssigned 
+	//				){
+	//			UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
+	//			pol.getUserRoleAssignment().remove(ur);
+	//			return true;
+	//		}
+	//		return false;
+	//	}
+	//
+
+	//
+	//	boolean deactivateRole(RbacPolicy pol, User usr, Role rol){
+	//		boolean userExists = userExists(pol, usr);
+	//		boolean roleExists = roleExists(pol, rol); 
+	//		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
+	//		boolean userRoleActive = userRoleActive(pol,usr,rol);
+	//
+	//		if(		userExists &&
+	//				roleExists &&
+	//				userRoleAssigned &&
+	//				userRoleActive
+	//				){
+	//			UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
+	//			ur.getActiveRoles().remove(usr);
+	//			return true;
+	//		}
+	//		return false;
+	//	}
+	//
+	//	public boolean userRoleActive(RbacPolicy pol, User usr, Role rol) {
+	//		UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
+	//		if(
+	//				ur!=null && //TODO check with findbugs 
+	//				ur.getActiveRoles().contains(rol)){
+	//			return true;
+	//		}
+	//		return false;
+	//	}
+	//
+	//	public boolean grantPermission(RbacPolicy pol, Permission pr, Role rol) {
+	//		boolean permissionExists = permissionExists(pol, pr);
+	//		boolean roleExists = roleExists(pol, rol);
+	//		boolean permissionRoleAssigned = permissionRoleAssignmentExists(pol,pr,rol);
+	//
+	//		if(		permissionExists &&
+	//				roleExists &&
+	//				!permissionRoleAssigned
+	//				){
+	//			pol.getPermissionRoleAssignment().add(new PermissionRoleAssignment(pr,rol));
+	//			return true;
+	//		}
+	//		return false;
+	//	}
+
+	//
+
+	//
+	//	public boolean afterAssignSsodIsValid(RbacPolicy policy, User user,
+	//			Role role) {
+	//		// TODO Auto-generated method stub
+	//		return true;
+	//	}
+	//
+	//	public boolean afterAssignDsodIsValid(RbacPolicy policy, User user,
+	//			Role role) {
+	//		// TODO Auto-generated method stub
+	//		return true;
+	//	}
+	//
+	//	public List<Role> getSeniorsActivation(RbacPolicy policy, Role role) {
+	//		List<Role> toCheck = new ArrayList<Role>();
+	//		List<Role> sr = new ArrayList<Role>();
+	//		toCheck.add(role);
+	//		Role current = null;
+	//		while(!toCheck.isEmpty()){
+	//			current = toCheck.get(0);
+	//			for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
+	//				if(ah.getJunior().equals(current)){
+	//					toCheck.add(ah.getSenior());
+	//					sr.add(ah.getSenior());
+	//				}
+	//			}
+	//			toCheck.remove(current);
+	//		}
+	//		return sr;
+	//	}
+	//
+	//	public List<Role> getJuniorsActivation(RbacPolicy policy, Role role) {
+	//		List<Role> toCheck = new ArrayList<Role>();
+	//		List<Role> jr = new ArrayList<Role>();
+	//		toCheck.add(role);
+	//		Role current = null;
+	//		while(!toCheck.isEmpty()){
+	//			current = toCheck.get(0);
+	//			for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
+	//				if(ah.getSenior().equals(current)){
+	//					toCheck.add(ah.getJunior());
+	//					jr.add(ah.getJunior());
+	//				}
+	//			}
+	//			toCheck.remove(current);
+	//		}
+	//		return jr;
+	//	}
+	//
+	//
+	//	public List<ActivationHierarchy> getActivationHierarchiesWithJunior(RbacPolicy policy, Role role) {
+	//		List<ActivationHierarchy> result = new ArrayList<ActivationHierarchy>();
+	//		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
+	//			if(ah.getJunior().equals(role)){
+	//				result.add(ah);
+	//			}
+	//		}
+	//		return result;
+	//	}
+	//	
+	//	public List<ActivationHierarchy> getActivationHierarchyWithSenior(RbacPolicy policy, Role role) {
+	//		List<ActivationHierarchy> result = new ArrayList<ActivationHierarchy>();
+	//		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
+	//			if(ah.getSenior().equals(role)){
+	//				result.add(ah);
+	//			}
+	//		}
+	//		return result;
+	//	}
+	//
+	//	public ActivationHierarchy getActivationHierarchy(RbacPolicy policy,
+	//			Role senior, Role junior) {
+	//		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
+	//			if(ah.getSenior().equals(senior) && ah.getJunior().equals(junior)){
+	//				return ah;
+	//			}
+	//		}
+	//		return null;
+	//	}
 }

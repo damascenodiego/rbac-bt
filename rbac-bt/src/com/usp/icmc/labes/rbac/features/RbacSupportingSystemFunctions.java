@@ -1,7 +1,15 @@
 package com.usp.icmc.labes.rbac.features;
 
 
-import com.usp.icmc.labes.rbac.model.masood.ansi.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.usp.icmc.labes.rbac.model.Permission;
+import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.rbac.utils.RbacUtils;
 
 public class RbacSupportingSystemFunctions {
@@ -18,37 +26,22 @@ public class RbacSupportingSystemFunctions {
 
 	private RbacSupportingSystemFunctions() {}
 
-	//	public void createSession(RbacPolicy policy, User user, String sessionName){
-	//	XXX not yet necessary 
-	//	}
+	public boolean addActiveRole(RbacPolicy policy, User user, Role role){
+		boolean userExists 			= utils.userExists(policy, user);
+		boolean roleExists 			= utils.roleExists(policy,role); 
 
-	//	public void deleteSession(RbacPolicy policy, User user, Session session){
-	//	XXX not yet necessary
-	//	}
-
-	public boolean addActiveRole(RbacPolicy policy, User user, 
-			//Session session, // XXX not yet necessary
-			Role role){
-		boolean userExists = utils.userExists(policy, user);
-		boolean roleExists = utils.roleExists(policy,role); 
-		
 		UserRoleAssignment ur 		= utils.getUserRoleAssignment(policy, user, role);
 		boolean userRoleAssigned	= (ur!=null);
-		boolean userRoleActive 		= utils.userRoleActive(policy, user, role);
+		boolean userRoleActive 		= utils.isRoleActiveByUser(policy, role, user);
 
-		boolean nextDuIsValid 	= utils.afterActivateDuIsValid(policy, user, role);
-		boolean nextDrIsValid 	= utils.afterActivateDrIsValid(policy, user, role);
+		boolean nextDuIsValid 		= utils.afterActivateDuIsValid(policy, user, role);
+		boolean nextDrIsValid 		= utils.afterActivateDrIsValid(policy, user, role);
 
-		boolean nextSSoDIsValid 	= utils.afterAssignSsodIsValid(policy, user, role);
-		boolean nextDSoDIsValid 	= utils.afterAssignDsodIsValid(policy, user, role);
-		
 		if(		userExists &&
 				roleExists &&
 				userRoleAssigned &&
 				nextDuIsValid &&
 				nextDrIsValid &&
-				nextSSoDIsValid && //TODO test SSoD constraints
-				nextDSoDIsValid && //TODO test DSoD constraints
 				!userRoleActive
 				){
 			ur.getActiveRoles().add(role);
@@ -57,14 +50,14 @@ public class RbacSupportingSystemFunctions {
 		return false;
 	}
 
-	public boolean dropActiveRole(RbacPolicy policy, User user, 
-			//Session session, // XXX not yet necessary 
-			Role role){
-		boolean userExists = utils.userExists(policy, user);
-		boolean roleExists = utils.roleExists(policy,role); 
-		UserRoleAssignment ur = utils.getUserRoleAssignment(policy, user, role);
-		boolean userRoleAssigned = (ur!=null);
-		boolean userRoleActive = utils.userRoleActive(policy, user, role);
+	public boolean dropActiveRole(RbacPolicy policy, User user, Role role){
+		boolean userExists 			= utils.userExists(policy, user);
+		boolean roleExists 			= utils.roleExists(policy,role); 
+		
+		UserRoleAssignment ur 		= utils.getUserRoleAssignment(policy, user, role);
+		boolean userRoleAssigned 	= (ur!=null);
+		
+		boolean userRoleActive 		= utils.isRoleActiveByUser(policy, role, user);
 
 		if(		userExists &&
 				roleExists &&
@@ -77,9 +70,15 @@ public class RbacSupportingSystemFunctions {
 		return false;
 	}
 
-	//	public boolean checkAccess(RbacPolicy policy, Session session, Permission permission){
-	// XXX not yet necessary
-	//		return true;
-	//	}
+	public Set<Permission> checkAccess(RbacPolicy pol, User usr, Permission permission){
+		Set<Role> rolesOfUsr = utils.getRolesAssignedToUser(pol, usr);
+		Set<Permission> prmSet = new HashSet<Permission>();
+		for (Role role : rolesOfUsr) {
+			for (PermissionRoleAssignment pr : utils.getPermissionRoleAssignmentsWithRole(pol, role)) {
+				prmSet.add(pr.getPermission());
+			}
+		}
+		return prmSet;
+	}
 
 }

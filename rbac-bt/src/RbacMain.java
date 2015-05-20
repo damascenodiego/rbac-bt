@@ -3,12 +3,12 @@ import java.io.FileNotFoundException;
 
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
-import com.usp.icmc.labes.rbac.model.masood.ansi.Permission;
-import com.usp.icmc.labes.rbac.model.masood.ansi.PermissionRoleAssignment;
-import com.usp.icmc.labes.rbac.model.masood.ansi.RbacPolicy;
-import com.usp.icmc.labes.rbac.model.masood.ansi.Role;
-import com.usp.icmc.labes.rbac.model.masood.ansi.User;
-import com.usp.icmc.labes.rbac.model.masood.ansi.UserRoleAssignment;
+import com.usp.icmc.labes.rbac.model.Permission;
+import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.rbac.utils.RbacUtils;
 
 

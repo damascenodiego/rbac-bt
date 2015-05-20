@@ -1,9 +1,13 @@
 package com.usp.icmc.labes.rbac.features;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.usp.icmc.labes.rbac.model.masood.ansi.*;
+import com.usp.icmc.labes.rbac.model.Permission;
+import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.utils.RbacUtils;
 
 public class RbacAdvancedReviewFunctions {
@@ -20,29 +24,21 @@ public class RbacAdvancedReviewFunctions {
 
 	private RbacAdvancedReviewFunctions() {}
 
-	public List<Permission> rolePermissions(RbacPolicy policy, Role role){
-		List<Permission> result = new ArrayList<Permission>();
-		
+	public Set<Permission> rolePermissions(RbacPolicy policy, Role role){
+		Set<Permission> result = new HashSet<Permission>();
+		for (PermissionRoleAssignment el : utils.getPermissionRoleAssignmentsWithRole(policy,role)) {
+			result.add(el.getPermission());
+		}		
 		return result;
 
 	}
-	public List<Permission> userPermissions(RbacPolicy policy, User role){
-		List<Permission> result = new ArrayList<Permission>();
-		
-		return result;
-	}
-	public List<Role> sessionRoles(RbacPolicy policy
-			//, Session session //TODO not yet necessary
-			){
-		List<Role> result = new ArrayList<Role>();
-		
-		return result;
-	}
-	public List<Permission> sessionPermissions(RbacPolicy policy
-			//, Session session //TODO not yet necessary
-			){
-		List<Permission> result = new ArrayList<Permission>();
-		
+	public Set<Permission> userPermissions(RbacPolicy policy, User usr){
+		Set<Permission> result = new HashSet<Permission>();
+		for (Role rol: utils.getRolesAssignedToUser(policy, usr)) {
+			for (PermissionRoleAssignment el : utils.getPermissionRoleAssignmentsWithRole(policy,rol)) {
+				result.add(el.getPermission());
+			}
+		}
 		return result;
 	}
 

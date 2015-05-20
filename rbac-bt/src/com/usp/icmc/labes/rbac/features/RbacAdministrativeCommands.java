@@ -3,7 +3,12 @@ package com.usp.icmc.labes.rbac.features;
 import java.util.List;
 import java.util.Set;
 
-import com.usp.icmc.labes.rbac.model.masood.ansi.*;
+import com.usp.icmc.labes.rbac.model.Permission;
+import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.rbac.utils.RbacUtils;
 
 public class RbacAdministrativeCommands {
@@ -31,7 +36,12 @@ public class RbacAdministrativeCommands {
 	}
 
 	public boolean deleteUser(RbacPolicy policy, User user){
-		//TODO to be implemented later	
+		boolean userExists = utils.userExists(policy, user);
+		if(userExists){
+			policy.getUser().remove(user);
+			//TODO remove assignments
+			return true;
+		}
 		return false;
 	}
 	public boolean addRole(RbacPolicy policy, Role role){
@@ -44,7 +54,12 @@ public class RbacAdministrativeCommands {
 	}
 
 	public boolean deleteRole(RbacPolicy policy, Role role){
-		//TODO to be implemented later	
+		boolean roleExists = utils.roleExists(policy, role);
+		if(roleExists){
+			policy.getRole().remove(role);
+			//TODO remove assignments
+			return true;
+		}
 		return false;
 	}
 
@@ -58,7 +73,12 @@ public class RbacAdministrativeCommands {
 	}
 
 	public boolean deletePermission(RbacPolicy policy, Permission prms){
-		//TODO to be implemented later
+		boolean prmsExists = utils.permissionExists(policy, prms);
+		if(prmsExists){
+			policy.getPermission().remove(prms);
+			//TODO remove assignments
+			return true;
+		}
 		return false;
 	}
 
@@ -72,13 +92,10 @@ public class RbacAdministrativeCommands {
 		boolean nextSuIsValid 		= utils.afterAssignSuIsValid(policy, user, role);
 		boolean nextSrIsValid 		= utils.afterAssignSrIsValid(policy, user, role);
 
-		boolean nextSSoDIsValid 	= utils.afterAssignSsodIsValid(policy, user, role);
-
 		if(		userExists &&
 				roleExists &&
 				nextSuIsValid &&
 				nextSrIsValid &&
-				nextSSoDIsValid &&
 				!userAssignedtoRole
 				){
 			policy.getUserRoleAssignment().add(new UserRoleAssignment(user,role));
@@ -133,73 +150,6 @@ public class RbacAdministrativeCommands {
 			return true;
 		}
 		return false;
-
-	}
-	// hierarchical rbac
-	public boolean addActivationHierarchy(RbacPolicy policy, Role senior, Role junior){
-		List<Role> srs = utils.getSeniorsActivation(policy, senior);
-		List<Role> jrs = utils.getJuniorsActivation(policy,senior);
-		List<ActivationHierarchy> ahs = utils.getActivationHierarchyWithSenior(policy, senior);
-		ActivationHierarchy ahSrJr = utils.getActivationHierarchy(policy, senior,junior);
-		ahs.remove(ahSrJr);
-		
-		boolean isJuniorOfSenior 	= jrs.contains(junior);
-		boolean isSeniorOfSenior 	= srs.contains(junior);;
-		boolean multipleInheritance = !ahs.isEmpty();
-		
-		if(		!isJuniorOfSenior&&
-				!isSeniorOfSenior&&
-				!multipleInheritance
-				){
-			policy.getActivationHierarchy().add(new ActivationHierarchy(senior, junior));
-			return true;
-		}
-		return false;
-	}
-
-
-	public boolean deleteActivationHierarchy(RbacPolicy policy, Role senior, Role junior){
-		return false;
-	}
-
-	public boolean addInheritanceHierarchy(RbacPolicy policy, Role senior, Role junior){
-		return false;
-	}
-
-	public boolean deleteInheritanceHierarchy(RbacPolicy policy, Role senior, Role junior){
-		return false;
-	}
-
-	// static SoD
-	public void createSsodSet(RbacPolicy policy, String name , Set<Role> set, int set_card){
-
-	}
-	public void deleteSsodSet(RbacPolicy policy, SSoDConstraint ssod){
-
-	}
-	public void addSsodRoleMember(RbacPolicy policy, SSoDConstraint ssod, Role role){
-
-	}
-	public void setSsodSetCardinality(RbacPolicy policy, SSoDConstraint ssod, int set_card){
-
-	}
-	public void deleteSsodRoleMember(RbacPolicy policy, SSoDConstraint ssod, Role role){
-
-	}
-	// dynamic SoD
-	public void createDsodSet(RbacPolicy policy, String name , Set<Role> set, int set_card){
-
-	}
-	public void deleteDsodSet(RbacPolicy policy, SSoDConstraint ssod){
-
-	}
-	public void addDsodRoleMember(RbacPolicy policy, SSoDConstraint ssod, Role role){
-
-	}
-	public void setDsodSetCardinality(RbacPolicy policy, SSoDConstraint ssod, int set_card){
-
-	}
-	public void deleteDsodRoleMember(RbacPolicy policy, SSoDConstraint ssod, Role role){
 
 	}
 }

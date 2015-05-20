@@ -1,23 +1,21 @@
-package com.usp.icmc.labes.rbac.model.masood.ansi;
+package com.usp.icmc.labes.rbac.model;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.usp.icmc.labes.rbac.model.RbacElement;
-
-public class DSoDConstraint implements RbacElement {
+public class SSoDConstraint implements RbacElement {
 
 	int cardinality;
 	Set<Role> sodSet;
 
-	public DSoDConstraint() {
+	public SSoDConstraint() {
 		sodSet = new HashSet<Role>();
 	}
 
 
-	public DSoDConstraint(Role[] set, int card) {
+	public SSoDConstraint(Role[] set, int card) {
 		this();
 		for (int i = 0; i < set.length; i++) {
 			sodSet.add(set[i]);
@@ -25,7 +23,7 @@ public class DSoDConstraint implements RbacElement {
 		this.cardinality = card;
 	}
 
-	public DSoDConstraint(Collection<Role> set, int card) {
+	public SSoDConstraint(Collection<Role> set, int card) {
 		this();
 		Iterator<Role> roles = set.iterator();
 		while(roles.hasNext()) {
@@ -33,7 +31,7 @@ public class DSoDConstraint implements RbacElement {
 		}
 		this.cardinality = card;
 	}
-	
+
 	public String getName() {
 		return String.join(", ", (CharSequence[]) this.sodSet.toArray());
 	}
@@ -60,6 +58,6 @@ public class DSoDConstraint implements RbacElement {
 	
 	@Override
 	public String toString() {
-		return "DSoD({"+sodSet+"},"+cardinality+")";
+		return "SSoD({"+sodSet+"},"+cardinality+")";
 	}
 }

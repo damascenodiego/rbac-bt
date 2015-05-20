@@ -1,4 +1,4 @@
-package com.usp.icmc.labes.rbac.model.masood.ansi;
+package com.usp.icmc.labes.rbac.model;
 
 import java.util.Set;
 

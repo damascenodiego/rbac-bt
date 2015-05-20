@@ -1,28 +1,27 @@
-package com.usp.icmc.labes.rbac.model.masood.ansi;
-
-import com.usp.icmc.labes.rbac.model.RbacElement;
+package com.usp.icmc.labes.rbac.model;
 
 
-public class User implements RbacElement{
 
-	/* user name */
+public class Role implements RbacElement{
+	
+	/* role name */
 	private String name;
 	/* static cardinality */
 	private int staticCardinality;
 	/* dynamic cardinality */
 	private int dynamicCardinality;
-
-	public User() {
+	
+	public Role() {
 		staticCardinality = 0;
 		dynamicCardinality = 0;
 	}
-
-	public User(String name) {
+	
+	public Role(String name) {
 		this();
 		this.name = name;
 	}
 
-	public User(String name, int staticCard, int dynamicCard) {
+	public Role(String name, int staticCard, int dynamicCard) {
 		this(name);
 		this.staticCardinality = staticCard;
 		this.dynamicCardinality = dynamicCard;
@@ -52,6 +51,7 @@ public class User implements RbacElement{
 		this.dynamicCardinality = dynamicCardinality;
 	}
 
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -68,9 +68,9 @@ public class User implements RbacElement{
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof User))
+		if (!(obj instanceof Role))
 			return false;
-		User other = (User) obj;
+		Role other = (Role) obj;
 		if (dynamicCardinality != other.dynamicCardinality)
 			return false;
 		if (name == null) {
@@ -85,6 +85,7 @@ public class User implements RbacElement{
 
 	@Override
 	public String toString() {
-		return "user("+name+","+staticCardinality+","+dynamicCardinality+")";
+		return "role("+name+","+staticCardinality+","+dynamicCardinality+")";
 	}
 }
+

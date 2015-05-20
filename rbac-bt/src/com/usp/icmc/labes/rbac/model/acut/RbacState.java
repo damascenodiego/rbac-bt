@@ -1,4 +1,4 @@
-package com.usp.icmc.labes.rbac.model.masood.acut;
+package com.usp.icmc.labes.rbac.model.acut;
 
 import com.usp.icmc.labes.rbac.model.RbacElement;
 
