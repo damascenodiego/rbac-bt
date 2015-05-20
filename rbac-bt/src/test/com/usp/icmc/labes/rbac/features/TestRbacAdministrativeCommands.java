@@ -23,17 +23,6 @@ public class TestRbacAdministrativeCommands {
 	private RbacUtils rbacUtils = RbacUtils.getInstance();
 	
 	
-	//create users
-	User u1 = new User("u1",1,1);
-	User u2 = new User("u2",1,1);
-
-	//create role
-	Role r1 = new Role("r1",2,1);
-
-	//create permissions
-	Permission p1 = new Permission("p1");
-	Permission p2= new Permission("p2");
-
 	@Test
 	public void test() {
 
@@ -80,9 +69,6 @@ public class TestRbacAdministrativeCommands {
 			fail(e.getMessage());
 		}
 		
-		assertTrue(rbacSys.addActiveRole(policyModel,u1,r1));
-		assertTrue(rbacSys.addActiveRole(policyAdmin,u1,r1));
-		
 		assertEquals(policyModel, policyAdmin);
 		
 	}
@@ -91,6 +77,17 @@ public class TestRbacAdministrativeCommands {
 	private RbacPolicy rbacViaModelMethods() {
 		RbacPolicy rbac = new RbacPolicy("rbacViaModelMethods");
 
+		//create users
+		User u1 = new User("u1",1,1);
+		User u2 = new User("u2",1,1);
+
+		//create role
+		Role r1 = new Role("r1",2,1);
+
+		//create permissions
+		Permission p1 = new Permission("p1");
+		Permission p2= new Permission("p2");
+		
 		//add users to policy
 		rbac.getUser().add(u1);
 		rbac.getUser().add(u2);
@@ -112,6 +109,9 @@ public class TestRbacAdministrativeCommands {
 		rbac.getUserRoleAssignment().add(u1r1);
 		rbac.getUserRoleAssignment().add(u2r1);
 
+		// activate r1
+		u1r1.getActiveRoles().add(r1);
+		
 		//add PR to policy
 		rbac.getPermissionRoleAssignment().add(r1p1);
 		rbac.getPermissionRoleAssignment().add(r1p2);
@@ -122,6 +122,17 @@ public class TestRbacAdministrativeCommands {
 	private RbacPolicy rbacViaAdminCommand(){
 		RbacPolicy rbac = new RbacPolicy("rbacViaAdminCommand");
 
+		//create users
+		User u1 = new User("u1",1,1);
+		User u2 = new User("u2",1,1);
+
+		//create role
+		Role r1 = new Role("r1",2,1);
+
+		//create permissions
+		Permission p1 = new Permission("p1");
+		Permission p2= new Permission("p2");
+		
 		//add users to policy
 		//first add OK
 		assertTrue(rbacAdmin .addUser(rbac,u1));
@@ -156,7 +167,7 @@ public class TestRbacAdministrativeCommands {
 		assertTrue(rbacAdmin.assignUser(rbac, u1,r1));
 		assertTrue(rbacAdmin.assignUser(rbac, u2,r1));
 		
-		//test activate non existing relationship
+		//test activate existing relationship
 		assertTrue(rbacSys.addActiveRole(rbac, u1, r1));
 		
 		//second false
@@ -171,6 +182,9 @@ public class TestRbacAdministrativeCommands {
 		
 		//test drop again activation
 		assertFalse(rbacSys.dropActiveRole(rbac, u1, r1));
+		
+		//test activate existing relationship
+		assertTrue(rbacSys.addActiveRole(rbac, u1, r1));
 		
 		//create PR relationships
 		//first ok
