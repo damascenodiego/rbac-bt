@@ -70,7 +70,6 @@ public class RbacAcut implements RbacElement{
 	}
 
 	public boolean request(RbacRequest rq) {
-		String transition = getCurrentState().toString();
 		boolean output = false;
 		if(rq instanceof RbacRequestAssignUR){
 			output = admin.assignUser(policy, rq.getUser(), rq.getRole());

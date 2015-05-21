@@ -67,7 +67,7 @@ public class RbacSupportingSystemFunctions {
 				userRoleAssigned &&
 				userRoleActive
 				){
-			policy.getUserRoleAssignment().remove(ur);
+//			policy.getUserRoleAssignment().remove(ur);
 			policy.getUserRoleActivation().remove(ua);
 			return true;
 		}

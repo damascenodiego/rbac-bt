@@ -1,39 +1,40 @@
 package test.com.usp.icmc.labes.rbac.features;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.internal.runners.statements.Fail;
 
+import com.usp.icmc.labes.fsm.FsmModel;
+import com.usp.icmc.labes.fsm.FsmState;
+import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.acut.RbacRequest;
 import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestAssignPR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignPR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
 import com.usp.icmc.labes.rbac.acut.RbacState;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.Permission;
-import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
-import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
+import com.usp.icmc.labes.rbac.utils.FsmUtils;
 import com.usp.icmc.labes.rbac.utils.RbacUtils;
 
 public class MainTest {
@@ -94,14 +95,14 @@ public class MainTest {
 		assertFalse(rbacAdmin.addPermission(rbac,p1));
 		assertFalse(rbacAdmin.addPermission(rbac,p2));
 
-		for (int i = 2; i < 10; i++) {
-			//first add ok
-			assertTrue(rbacAdmin.addRole(rbac,new Role("r"+i,1,1)));
-		}
+//		for (int i = 2; i < 10; i++) {
+//			//first add ok
+//			assertTrue(rbacAdmin.addRole(rbac,new Role("r"+i,1,1)));
+//		}
 
 		try {
-			//			rbacUtils.WriteRbacPolicyAsXML(rbac, new File("example.rbac"));
-			rbac= rbacUtils.LoadRbacPolicyFromXML(new File("example.rbac"));
+			rbacUtils.WriteRbacPolicyAsXML(rbac, new File("policies/Masood2010Example1.rbac"));
+			rbac = rbacUtils.LoadRbacPolicyFromXML(new File("policies/Masood2010Example1.rbac"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -171,60 +172,80 @@ public class MainTest {
 
 	}
 	public void generateRbacFsm(RbacPolicy pol){
-		rbac.getUserRoleAssignment().clear();
-		List<RbacRequest> input = new ArrayList<RbacRequest>();
-		for (Role rol: rbac.getRole()) {
-			for (User usr: rbac.getUser()) {
-				input.add(new RbacRequestAssignUR(usr, rol));
-				input.add(new RbacRequestDeassignUR(usr, rol));
-				input.add(new RbacRequestActivateUR(usr, rol));
-				input.add(new RbacRequestDeactivateUR(usr, rol));
-			}
-		}
-
-		try {
-			Queue<RbacState> toVisit = new LinkedList<RbacState>();
-			List<RbacState> visited = new ArrayList<RbacState>();
-
-			List<Object[]> oiod = new ArrayList<>();
-			//			Set<String> fsmFile = new HashSet<String>();
-
-
-			RbacAcut acut = new RbacAcut(pol);
-
-			RbacState 	origin 			= null;
-			boolean 	out 			= false;
-			RbacState	 destination 	= null;
-
-			toVisit.add(acut.getCurrentState());
-
-			Object[] arr = new Object[4];
+		//		rbac.getUserRoleAssignment().clear();
+		//		List<RbacRequest> input = new ArrayList<RbacRequest>();
+		//		for (Role rol: rbac.getRole()) {
+		//			for (User usr: rbac.getUser()) {
+		//				input.add(new RbacRequestAssignUR(usr, rol));
+		//				input.add(new RbacRequestDeassignUR(usr, rol));
+		//				input.add(new RbacRequestActivateUR(usr, rol));
+		//				input.add(new RbacRequestDeactivateUR(usr, rol));
+		//			}
+		//			for (Permission prms: rbac.getPermission()) {
+		//				input.add(new RbacRequestAssignPR(prms, rol));
+		//				input.add(new RbacRequestDeassignPR(prms, rol));
+		//
+		//			}
+		//		}
+		//
+		//		try {
+		//
+		//			RbacAcut acut = new RbacAcut(pol);
+		//
+		//			RbacState 	origin 			= null;
+		//			boolean 	out 			= false;
+		//			RbacState	 destination 	= null;
+		//
+		//
+		//			FsmModel rbac2fsm = new FsmModel(rbac.getName());
+		//
+		//			Queue<RbacState> toVisit = new LinkedList<RbacState>();
+		//			toVisit.add(acut.getCurrentState());
+		//
+		//			List<RbacState> visited = new ArrayList<RbacState>();
+		//
+		//			while (!toVisit.isEmpty()) {
+		//				origin = toVisit.remove();
+		//				acut.reset(origin);
+		//				if(!visited.contains(origin)){
+		//					visited.add(origin);
+		//					rbac2fsm.addState(new FsmState(origin.getName()));
+		//					for (RbacRequest in : input) {
+		//						out = acut.request(in);
+		//						destination = acut.getCurrentState();
+		//						rbac2fsm.addTransition(new FsmTransition(new FsmState(origin.getName()), new FsmState(destination.getName()), in.toString(), (out? "grant" : "deny")));
+		//						if(!visited.contains(destination)) 
+		//							toVisit.add(destination);
+		//						acut.reset(origin);
+		//					}
+		//				}
+		//			}
+		//			
+		FsmModel rbac2fsm = FsmUtils.getInstance().rbac2Fsm(pol);
+		
+		try{
 			
-			while (!toVisit.isEmpty()) {
-				origin = toVisit.remove();
-				acut.reset(origin);
-				if(!visited.contains(origin)){
-					visited.add(origin);
-					for (RbacRequest in : input) {
-						out = acut.request(in);
-						destination = acut.getCurrentState();
-						
-						arr[0] = origin;  arr[1] = in; arr[2] = out; arr[3] = destination;
-						oiod.add(arr.clone());
-						
-						if(!visited.contains(destination)) toVisit.add(destination);
-
-						acut.reset(origin);
-					}
-				}
-			}
+			File example = new File("policies/Masood2010Example1.rbac");
+			RbacUtils.getInstance().WriteRbacPolicyAsXML(pol, example);
 			
-			PrintWriter pw = new PrintWriter(new FileWriter(new File("fsmTest.txt")));
-			pw.println("digraph fsm {");
-			pw.println("}");
-			pw.close();
+			File dotFile = new File("policies/Masood2010Example1.dot");
+			FsmUtils.getInstance().WriteFsmAsDot(rbac2fsm, dotFile);
+
+			File gmlFile = new File("policies/Masood2010Example1.gml");
+			FsmUtils.getInstance().WriteFsmAsGML(rbac2fsm, gmlFile);
+
+			File kissFile = new File("policies/Masood2010Example1.fsm");
+			FsmUtils.getInstance().WriteFsmAsKiss(rbac2fsm, kissFile);
+
+			File csvFile = new File("policies/Masood2010Example1.csv");
+			FsmUtils.getInstance().WriteFsmAsCsv(rbac2fsm, csvFile);
+			//			
+			//			PrintWriter pw = new PrintWriter(new FileWriter(new File("fsmTest.txt")));
+			//			pw.println("digraph fsm {");
+			//			pw.println("}");
+			//			pw.close();
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 
 	}

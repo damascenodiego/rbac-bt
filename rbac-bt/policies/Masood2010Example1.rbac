@@ -1,54 +1,58 @@
-<com.usp.icmc.labes.rbac.model.RbacPolicy id="1">
-  <name>rbacViaModelMethods</name>
+<rbac id="1">
+  <name>rbacViaAdminCommand</name>
   <user id="2">
-    <com.usp.icmc.labes.rbac.model.User id="3">
+    <user id="3">
       <name>u1</name>
-      <staticCardinality>1</staticCardinality>
-      <dynamicCardinality>1</dynamicCardinality>
-    </com.usp.icmc.labes.rbac.model.User>
-    <com.usp.icmc.labes.rbac.model.User id="4">
+      <su>1</su>
+      <du>1</du>
+    </user>
+    <user id="4">
       <name>u2</name>
-      <staticCardinality>1</staticCardinality>
-      <dynamicCardinality>1</dynamicCardinality>
-    </com.usp.icmc.labes.rbac.model.User>
+      <su>1</su>
+      <du>1</du>
+    </user>
   </user>
   <role id="5">
-    <com.usp.icmc.labes.rbac.model.Role id="6">
+    <role id="6">
       <name>r1</name>
-      <staticCardinality>2</staticCardinality>
-      <dynamicCardinality>1</dynamicCardinality>
-    </com.usp.icmc.labes.rbac.model.Role>
+      <sr>2</sr>
+      <dr>1</dr>
+    </role>
   </role>
   <permission id="7">
-    <com.usp.icmc.labes.rbac.model.Permission id="8">
+    <prms id="8">
       <name>p1</name>
-    </com.usp.icmc.labes.rbac.model.Permission>
-    <com.usp.icmc.labes.rbac.model.Permission id="9">
+    </prms>
+    <prms id="9">
       <name>p2</name>
-    </com.usp.icmc.labes.rbac.model.Permission>
+    </prms>
   </permission>
   <userRoleAssignment id="10">
-    <com.usp.icmc.labes.rbac.model.UserRoleAssignment id="11">
+    <uras id="11">
       <user reference="3"/>
       <role reference="6"/>
-      <activeRoles id="12"/>
-    </com.usp.icmc.labes.rbac.model.UserRoleAssignment>
-    <com.usp.icmc.labes.rbac.model.UserRoleAssignment id="13">
+    </uras>
+    <uras id="12">
       <user reference="4"/>
       <role reference="6"/>
-      <activeRoles id="14"/>
-    </com.usp.icmc.labes.rbac.model.UserRoleAssignment>
+    </uras>
   </userRoleAssignment>
+  <userRoleActivation id="13">
+    <urac id="14">
+      <user reference="3"/>
+      <role reference="6"/>
+    </urac>
+  </userRoleActivation>
   <permissionRoleAssignment id="15">
-    <com.usp.icmc.labes.rbac.model.PermissionRoleAssignment id="16">
+    <pras id="16">
       <permission reference="8"/>
       <role reference="6"/>
-    </com.usp.icmc.labes.rbac.model.PermissionRoleAssignment>
-    <com.usp.icmc.labes.rbac.model.PermissionRoleAssignment id="17">
+    </pras>
+    <pras id="17">
       <permission reference="9"/>
       <role reference="6"/>
-    </com.usp.icmc.labes.rbac.model.PermissionRoleAssignment>
+    </pras>
   </permissionRoleAssignment>
   <sodConstraint id="18"/>
   <hierarchy id="19"/>
-</com.usp.icmc.labes.rbac.model.RbacPolicy>
+</rbac>

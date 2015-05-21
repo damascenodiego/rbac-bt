@@ -7,13 +7,13 @@ public class User implements RbacElement, RoleAssignable{
 	/* user name */
 	private String name;
 	/* static cardinality */
-	private int staticCardinality;
+	private int su;
 	/* dynamic cardinality */
-	private int dynamicCardinality;
+	private int du;
 
 	public User() {
-		staticCardinality = 0;
-		dynamicCardinality = 0;
+		su = 0;
+		du = 0;
 	}
 
 	public User(String name) {
@@ -23,8 +23,8 @@ public class User implements RbacElement, RoleAssignable{
 
 	public User(String name, int staticCard, int dynamicCard) {
 		this(name);
-		this.staticCardinality = staticCard;
-		this.dynamicCardinality = dynamicCard;
+		this.su = staticCard;
+		this.du = dynamicCard;
 	}
 
 	public String getName() {
@@ -36,28 +36,28 @@ public class User implements RbacElement, RoleAssignable{
 	}
 
 	public int getStaticCardinality() {
-		return staticCardinality;
+		return su;
 	}
 
 	public void setStaticCardinality(int staticCardinality) {
-		this.staticCardinality = staticCardinality;
+		this.su = staticCardinality;
 	}
 
 	public int getDynamicCardinality() {
-		return dynamicCardinality;
+		return du;
 	}
 
 	public void setDynamicCardinality(int dynamicCardinality) {
-		this.dynamicCardinality = dynamicCardinality;
+		this.du = dynamicCardinality;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + dynamicCardinality;
+		result = prime * result + du;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + staticCardinality;
+		result = prime * result + su;
 		return result;
 	}
 
@@ -70,20 +70,20 @@ public class User implements RbacElement, RoleAssignable{
 		if (!(obj instanceof User))
 			return false;
 		User other = (User) obj;
-		if (dynamicCardinality != other.dynamicCardinality)
+		if (du != other.du)
 			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (staticCardinality != other.staticCardinality)
+		if (su != other.su)
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "user("+name+","+staticCardinality+","+dynamicCardinality+")";
+		return "user("+name+","+su+","+du+")";
 	}
 }

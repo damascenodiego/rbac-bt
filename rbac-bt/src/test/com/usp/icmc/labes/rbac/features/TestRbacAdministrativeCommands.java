@@ -64,8 +64,8 @@ public class TestRbacAdministrativeCommands {
 			
 			assertEquals(policyModel, policyAdmin);
 			
-			policyAdminFile.delete();
-			policyModelFile.delete();
+//			policyAdminFile.delete();
+//			policyModelFile.delete();
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

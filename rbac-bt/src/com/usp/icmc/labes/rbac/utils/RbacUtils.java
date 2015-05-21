@@ -7,16 +7,35 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.usp.icmc.labes.fsm.FsmModel;
+import com.usp.icmc.labes.fsm.FsmState;
+import com.usp.icmc.labes.fsm.FsmTransition;
+import com.usp.icmc.labes.rbac.acut.RbacAcut;
+import com.usp.icmc.labes.rbac.acut.RbacRequest;
+import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestAssignPR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignPR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
+import com.usp.icmc.labes.rbac.acut.RbacState;
 import com.usp.icmc.labes.rbac.model.ActivationHierarchy;
+import com.usp.icmc.labes.rbac.model.DSoDConstraint;
+import com.usp.icmc.labes.rbac.model.Hierarchy;
+import com.usp.icmc.labes.rbac.model.InheritanceHierarchy;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.SSoDConstraint;
+import com.usp.icmc.labes.rbac.model.SoDConstraint;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
@@ -30,6 +49,20 @@ public class RbacUtils {
 	private RbacUtils() {
 		xstream = new XStream(new DomDriver());
 		xstream.setMode(XStream.ID_REFERENCES);
+		xstream.alias("rbac", RbacPolicy.class);
+		xstream.alias("user", User.class);
+		xstream.alias("role", Role.class);
+		xstream.alias("prms", Permission.class);
+		xstream.alias("uras", UserRoleAssignment.class);
+		xstream.alias("urac", UserRoleActivation.class);
+		xstream.alias("pras", PermissionRoleAssignment.class);
+		xstream.alias("pras", PermissionRoleAssignment.class);
+		xstream.alias("sod", SoDConstraint.class);
+		xstream.alias("ssd", SSoDConstraint.class);
+		xstream.alias("dsd", DSoDConstraint.class);
+		xstream.alias("hie", Hierarchy.class);
+		xstream.alias("ah", ActivationHierarchy.class);
+		xstream.alias("ih", InheritanceHierarchy.class);
 	} 
 
 	public static RbacUtils getInstance() {
@@ -85,7 +118,7 @@ public class RbacUtils {
 		}
 		return result;
 	}
-	
+
 	public Set<UserRoleAssignment> getUserRoleAssignmentWithRole(RbacPolicy pol, Role rol) {
 		Set<UserRoleAssignment> result = new HashSet<UserRoleAssignment>(); 
 		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
@@ -95,11 +128,11 @@ public class RbacUtils {
 		}
 		return result;
 	}
-	
+
 	public boolean userRoleActivationExists(RbacPolicy policy, User user, Role role) {
 		return (getUserRoleActivation(policy, user, role)!=null);
 	}	
-	
+
 	public UserRoleActivation getUserRoleActivation(RbacPolicy policy, User user, Role role) {
 		for (UserRoleActivation el : policy.getUserRoleActivation()) {
 			if(el.getUser().equals(user) && el.getRole().equals(role)){
@@ -108,7 +141,7 @@ public class RbacUtils {
 		}
 		return null;
 	}
-	
+
 	public Set<UserRoleActivation> getUserRoleActivationWithUser(RbacPolicy policy, User user) {
 		Set<UserRoleActivation> result = new HashSet<UserRoleActivation>();
 		for (UserRoleActivation el : policy.getUserRoleActivation()) {
@@ -128,7 +161,7 @@ public class RbacUtils {
 		}
 		return result;
 	}
-	
+
 	public boolean permissionRoleAssignmentExists(RbacPolicy pol, Permission pr, Role rol) {
 		if(getPermissionRoleAssignment(pol, pr, rol) != null){
 			return true;

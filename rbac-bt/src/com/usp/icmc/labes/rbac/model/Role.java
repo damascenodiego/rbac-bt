@@ -7,13 +7,13 @@ public class Role implements RbacElement{
 	/* role name */
 	private String name;
 	/* static cardinality */
-	private int staticCardinality;
+	private int sr;
 	/* dynamic cardinality */
-	private int dynamicCardinality;
+	private int dr;
 	
 	public Role() {
-		staticCardinality = 0;
-		dynamicCardinality = 0;
+		sr = 0;
+		dr = 0;
 	}
 	
 	public Role(String name) {
@@ -23,8 +23,8 @@ public class Role implements RbacElement{
 
 	public Role(String name, int staticCard, int dynamicCard) {
 		this(name);
-		this.staticCardinality = staticCard;
-		this.dynamicCardinality = dynamicCard;
+		this.sr = staticCard;
+		this.dr = dynamicCard;
 	}
 
 	public String getName() {
@@ -36,19 +36,19 @@ public class Role implements RbacElement{
 	}
 
 	public int getStaticCardinality() {
-		return staticCardinality;
+		return sr;
 	}
 
 	public void setStaticCardinality(int staticCardinality) {
-		this.staticCardinality = staticCardinality;
+		this.sr = staticCardinality;
 	}
 
 	public int getDynamicCardinality() {
-		return dynamicCardinality;
+		return dr;
 	}
 
 	public void setDynamicCardinality(int dynamicCardinality) {
-		this.dynamicCardinality = dynamicCardinality;
+		this.dr = dynamicCardinality;
 	}
 
 
@@ -56,9 +56,9 @@ public class Role implements RbacElement{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + dynamicCardinality;
+		result = prime * result + dr;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + staticCardinality;
+		result = prime * result + sr;
 		return result;
 	}
 
@@ -71,21 +71,21 @@ public class Role implements RbacElement{
 		if (!(obj instanceof Role))
 			return false;
 		Role other = (Role) obj;
-		if (dynamicCardinality != other.dynamicCardinality)
+		if (dr != other.dr)
 			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (staticCardinality != other.staticCardinality)
+		if (sr != other.sr)
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "role("+name+","+staticCardinality+","+dynamicCardinality+")";
+		return "role("+name+","+sr+","+dr+")";
 	}
 }
 

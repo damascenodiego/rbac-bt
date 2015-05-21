@@ -54,9 +54,7 @@ public class RbacState implements RbacElement {
 		}
 		for (Role rol: policy.getRole()) {
 			for (Permission prm: policy.getPermission()) {
-				if(utils.permissionRoleAssignmentExists(policy, prm, rol)){
-					stateName += getBinaryRepresentation(prm, rol);
-				}
+				stateName += getBinaryRepresentation(prm, rol);
 
 			}
 		}

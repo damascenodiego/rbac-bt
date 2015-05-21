@@ -26,18 +26,23 @@ public class FsmModel {
 	public List<FsmTransition> getTransitions() {
 		return this.transitions;
 	}
-	
+
 	public void addState(FsmState el){
-		this.states.add(el);
+		if(!this.states.contains(el))
+			this.states.add(el);
 	}
-	
+
 	public void addTransition(FsmTransition el){
-		if(!states.contains(el.getFrom())) states.add(el.getFrom());
-		if(!states.contains(el.getTo())) states.add(el.getTo());
+		if(!states.contains(el.getFrom())) 
+			states.add(el.getFrom());
 		
-		this.transitions.add(el);
+		if(!states.contains(el.getTo())) 
+			states.add(el.getTo());
+
+		if(!this.transitions.contains(el))
+			this.transitions.add(el);
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -73,6 +78,6 @@ public class FsmModel {
 			return false;
 		return true;
 	}
-	
-	
+
+
 }

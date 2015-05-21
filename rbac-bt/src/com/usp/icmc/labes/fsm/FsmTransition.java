@@ -11,6 +11,8 @@ public class FsmTransition extends FsmElement {
 	public FsmTransition(FsmState f, FsmState t, String in, String out) {
 		from = f;
 		to = t;
+		input = in;
+		output = out;
 	}
 	
 	public FsmState getFrom() {
