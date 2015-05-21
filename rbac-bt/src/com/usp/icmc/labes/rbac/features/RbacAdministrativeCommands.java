@@ -40,7 +40,8 @@ public class RbacAdministrativeCommands {
 		boolean userExists = utils.userExists(policy, user);
 		if(userExists){
 			policy.getUser().remove(user);
-			//TODO remove assignments
+			policy.getUserRoleAssignment().removeAll(utils.getUserRoleAssignmentWithUser(policy, user));
+			policy.getUserRoleActivation().removeAll(utils.getUserRoleActivationWithUser(policy, user));
 			return true;
 		}
 		return false;
@@ -58,7 +59,8 @@ public class RbacAdministrativeCommands {
 		boolean roleExists = utils.roleExists(policy, role);
 		if(roleExists){
 			policy.getRole().remove(role);
-			//TODO remove assignments
+			policy.getUserRoleAssignment().removeAll(utils.getUserRoleAssignmentWithRole(policy, role));
+			policy.getUserRoleActivation().removeAll(utils.getUserRoleActivationWithRole(policy, role));
 			return true;
 		}
 		return false;
@@ -77,7 +79,7 @@ public class RbacAdministrativeCommands {
 		boolean prmsExists = utils.permissionExists(policy, prms);
 		if(prmsExists){
 			policy.getPermission().remove(prms);
-			//TODO remove assignments
+			policy.getPermissionRoleAssignment().removeAll(utils.getPermissionRoleAssignmentWithPermission(policy, prms));
 			return true;
 		}
 		return false;
