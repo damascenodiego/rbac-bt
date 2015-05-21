@@ -26,7 +26,7 @@ public class RbacAdvancedReviewFunctions {
 
 	public Set<Permission> rolePermissions(RbacPolicy policy, Role role){
 		Set<Permission> result = new HashSet<Permission>();
-		for (PermissionRoleAssignment el : utils.getPermissionRoleAssignmentsWithRole(policy,role)) {
+		for (PermissionRoleAssignment el : utils.getPermissionRoleAssignmentWithRole(policy,role)) {
 			result.add(el.getPermission());
 		}		
 		return result;
@@ -35,7 +35,7 @@ public class RbacAdvancedReviewFunctions {
 	public Set<Permission> userPermissions(RbacPolicy policy, User usr){
 		Set<Permission> result = new HashSet<Permission>();
 		for (Role rol: utils.getRolesAssignedToUser(policy, usr)) {
-			for (PermissionRoleAssignment el : utils.getPermissionRoleAssignmentsWithRole(policy,rol)) {
+			for (PermissionRoleAssignment el : utils.getPermissionRoleAssignmentWithRole(policy,rol)) {
 				result.add(el.getPermission());
 			}
 		}

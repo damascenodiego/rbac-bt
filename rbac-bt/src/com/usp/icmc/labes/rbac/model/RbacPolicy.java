@@ -10,6 +10,7 @@ public class RbacPolicy implements RbacElement{
 	private List<Role> role;
 	private List<Permission> permission;
 	private List<UserRoleAssignment> userRoleAssignment;
+	private List<UserRoleActivation> userRoleActivation;
 	private List<PermissionRoleAssignment> permissionRoleAssignment;
 	private List<SoDConstraint> sodConstraint;
 	private List<Hierarchy> hierarchy;
@@ -20,6 +21,7 @@ public class RbacPolicy implements RbacElement{
 		role = new ArrayList<Role>();
 		permission = new ArrayList<Permission>();
 		userRoleAssignment = new ArrayList<UserRoleAssignment>();
+		userRoleActivation= new ArrayList<UserRoleActivation>();
 		permissionRoleAssignment = new ArrayList<PermissionRoleAssignment>();
 		sodConstraint = new ArrayList<SoDConstraint>();
 		hierarchy = new ArrayList<Hierarchy>();
@@ -70,6 +72,14 @@ public class RbacPolicy implements RbacElement{
 		this.userRoleAssignment = userRoleAssignment;
 	}
 
+	public List<UserRoleActivation> getUserRoleActivation() {
+		return userRoleActivation;
+	}
+
+	public void setUserRoleActivation(List<UserRoleActivation> userRoleActivation) {
+		this.userRoleActivation = userRoleActivation;
+	}
+
 	public List<PermissionRoleAssignment> getPermissionRoleAssignment() {
 		return permissionRoleAssignment;
 	}
@@ -101,7 +111,7 @@ public class RbacPolicy implements RbacElement{
 		int result = 1;
 		result = prime * result
 				+ ((hierarchy == null) ? 0 : hierarchy.hashCode());
-//		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result
 				+ ((permission == null) ? 0 : permission.hashCode());
 		result = prime
@@ -112,6 +122,10 @@ public class RbacPolicy implements RbacElement{
 		result = prime * result
 				+ ((sodConstraint == null) ? 0 : sodConstraint.hashCode());
 		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		result = prime
+				* result
+				+ ((userRoleActivation == null) ? 0 : userRoleActivation
+						.hashCode());
 		result = prime
 				* result
 				+ ((userRoleAssignment == null) ? 0 : userRoleAssignment
@@ -133,11 +147,6 @@ public class RbacPolicy implements RbacElement{
 				return false;
 		} else if (!hierarchy.equals(other.hierarchy))
 			return false;
-//		if (name == null) {
-//			if (other.name != null)
-//				return false;
-//		} else if (!name.equals(other.name))
-//			return false;
 		if (permission == null) {
 			if (other.permission != null)
 				return false;
@@ -164,6 +173,11 @@ public class RbacPolicy implements RbacElement{
 				return false;
 		} else if (!user.equals(other.user))
 			return false;
+		if (userRoleActivation == null) {
+			if (other.userRoleActivation != null)
+				return false;
+		} else if (!userRoleActivation.equals(other.userRoleActivation))
+			return false;
 		if (userRoleAssignment == null) {
 			if (other.userRoleAssignment != null)
 				return false;
@@ -171,5 +185,16 @@ public class RbacPolicy implements RbacElement{
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "RbacPolicy [name=" + name + ", user=" + user + ", role=" + role
+				+ ", permission=" + permission + ", userRoleAssignment="
+				+ userRoleAssignment + ", userRoleActivation="
+				+ userRoleActivation + ", permissionRoleAssignment="
+				+ permissionRoleAssignment + ", sodConstraint=" + sodConstraint
+				+ ", hierarchy=" + hierarchy + "]";
+	}
+
 	
 }

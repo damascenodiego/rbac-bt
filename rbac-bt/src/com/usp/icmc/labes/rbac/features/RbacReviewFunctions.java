@@ -25,14 +25,14 @@ public class RbacReviewFunctions {
 
 	public Set<User> assignedUsers(RbacPolicy policy, Role role){
 		Set<User> result = new HashSet<User>();
-		for (UserRoleAssignment el : RbacUtils.getInstance().getUserRoleAssignmentsWithRole(policy,role)) {
+		for (UserRoleAssignment el : RbacUtils.getInstance().getUserRoleAssignmentWithRole(policy,role)) {
 			result.add(el.getUser());
 		}		
 		return result;
 	}
 	public Set<Role> assignedRoles(RbacPolicy policy, User user){
 		Set<Role> result = new HashSet<Role>();
-		for (UserRoleAssignment el : RbacUtils.getInstance().getUserRoleAssignmentsWithUser(policy,user)) {
+		for (UserRoleAssignment el : RbacUtils.getInstance().getUserRoleAssignmentWithUser(policy,user)) {
 			result.add(el.getRole());
 		}		
 		return result;

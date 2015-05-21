@@ -1,14 +1,14 @@
 package com.usp.icmc.labes.rbac.model;
 
-public class UserRoleAssignment implements RbacElement {
+public class UserRoleActivation implements RbacElement {
 
 	private User user;
 	private Role role;
 
-	public UserRoleAssignment(){
+	public UserRoleActivation(){
 	}
 
-	public UserRoleAssignment(User u, Role r){
+	public UserRoleActivation(User u, Role r){
 		this();
 		this.user = u;
 		this.role = r;
@@ -49,9 +49,9 @@ public class UserRoleAssignment implements RbacElement {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof UserRoleAssignment))
+		if (!(obj instanceof UserRoleActivation))
 			return false;
-		UserRoleAssignment other = (UserRoleAssignment) obj;
+		UserRoleActivation other = (UserRoleActivation) obj;
 		if (role == null) {
 			if (other.role != null)
 				return false;

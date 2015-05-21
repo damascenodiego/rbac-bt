@@ -13,6 +13,7 @@ import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.rbac.utils.RbacUtils;
 
@@ -110,7 +111,8 @@ public class TestRbacAdministrativeCommands {
 		rbac.getUserRoleAssignment().add(u2r1);
 
 		// activate r1
-		u1r1.getActiveRoles().add(r1);
+		UserRoleActivation ua = new UserRoleActivation(u1, r1);
+		rbac. getUserRoleActivation().add(ua);
 		
 		//add PR to policy
 		rbac.getPermissionRoleAssignment().add(r1p1);

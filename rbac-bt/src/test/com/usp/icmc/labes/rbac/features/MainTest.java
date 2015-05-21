@@ -23,6 +23,7 @@ import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.acut.RbacRequest;
 import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
 import com.usp.icmc.labes.rbac.acut.RbacState;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
@@ -92,6 +93,18 @@ public class MainTest {
 		//second add false
 		assertFalse(rbacAdmin.addPermission(rbac,p1));
 		assertFalse(rbacAdmin.addPermission(rbac,p2));
+
+		for (int i = 2; i < 10; i++) {
+			//first add ok
+			assertTrue(rbacAdmin.addRole(rbac,new Role("r"+i,1,1)));
+		}
+
+		try {
+			//			rbacUtils.WriteRbacPolicyAsXML(rbac, new File("example.rbac"));
+			rbac= rbacUtils.LoadRbacPolicyFromXML(new File("example.rbac"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -165,58 +178,49 @@ public class MainTest {
 				input.add(new RbacRequestAssignUR(usr, rol));
 				input.add(new RbacRequestDeassignUR(usr, rol));
 				input.add(new RbacRequestActivateUR(usr, rol));
-				input.add(new RbacRequestActivateUR(usr, rol));
+				input.add(new RbacRequestDeactivateUR(usr, rol));
 			}
 		}
 
-		Queue<RbacState> toVisit = new LinkedList<RbacState>();
-
-		// origin + input + output + destination
-		Set<Object[]>  oiodVisited = new HashSet<Object[]>();
-
-		Set<RbacState> visited = new HashSet<RbacState>();
-
-		RbacAcut acut = new RbacAcut(pol);
-
-		RbacState origin = null;
-		RbacRequest in = null;
-		boolean out = true;
-		RbacState destination = null;
-
-		toVisit.add(acut.getCurrentState());
-
-		String stateName = "";
 		try {
-			PrintWriter pw = new PrintWriter(new FileWriter(new File("fsmTest.txt")));
-			pw.println("digraph fsm {");
+			Queue<RbacState> toVisit = new LinkedList<RbacState>();
+			List<RbacState> visited = new ArrayList<RbacState>();
 
+			List<Object[]> oiod = new ArrayList<>();
+			//			Set<String> fsmFile = new HashSet<String>();
+
+
+			RbacAcut acut = new RbacAcut(pol);
+
+			RbacState 	origin 			= null;
+			boolean 	out 			= false;
+			RbacState	 destination 	= null;
+
+			toVisit.add(acut.getCurrentState());
+
+			Object[] arr = new Object[4];
+			
 			while (!toVisit.isEmpty()) {
 				origin = toVisit.remove();
-				stateName = origin.toString();
+				acut.reset(origin);
 				if(!visited.contains(origin)){
-					for (RbacRequest rq : input) {
-						in = rq;
-						out = acut.request(rq);
+					visited.add(origin);
+					for (RbacRequest in : input) {
+						out = acut.request(in);
 						destination = acut.getCurrentState();
-						if(!visited.contains(destination)){
-							toVisit.add(destination);
-						}
-						Object [] oiod = new Object[4];
-						oiod[0] = origin;
-						oiod[1] = in;
-						oiod[2] = out;
-						oiod[3] = destination;
+						
+						arr[0] = origin;  arr[1] = in; arr[2] = out; arr[3] = destination;
+						oiod.add(arr.clone());
+						
+						if(!visited.contains(destination)) toVisit.add(destination);
 
-						if(!oiodVisited.contains(oiod))
-						{
-							pw.println(stateName+" -> "+destination+"  [ label=\""+in.toString()+"/"+(out ? "granted": "denied")+"\"];");
-							oiodVisited.add(oiod);
-						}
 						acut.reset(origin);
 					}
-					visited.add(origin);
 				}
 			}
+			
+			PrintWriter pw = new PrintWriter(new FileWriter(new File("fsmTest.txt")));
+			pw.println("digraph fsm {");
 			pw.println("}");
 			pw.close();
 		} catch (Exception e) {

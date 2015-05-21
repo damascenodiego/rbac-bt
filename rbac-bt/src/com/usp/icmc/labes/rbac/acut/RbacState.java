@@ -12,6 +12,7 @@ import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.RoleAssignable;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.rbac.utils.RbacUtils;
 
@@ -20,26 +21,26 @@ public class RbacState implements RbacElement {
 
 	RbacPolicy policy;
 
-	protected ArrayList<UserRoleAssignment> urCopy;
-	protected ArrayList<PermissionRoleAssignment> prCopy;
+	protected ArrayList<UserRoleAssignment> urAsCopy;
+	protected ArrayList<UserRoleActivation> urAcCopy;
+	protected ArrayList<PermissionRoleAssignment> prAsCopy;
 
 	RbacUtils utils = RbacUtils.getInstance();
 
 	public RbacState(RbacPolicy p) {
 		this.policy=p;
-		urCopy = new ArrayList<UserRoleAssignment>();
-		prCopy = new ArrayList<PermissionRoleAssignment>();
+		urAsCopy = new ArrayList<UserRoleAssignment>();
+		urAcCopy = new ArrayList<UserRoleActivation>();
+		prAsCopy = new ArrayList<PermissionRoleAssignment>();
 
-		for (UserRoleAssignment el : policy.getUserRoleAssignment()) {
-			UserRoleAssignment tmp = new UserRoleAssignment(el.getUser(), el.getRole());
-			tmp.getActiveRoles().addAll(el.getActiveRoles());
-			urCopy.add(tmp);
-		}
+		for (UserRoleAssignment el : policy.getUserRoleAssignment()) 
+			urAsCopy.add(new UserRoleAssignment(el.getUser(), el.getRole()));
 
-		for (PermissionRoleAssignment el : policy.getPermissionRoleAssignment()) {
-			PermissionRoleAssignment tmp = new PermissionRoleAssignment(el.getPermission(), el.getRole());
-			prCopy.add(tmp);
-		}
+		for (UserRoleActivation el : policy.getUserRoleActivation()) 
+			urAcCopy.add(new UserRoleActivation(el.getUser(), el.getRole()));
+
+		for (PermissionRoleAssignment el : policy.getPermissionRoleAssignment()) 
+			prAsCopy.add(new PermissionRoleAssignment(el.getPermission(), el.getRole()));
 
 	}
 
@@ -48,26 +49,38 @@ public class RbacState implements RbacElement {
 		String stateName = "";
 		for (User usr: policy.getUser()) {
 			for (Role rol: policy.getRole()) {
-				if(utils.userRoleAssignmentExists(policy, usr, rol) &&
-						utils.isRoleActiveByUser(policy, rol, usr)){
-					stateName += "11";
-				} else if(utils.userRoleAssignmentExists(policy, usr, rol)){
-					stateName += "10";
-				}else stateName += "00";
-
+				stateName += getBinaryRepresentation(usr, rol);
 			}	
 		}
 		for (Role rol: policy.getRole()) {
 			for (Permission prm: policy.getPermission()) {
 				if(utils.permissionRoleAssignmentExists(policy, prm, rol)){
-					stateName += "10";
+					stateName += getBinaryRepresentation(prm, rol);
 				}
 
 			}
 		}
 		return stateName;
 	}
-	
+
+	private String getBinaryRepresentation(RoleAssignable assigned, Role rol) {
+
+		if (assigned instanceof User){
+			for (UserRoleActivation el : urAcCopy)
+				if(el.getUser().equals(assigned) && el.getRole().equals(rol)) 
+					return "11";
+			for (UserRoleAssignment el : urAsCopy)
+				if(el.getUser().equals(assigned) && el.getRole().equals(rol)) 
+					return "10";
+		}else if (assigned instanceof Permission){
+			for (PermissionRoleAssignment el : prAsCopy) 
+				if(el.getPermission().equals(assigned) && el.getRole().equals(rol)) 
+					return "10";
+		}
+
+		return "00";
+	}
+
 	@Override
 	public String toString() {
 		return getName();
@@ -77,9 +90,12 @@ public class RbacState implements RbacElement {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((policy == null) ? 0 : policy.hashCode());
-		result = prime * result + ((prCopy == null) ? 0 : prCopy.hashCode());
-		result = prime * result + ((urCopy == null) ? 0 : urCopy.hashCode());
+		result = prime * result
+				+ ((prAsCopy == null) ? 0 : prAsCopy.hashCode());
+		result = prime * result
+				+ ((urAcCopy == null) ? 0 : urAcCopy.hashCode());
+		result = prime * result
+				+ ((urAsCopy == null) ? 0 : urAsCopy.hashCode());
 		return result;
 	}
 
@@ -92,24 +108,22 @@ public class RbacState implements RbacElement {
 		if (!(obj instanceof RbacState))
 			return false;
 		RbacState other = (RbacState) obj;
-		if (policy == null) {
-			if (other.policy != null)
+		if (prAsCopy == null) {
+			if (other.prAsCopy != null)
 				return false;
-		} else if (!policy.equals(other.policy))
+		} else if (!prAsCopy.equals(other.prAsCopy))
 			return false;
-		if (prCopy == null) {
-			if (other.prCopy != null)
+		if (urAcCopy == null) {
+			if (other.urAcCopy != null)
 				return false;
-		} else if (!prCopy.equals(other.prCopy))
+		} else if (!urAcCopy.equals(other.urAcCopy))
 			return false;
-		if (urCopy == null) {
-			if (other.urCopy != null)
+		if (urAsCopy == null) {
+			if (other.urAsCopy != null)
 				return false;
-		} else if (!urCopy.equals(other.urCopy))
+		} else if (!urAsCopy.equals(other.urAsCopy))
 			return false;
 		return true;
 	}
-	
-	
 
 }

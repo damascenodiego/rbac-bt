@@ -18,6 +18,7 @@ import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 
 public class RbacUtils {
@@ -63,10 +64,7 @@ public class RbacUtils {
 
 
 	public boolean userRoleAssignmentExists(RbacPolicy pol, User usr, Role rol) {
-		if(getUserRoleAssignment(pol, usr, rol) != null){
-			return true;
-		}
-		return false;
+		return (getUserRoleAssignment(pol, usr, rol) != null);
 	}
 
 	public UserRoleAssignment getUserRoleAssignment(RbacPolicy pol, User usr, Role rol) {
@@ -78,7 +76,7 @@ public class RbacUtils {
 		return null;
 	}
 
-	public Set<UserRoleAssignment> getUserRoleAssignmentsWithUser(RbacPolicy pol, User usr) {
+	public Set<UserRoleAssignment> getUserRoleAssignmentWithUser(RbacPolicy pol, User usr) {
 		Set<UserRoleAssignment> result = new HashSet<UserRoleAssignment>(); 
 		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
 			if(el.getUser().equals(usr)){
@@ -88,7 +86,7 @@ public class RbacUtils {
 		return result;
 	}
 	
-	public Set<UserRoleAssignment> getUserRoleAssignmentsWithRole(RbacPolicy pol, Role rol) {
+	public Set<UserRoleAssignment> getUserRoleAssignmentWithRole(RbacPolicy pol, Role rol) {
 		Set<UserRoleAssignment> result = new HashSet<UserRoleAssignment>(); 
 		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
 			if(el.getRole().equals(rol)){
@@ -97,7 +95,40 @@ public class RbacUtils {
 		}
 		return result;
 	}
+	
+	public boolean userRoleActivationExists(RbacPolicy policy, User user, Role role) {
+		return (getUserRoleActivation(policy, user, role)!=null);
+	}	
+	
+	public UserRoleActivation getUserRoleActivation(RbacPolicy policy, User user, Role role) {
+		for (UserRoleActivation el : policy.getUserRoleActivation()) {
+			if(el.getUser().equals(user) && el.getRole().equals(role)){
+				return el;
+			}
+		}
+		return null;
+	}
+	
+	public Set<UserRoleActivation> getUserRoleActivationWithUser(RbacPolicy policy, User user) {
+		Set<UserRoleActivation> result = new HashSet<UserRoleActivation>();
+		for (UserRoleActivation el : policy.getUserRoleActivation()) {
+			if(el.getUser().equals(user)){
+				result.add(el);
+			}
+		}
+		return result;
+	}
 
+	public Set<UserRoleActivation> getUserRoleActivationWithRole(RbacPolicy policy, Role role) {
+		Set<UserRoleActivation> result = new HashSet<UserRoleActivation>();
+		for (UserRoleActivation el : policy.getUserRoleActivation()) {
+			if(el.getRole().equals(role)){
+				result.add(el);
+			}
+		}
+		return result;
+	}
+	
 	public boolean permissionRoleAssignmentExists(RbacPolicy pol, Permission pr, Role rol) {
 		if(getPermissionRoleAssignment(pol, pr, rol) != null){
 			return true;
@@ -115,7 +146,7 @@ public class RbacUtils {
 		return null;
 	}
 
-	public Set<PermissionRoleAssignment> getPermissionRoleAssignmentsWithRole(RbacPolicy pol, Role rol) {
+	public Set<PermissionRoleAssignment> getPermissionRoleAssignmentWithRole(RbacPolicy pol, Role rol) {
 		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
 		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
 			if(el.getRole().equals(rol)){
@@ -125,7 +156,7 @@ public class RbacUtils {
 		return result;
 	}
 
-	public Set<PermissionRoleAssignment> getPermissionRoleAssignmentsWithPermission(RbacPolicy pol, Permission pr) {
+	public Set<PermissionRoleAssignment> getPermissionRoleAssignmentWithPermission(RbacPolicy pol, Permission pr) {
 		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
 		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
 			if(el.getPermission().equals(pr)){
@@ -136,40 +167,26 @@ public class RbacUtils {
 	}
 
 	public boolean afterAssignSuIsValid(RbacPolicy policy, User user, Role role) {
-		if(user.getStaticCardinality()==0) return false;
-		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
-		int total=0;
-		for (UserRoleAssignment ur : urList) {
-			if(ur.getUser().equals(user)) total++;
-		}
+		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithUser(policy, user);
+		int total = urList.size();
 		return total<user.getStaticCardinality() ;
 	}
 
 	public boolean afterAssignSrIsValid(RbacPolicy policy, User user, Role role) {
-		if(role.getStaticCardinality()==0) return false;
-		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
-		int total=0;
-		for (UserRoleAssignment ur : urList) {
-			if(ur.getRole().equals(role)) total++;
-		}
+		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithRole(policy, role);
+		int total = urList.size();
 		return total<role.getStaticCardinality();
 	}
 
 	public boolean afterActivateDuIsValid(RbacPolicy policy, User user, Role role) {
-		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
-		int total=0;
-		for (UserRoleAssignment ur : urList) {
-			if(ur.getUser().equals(user)) total+=ur.getActiveRoles().size();
-		}
+		Set<UserRoleActivation> urList = getUserRoleActivationWithUser(policy, user);
+		int total = urList.size();
 		return total<user.getDynamicCardinality();
 	}
 
 	public boolean afterActivateDrIsValid(RbacPolicy policy, User user, Role role) {
-		List<UserRoleAssignment> urList = policy.getUserRoleAssignment();
-		int total=0;
-		for (UserRoleAssignment ur : urList) {
-			if(ur.getActiveRoles().contains(role)) total++;
-		}
+		Set<UserRoleActivation> urList = getUserRoleActivationWithRole(policy, role);
+		int total = urList.size();
 		return total<role.getDynamicCardinality();
 	}
 
@@ -181,15 +198,6 @@ public class RbacUtils {
 				result.add(ur.getRole());
 		}
 		return result;
-	}
-
-	public boolean isRoleActiveByUser(RbacPolicy pol, Role rol, User usr){
-		for (UserRoleAssignment el: getUserRoleAssignmentsWithUser(pol, usr)) {
-			if(el.getActiveRoles().contains(rol)){
-				return true;
-			}
-		}
-		return false;
 	}
 
 	//	boolean assignUser(RbacPolicy pol, User usr, Role rol){

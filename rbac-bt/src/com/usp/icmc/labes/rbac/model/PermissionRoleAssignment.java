@@ -70,7 +70,7 @@ public class PermissionRoleAssignment implements RbacElement {
 
 	@Override
 	public String toString() {
-		return "ur("+permission+","+role+")";
+		return getName();
 	}
 }
 

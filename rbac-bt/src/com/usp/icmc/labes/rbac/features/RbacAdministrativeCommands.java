@@ -8,6 +8,7 @@ import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.rbac.utils.RbacUtils;
 
@@ -87,7 +88,8 @@ public class RbacAdministrativeCommands {
 		boolean userExists 			= utils.userExists(policy, user);
 		boolean roleExists 			= utils.roleExists(policy,role); 
 
-		boolean userAssignedtoRole 	= utils.userRoleAssignmentExists(policy, user, role);
+		UserRoleAssignment ur 		= utils.getUserRoleAssignment(policy, user, role);
+		boolean userRoleAssigned 	= (ur!=null);
 
 		boolean nextSuIsValid 		= utils.afterAssignSuIsValid(policy, user, role);
 		boolean nextSrIsValid 		= utils.afterAssignSrIsValid(policy, user, role);
@@ -96,7 +98,7 @@ public class RbacAdministrativeCommands {
 				roleExists &&
 				nextSuIsValid &&
 				nextSrIsValid &&
-				!userAssignedtoRole
+				!userRoleAssigned
 				){
 			policy.getUserRoleAssignment().add(new UserRoleAssignment(user,role));
 			return true;
@@ -107,14 +109,19 @@ public class RbacAdministrativeCommands {
 	public boolean deassignUser(RbacPolicy policy, User user, Role role){
 		boolean userExists = utils.userExists(policy, user);
 		boolean roleExists = utils.roleExists(policy,role); 
-		UserRoleAssignment ur = utils.getUserRoleAssignment(policy, user, role);
-		boolean userAssignedtoRole = (ur!=null);
+
+		UserRoleAssignment ur 		= utils.getUserRoleAssignment(policy, user, role);
+		boolean userRoleAssigned 	= (ur!=null);
+
+		UserRoleActivation ua 		= utils.getUserRoleActivation(policy, user, role);
+		boolean userRoleActive 		= (ua!=null);
 
 		if(		userExists &&
 				roleExists &&
-				userAssignedtoRole
+				userRoleAssigned
 				){
 			policy.getUserRoleAssignment().remove(ur);
+			if(userRoleActive) policy.getUserRoleActivation().remove(ua);
 			return true;
 		}
 		return false;
