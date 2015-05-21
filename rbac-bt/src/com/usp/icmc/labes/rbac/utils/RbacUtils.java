@@ -53,10 +53,12 @@ public class RbacUtils {
 		xstream.alias("user", User.class);
 		xstream.alias("role", Role.class);
 		xstream.alias("prms", Permission.class);
-		xstream.alias("uras", UserRoleAssignment.class);
-		xstream.alias("urac", UserRoleActivation.class);
-		xstream.alias("pras", PermissionRoleAssignment.class);
-		xstream.alias("pras", PermissionRoleAssignment.class);
+//		xstream.alias("uras", UserRoleAssignment.class);
+//		xstream.alias("urac", UserRoleActivation.class);
+//		xstream.alias("pras", PermissionRoleAssignment.class);
+		xstream.alias("UserRoleAssignment", UserRoleAssignment.class);
+		xstream.alias("UserRoleActivation", UserRoleActivation.class);
+		xstream.alias("PermissionRoleAssignment", PermissionRoleAssignment.class);
 		xstream.alias("sod", SoDConstraint.class);
 		xstream.alias("ssd", SSoDConstraint.class);
 		xstream.alias("dsd", DSoDConstraint.class);

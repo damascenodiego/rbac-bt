@@ -13,27 +13,27 @@
   </permission>
   <userRoleAssignment id="10">
     <UserRoleAssignment id="11">
-      <user reference="4"/>
+      <user reference="3"/>
       <role reference="6"/>
     </UserRoleAssignment>
     <UserRoleAssignment id="12">
-      <user reference="3"/>
+      <user reference="4"/>
       <role reference="6"/>
     </UserRoleAssignment>
   </userRoleAssignment>
   <userRoleActivation id="13">
     <UserRoleActivation id="14">
-      <user reference="4"/>
+      <user reference="3"/>
       <role reference="6"/>
     </UserRoleActivation>
   </userRoleActivation>
   <permissionRoleAssignment id="15">
     <PermissionRoleAssignment id="16">
-      <permission reference="9"/>
+      <permission reference="8"/>
       <role reference="6"/>
     </PermissionRoleAssignment>
     <PermissionRoleAssignment id="17">
-      <permission reference="8"/>
+      <permission reference="9"/>
       <role reference="6"/>
     </PermissionRoleAssignment>
   </permissionRoleAssignment>
