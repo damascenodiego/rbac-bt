@@ -1,58 +1,33 @@
 <rbac id="1">
   <name>rbacViaAdminCommand</name>
   <user id="2">
-    <user id="3">
-      <name>u1</name>
-      <su>1</su>
-      <du>1</du>
-    </user>
-    <user id="4">
-      <name>u2</name>
-      <su>1</su>
-      <du>1</du>
-    </user>
+    <user id="3" name="u1" su="1" du="1"/>
+    <user id="4" name="u2" su="1" du="1"/>
   </user>
   <role id="5">
-    <role id="6">
-      <name>r1</name>
-      <sr>2</sr>
-      <dr>1</dr>
-    </role>
+    <role id="6" name="r1" sr="2" dr="1"/>
   </role>
   <permission id="7">
-    <prms id="8">
-      <name>p1</name>
-    </prms>
-    <prms id="9">
-      <name>p2</name>
-    </prms>
+    <prms id="8" name="p1"/>
+    <prms id="9" name="p2"/>
   </permission>
   <userRoleAssignment id="10">
     <uras id="11">
-      <user reference="3"/>
+      <user reference="4"/>
       <role reference="6"/>
     </uras>
     <uras id="12">
-      <user reference="4"/>
+      <user reference="3"/>
       <role reference="6"/>
     </uras>
   </userRoleAssignment>
   <userRoleActivation id="13">
     <urac id="14">
-      <user reference="3"/>
+      <user reference="4"/>
       <role reference="6"/>
     </urac>
   </userRoleActivation>
-  <permissionRoleAssignment id="15">
-    <pras id="16">
-      <permission reference="8"/>
-      <role reference="6"/>
-    </pras>
-    <pras id="17">
-      <permission reference="9"/>
-      <role reference="6"/>
-    </pras>
-  </permissionRoleAssignment>
-  <sodConstraint id="18"/>
-  <hierarchy id="19"/>
+  <permissionRoleAssignment id="15"/>
+  <sodConstraint id="16"/>
+  <hierarchy id="17"/>
 </rbac>

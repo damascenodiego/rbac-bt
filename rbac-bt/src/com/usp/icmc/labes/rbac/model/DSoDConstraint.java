@@ -5,8 +5,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+
 public class DSoDConstraint implements RbacElement, SoDConstraint {
 
+	@XStreamAsAttribute
 	int cardinality;
 	Set<Role> sodSet;
 

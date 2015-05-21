@@ -62,7 +62,16 @@ public class RbacUtils {
 		xstream.alias("dsd", DSoDConstraint.class);
 		xstream.alias("hie", Hierarchy.class);
 		xstream.alias("ah", ActivationHierarchy.class);
-		xstream.alias("ih", InheritanceHierarchy.class);  
+		xstream.alias("ih", InheritanceHierarchy.class);
+		xstream.processAnnotations(User.class);
+		xstream.processAnnotations(Role.class);
+		xstream.processAnnotations(Permission.class);
+		xstream.processAnnotations(UserRoleAssignment.class);
+		xstream.processAnnotations(UserRoleActivation.class);
+		xstream.processAnnotations(PermissionRoleAssignment.class);
+		xstream.processAnnotations(SoDConstraint.class);
+		xstream.processAnnotations(SSoDConstraint.class);
+		xstream.processAnnotations(DSoDConstraint.class);
 	} 
 
 	public static RbacUtils getInstance() {

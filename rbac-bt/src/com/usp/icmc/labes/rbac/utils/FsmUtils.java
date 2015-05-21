@@ -15,10 +15,13 @@ import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.acut.RbacRequest;
 import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestAssignPR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignPR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
 import com.usp.icmc.labes.rbac.acut.RbacState;
+import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
@@ -128,11 +131,10 @@ public class FsmUtils {
 				input.add(new RbacRequestActivateUR(usr, rol));
 				input.add(new RbacRequestDeactivateUR(usr, rol));
 			}
-//			for (Permission prms: rbac.getPermission()) {
-//				input.add(new RbacRequestAssignPR(prms, rol));
-//				input.add(new RbacRequestDeassignPR(prms, rol));
-//
-//			}
+			for (Permission prms: rbac.getPermission()) {
+				input.add(new RbacRequestAssignPR(prms, rol));
+				input.add(new RbacRequestDeassignPR(prms, rol));
+			}
 		}
 
 		RbacAcut acut = new RbacAcut(rbac);
