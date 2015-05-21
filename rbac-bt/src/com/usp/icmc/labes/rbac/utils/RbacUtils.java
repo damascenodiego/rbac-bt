@@ -62,7 +62,7 @@ public class RbacUtils {
 		xstream.alias("dsd", DSoDConstraint.class);
 		xstream.alias("hie", Hierarchy.class);
 		xstream.alias("ah", ActivationHierarchy.class);
-		xstream.alias("ih", InheritanceHierarchy.class);
+		xstream.alias("ih", InheritanceHierarchy.class); 
 	} 
 
 	public static RbacUtils getInstance() {
