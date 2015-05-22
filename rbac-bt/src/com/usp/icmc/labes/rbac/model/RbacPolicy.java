@@ -6,7 +6,7 @@ import java.util.List;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-public class RbacPolicy implements RbacElement{
+public class RbacPolicy{
 	
 	@XStreamAsAttribute
 	private String name;

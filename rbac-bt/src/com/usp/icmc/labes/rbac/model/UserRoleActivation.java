@@ -2,7 +2,7 @@ package com.usp.icmc.labes.rbac.model;
 
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-public class UserRoleActivation implements RbacElement {
+public class UserRoleActivation {
 
 	@XStreamAsAttribute
 	private User user;
@@ -16,10 +16,6 @@ public class UserRoleActivation implements RbacElement {
 		this();
 		this.user = u;
 		this.role = r;
-	}
-
-	public String getName() {
-		return "("+user.getName()+","+role.getName()+")";
 	}
 
 	public User getUser() {
@@ -71,6 +67,6 @@ public class UserRoleActivation implements RbacElement {
 
 	@Override
 	public String toString() {
-		return getName();
+		return "("+user.getName()+","+role.getName()+")";
 	}
 }

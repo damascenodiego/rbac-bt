@@ -1,4 +1,4 @@
-package com.usp.icmc.labes.rbac.utils;
+package com.usp.icmc.labes.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;

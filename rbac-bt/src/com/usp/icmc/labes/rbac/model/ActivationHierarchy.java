@@ -2,7 +2,7 @@ package com.usp.icmc.labes.rbac.model;
 
 
 
-public class ActivationHierarchy implements RbacElement, Hierarchy {
+public class ActivationHierarchy implements Hierarchy {
 	
 	private Role senior;
 	private Role junior;
@@ -10,9 +10,6 @@ public class ActivationHierarchy implements RbacElement, Hierarchy {
 	public ActivationHierarchy(Role sr, Role jr) {
 		this.senior = sr;
 		this.junior = jr;
-	}
-	public String getName() {
-		return "("+senior.getName()+">"+junior.getName()+")";
 	}
 	public Role getSenior() {
 		return senior;

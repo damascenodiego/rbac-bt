@@ -4,7 +4,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 
 
-public class Permission implements RbacElement, RoleAssignable {
+public class Permission implements RoleAssignable {
 	
 	/* permission name */
 	@XStreamAsAttribute

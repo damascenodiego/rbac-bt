@@ -6,15 +6,14 @@ import com.usp.icmc.labes.rbac.features.RbacReviewFunctions;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
-import com.usp.icmc.labes.rbac.model.RbacElement;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
-import com.usp.icmc.labes.rbac.utils.RbacUtils;
+import com.usp.icmc.labes.utils.RbacUtils;
 
-public class RbacAcut implements RbacElement{
+public class RbacAcut {
 
 	private RbacPolicy policy;
 
@@ -64,7 +63,6 @@ public class RbacAcut implements RbacElement{
 		return currentState;
 	}
 
-	@Override
 	public String getName() {
 		return currentState.getName();
 	}

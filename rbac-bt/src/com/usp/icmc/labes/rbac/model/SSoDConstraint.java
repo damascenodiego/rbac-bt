@@ -7,10 +7,10 @@ import java.util.Set;
 
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-public class SSoDConstraint implements RbacElement, SoDConstraint  {
+public class SSoDConstraint implements SoDConstraint  {
 
 	@XStreamAsAttribute
-	int cardinality;
+	int ss;
 	Set<Role> sodSet;
 
 	public SSoDConstraint() {
@@ -23,7 +23,7 @@ public class SSoDConstraint implements RbacElement, SoDConstraint  {
 		for (int i = 0; i < set.length; i++) {
 			sodSet.add(set[i]);
 		}
-		this.cardinality = card;
+		this.ss = card;
 	}
 
 	public SSoDConstraint(Collection<Role> set, int card) {
@@ -32,21 +32,16 @@ public class SSoDConstraint implements RbacElement, SoDConstraint  {
 		while(roles.hasNext()) {
 			sodSet.add(roles.next());
 		}
-		this.cardinality = card;
+		this.ss = card;
 	}
-
-	public String getName() {
-		return String.join(", ", (CharSequence[]) this.sodSet.toArray());
-	}
-
 
 	public int getCardinality() {
-		return cardinality;
+		return ss;
 	}
 
 
 	public void setCardinality(int cardinality) {
-		this.cardinality = cardinality;
+		this.ss = cardinality;
 	}
 
 
@@ -61,6 +56,6 @@ public class SSoDConstraint implements RbacElement, SoDConstraint  {
 	
 	@Override
 	public String toString() {
-		return "SSoD({"+sodSet+"},"+cardinality+")";
+		return "SSoD({"+sodSet+"},"+ss+")";
 	}
 }

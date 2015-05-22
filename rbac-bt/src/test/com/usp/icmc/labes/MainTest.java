@@ -1,4 +1,4 @@
-package test.com.usp.icmc.labes.rbac.features;
+package test.com.usp.icmc.labes;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -34,8 +34,8 @@ import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
-import com.usp.icmc.labes.rbac.utils.FsmUtils;
-import com.usp.icmc.labes.rbac.utils.RbacUtils;
+import com.usp.icmc.labes.utils.FsmUtils;
+import com.usp.icmc.labes.utils.RbacUtils;
 
 public class MainTest {
 

@@ -2,7 +2,7 @@ package com.usp.icmc.labes.rbac.model;
 
 
 
-public class InheritanceHierarchy implements RbacElement, Hierarchy {
+public class InheritanceHierarchy implements Hierarchy {
 	
 	private Role senior;
 	private Role junior;

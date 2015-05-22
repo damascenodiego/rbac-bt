@@ -4,7 +4,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 
 
-public class PermissionRoleAssignment implements RbacElement {
+public class PermissionRoleAssignment {
 	
 	@XStreamAsAttribute
 	private Permission permission;
@@ -17,10 +17,6 @@ public class PermissionRoleAssignment implements RbacElement {
 	public PermissionRoleAssignment(Permission p, Role r){
 		this.permission = p;
 		this.role = r;
-	}
-
-	public String getName() {
-		return "("+permission.getName()+","+role.getName()+")";
 	}
 
 	public Permission getPermission() {
@@ -74,7 +70,7 @@ public class PermissionRoleAssignment implements RbacElement {
 
 	@Override
 	public String toString() {
-		return getName();
+		return "("+permission.getName()+","+role.getName()+")";
 	}
 }
 

@@ -7,16 +7,15 @@ import java.util.Set;
 
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
-import com.usp.icmc.labes.rbac.model.RbacElement;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.RoleAssignable;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
-import com.usp.icmc.labes.rbac.utils.RbacUtils;
+import com.usp.icmc.labes.utils.RbacUtils;
 
-public class RbacState implements RbacElement {
+public class RbacState {
 
 
 	RbacPolicy policy;
@@ -44,7 +43,6 @@ public class RbacState implements RbacElement {
 
 	}
 
-	@Override
 	public String getName() {
 		String stateName = "";
 		for (User usr: policy.getUser()) {

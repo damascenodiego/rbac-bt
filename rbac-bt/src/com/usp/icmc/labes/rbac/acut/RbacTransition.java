@@ -1,8 +1,6 @@
 package com.usp.icmc.labes.rbac.acut;
 
-import com.usp.icmc.labes.rbac.model.RbacElement;
-
-public class RbacTransition implements RbacElement {
+public class RbacTransition {
 	
 	public static final String AH_GRANTS    	= "AH_GRANTS";
 	public static final String IH_GRANTS    	= "IH_GRANTS";
@@ -16,8 +14,6 @@ public class RbacTransition implements RbacElement {
 	public static final String DSoD_CARD_GRANTS = "DSoD_CARD_GRANTS";
 
 	
-	
-	@Override
 	public String getName() {
 		// TODO Auto-generated method stub 
 		return null;

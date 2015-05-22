@@ -8,7 +8,7 @@ import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
-import com.usp.icmc.labes.rbac.utils.RbacUtils;
+import com.usp.icmc.labes.utils.RbacUtils;
 
 public class RbacReviewFunctions {
 

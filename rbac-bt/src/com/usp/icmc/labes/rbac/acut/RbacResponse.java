@@ -1,8 +1,6 @@
 package com.usp.icmc.labes.rbac.acut;
 
-import com.usp.icmc.labes.rbac.model.RbacElement;
-
-public class RbacResponse implements RbacElement {
+public class RbacResponse {
 	
 	public static final String AH_GRANTS    	= "AH_GRANTS";
 	public static final String IH_GRANTS    	= "IH_GRANTS";
@@ -17,7 +15,6 @@ public class RbacResponse implements RbacElement {
 
 	
 	
-	@Override
 	public String getName() {
 		// TODO Auto-generated method stub 
 		return null;

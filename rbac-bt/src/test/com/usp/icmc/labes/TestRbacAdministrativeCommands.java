@@ -1,4 +1,4 @@
-package test.com.usp.icmc.labes.rbac.features;
+package test.com.usp.icmc.labes;
 
 import static org.junit.Assert.*;
 
@@ -15,7 +15,7 @@ import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
-import com.usp.icmc.labes.rbac.utils.RbacUtils;
+import com.usp.icmc.labes.utils.RbacUtils;
 
 public class TestRbacAdministrativeCommands {
 
