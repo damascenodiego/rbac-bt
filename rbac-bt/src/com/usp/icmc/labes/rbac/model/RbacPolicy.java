@@ -3,16 +3,28 @@ package com.usp.icmc.labes.rbac.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+
 public class RbacPolicy implements RbacElement{
 	
+	@XStreamAsAttribute
 	private String name;
+	@XStreamAlias("Users")
 	private List<User> user;
+	@XStreamAlias("Roles")
 	private List<Role> role;
+	@XStreamAlias("Permissions")
 	private List<Permission> permission;
+	@XStreamAlias("URAssignments")
 	private List<UserRoleAssignment> userRoleAssignment;
+	@XStreamAlias("URActivations")
 	private List<UserRoleActivation> userRoleActivation;
+	@XStreamAlias("PRAssignments")
 	private List<PermissionRoleAssignment> permissionRoleAssignment;
+	@XStreamAlias("SoDConstraints")
 	private List<SoDConstraint> sodConstraint;
+	@XStreamAlias("HierarchyRelations")
 	private List<Hierarchy> hierarchy;
 	
 	
