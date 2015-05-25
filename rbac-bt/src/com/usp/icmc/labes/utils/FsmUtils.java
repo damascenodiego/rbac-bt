@@ -131,10 +131,10 @@ public class FsmUtils {
 				input.add(new RbacRequestActivateUR(usr, rol));
 				input.add(new RbacRequestDeactivateUR(usr, rol));
 			}
-			for (Permission prms: rbac.getPermission()) {
-				input.add(new RbacRequestAssignPR(prms, rol));
-				input.add(new RbacRequestDeassignPR(prms, rol));
-			}
+//			for (Permission prms: rbac.getPermission()) {
+//				input.add(new RbacRequestAssignPR(prms, rol));
+//				input.add(new RbacRequestDeassignPR(prms, rol));
+//			}
 		}
 
 		RbacAcut acut = new RbacAcut(rbac);

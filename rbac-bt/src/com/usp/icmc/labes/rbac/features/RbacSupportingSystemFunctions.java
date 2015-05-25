@@ -36,8 +36,8 @@ public class RbacSupportingSystemFunctions {
 		UserRoleActivation ua 		= utils.getUserRoleActivation(policy, user, role);
 		boolean userRoleActive 		= (ua!=null);
 
-		boolean nextDuIsValid 		= utils.afterActivateDuIsValid(policy, user, role);
-		boolean nextDrIsValid 		= utils.afterActivateDrIsValid(policy, user, role);
+		boolean nextDuIsValid 		= utils.afterActivateDuIsValid(policy, user);
+		boolean nextDrIsValid 		= utils.afterActivateDrIsValid(policy, role);
 
 		if(		userExists &&
 				roleExists &&

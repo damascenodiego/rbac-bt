@@ -33,7 +33,9 @@ import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.RoleConstraint;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserConstraint;
 import com.usp.icmc.labes.utils.FsmUtils;
 import com.usp.icmc.labes.utils.RbacUtils;
 
@@ -48,17 +50,26 @@ public class MainTest {
 	User u1,u2;
 	Role r1;
 	Permission p1,p2;
+	UserConstraint u1Card,u2Card;
+	RoleConstraint r1Card;
 
 	@Before
 	public void setupRbacPolicy() {
 		rbac = new RbacPolicy("rbacViaAdminCommand");
 
 		//create users
-		u1 = new User("u1",1,1);
-		u2 = new User("u2",1,1);
+		u1 = new User("u1");
+		u2 = new User("u2");
 
 		//create role
-		r1 = new Role("r1",2,1);
+		r1 = new Role("r1");
+
+		//create user cardinality constraints
+		u1Card = new UserConstraint(u1, 1,1);
+		u2Card = new UserConstraint(u2, 1,1);
+
+		//create role cardinality constraints
+		r1Card = new RoleConstraint(r1, 2,1);
 
 		//create permissions
 		p1 = new Permission("p1");
@@ -72,6 +83,14 @@ public class MainTest {
 		assertTrue(rbacAdmin .addUser(rbac,u1));
 		//second add false
 		assertFalse(rbacAdmin.addUser(rbac,u1));
+
+		//add user constraints to policy
+		assertTrue(rbacAdmin .addUserConstraint(rbac,u1Card));
+		assertTrue(rbacAdmin .addUserConstraint(rbac,u2Card));
+
+		//add role constraints to policy
+		assertTrue(rbacAdmin .addRoleConstraint(rbac,r1Card));
+
 
 		//first add OK
 		assertTrue(rbacAdmin.addUser(rbac,u2));
@@ -95,10 +114,10 @@ public class MainTest {
 		assertFalse(rbacAdmin.addPermission(rbac,p1));
 		assertFalse(rbacAdmin.addPermission(rbac,p2));
 
-//		for (int i = 2; i < 10; i++) {
-//			//first add ok
-//			assertTrue(rbacAdmin.addRole(rbac,new Role("r"+i,1,1)));
-//		}
+		//		for (int i = 2; i < 10; i++) {
+		//			//first add ok
+		//			assertTrue(rbacAdmin.addRole(rbac,new Role("r"+i,1,1)));
+		//		}
 
 		try {
 			rbacUtils.WriteRbacPolicyAsXML(rbac, new File("policies/Masood2010Example1.rbac"));
@@ -222,12 +241,12 @@ public class MainTest {
 		//			}
 		//			
 		FsmModel rbac2fsm = FsmUtils.getInstance().rbac2Fsm(pol);
-		
+
 		try{
-			
+
 			File example = new File("policies/Masood2010Example1.rbac");
 			RbacUtils.getInstance().WriteRbacPolicyAsXML(pol, example);
-			
+
 			File dotFile = new File("policies/Masood2010Example1.dot");
 			FsmUtils.getInstance().WriteFsmAsDot(rbac2fsm, dotFile);
 

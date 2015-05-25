@@ -7,7 +7,9 @@ import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.RoleConstraint;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserConstraint;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.utils.RbacUtils;
@@ -93,8 +95,8 @@ public class RbacAdministrativeCommands {
 		UserRoleAssignment ur 		= utils.getUserRoleAssignment(policy, user, role);
 		boolean userRoleAssigned 	= (ur!=null);
 
-		boolean nextSuIsValid 		= utils.afterAssignSuIsValid(policy, user, role);
-		boolean nextSrIsValid 		= utils.afterAssignSrIsValid(policy, user, role);
+		boolean nextSuIsValid 		= utils.afterAssignSuIsValid(policy, user);
+		boolean nextSrIsValid 		= utils.afterAssignSrIsValid(policy, role);
 
 		if(		userExists &&
 				roleExists &&
@@ -160,5 +162,21 @@ public class RbacAdministrativeCommands {
 		}
 		return false;
 
+	}
+
+	public boolean addUserConstraint(RbacPolicy rbac, UserConstraint constr) {
+		if(!rbac.getUserCard().contains(constr)){
+			rbac.getUserCard().add(constr);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean addRoleConstraint(RbacPolicy rbac, RoleConstraint constr) {
+		if(!rbac.getRoleCard().contains(constr)){
+			rbac.getRoleCard().add(constr);
+			return true;
+		}
+		return false;
 	}
 }

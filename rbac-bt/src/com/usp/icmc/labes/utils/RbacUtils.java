@@ -34,9 +34,11 @@ import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.RoleConstraint;
 import com.usp.icmc.labes.rbac.model.SSoDConstraint;
 import com.usp.icmc.labes.rbac.model.SoDConstraint;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserConstraint;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 
@@ -62,6 +64,8 @@ public class RbacUtils {
 		xstream.alias("Hier", Hierarchy.class);
 		xstream.alias("Ah", ActivationHierarchy.class);
 		xstream.alias("Ih", InheritanceHierarchy.class);
+		xstream.alias("UserCard", UserConstraint.class);
+		xstream.alias("RoleCard", RoleConstraint.class);
 		xstream.processAnnotations(RbacPolicy.class);
 		xstream.processAnnotations(User.class);
 		xstream.processAnnotations(Role.class);
@@ -71,8 +75,9 @@ public class RbacUtils {
 		xstream.processAnnotations(PermissionRoleAssignment.class);
 		xstream.processAnnotations(SoDConstraint.class);
 		xstream.processAnnotations(SSoDConstraint.class);
-		xstream.processAnnotations(DSoDConstraint.class);
-	} 
+		xstream.processAnnotations(UserConstraint.class);
+		xstream.processAnnotations(RoleConstraint.class);
+		} 
 
 	public static RbacUtils getInstance() {
 		if(instance ==null){
@@ -208,29 +213,52 @@ public class RbacUtils {
 		return result;
 	}
 
-	public boolean afterAssignSuIsValid(RbacPolicy policy, User user, Role role) {
+	public UserConstraint getUserCardinality(RbacPolicy pol, User usr) {
+		for (UserConstraint card: pol.getUserCard()) {
+			if(card.getUser().equals(usr)){
+				return card;
+			}
+		}
+		return null;
+	}
+
+	public RoleConstraint getRoleCardinality(RbacPolicy pol, Role role) {
+		for (RoleConstraint card: pol.getRoleCard()) {
+			if(card.getRole().equals(role)){
+				return card;
+			}
+		}
+		return null;
+	}
+
+	public boolean afterAssignSuIsValid(RbacPolicy policy, User user) {
 		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithUser(policy, user);
 		int total = urList.size();
-		return total<user.getStaticCardinality() ;
+		UserConstraint constr = getUserCardinality(policy, user);
+		return total<constr.getStaticConstr();
 	}
 
-	public boolean afterAssignSrIsValid(RbacPolicy policy, User user, Role role) {
+	public boolean afterAssignSrIsValid(RbacPolicy policy, Role role) {
 		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithRole(policy, role);
 		int total = urList.size();
-		return total<role.getStaticCardinality();
+		RoleConstraint constr = getRoleCardinality(policy, role);
+		return total<constr.getStaticConstr();
 	}
 
-	public boolean afterActivateDuIsValid(RbacPolicy policy, User user, Role role) {
+	public boolean afterActivateDuIsValid(RbacPolicy policy, User user) {
 		Set<UserRoleActivation> urList = getUserRoleActivationWithUser(policy, user);
 		int total = urList.size();
-		return total<user.getDynamicCardinality();
+		UserConstraint constr = getUserCardinality(policy, user);
+		return total<constr.getDynamicConstr();
 	}
 
-	public boolean afterActivateDrIsValid(RbacPolicy policy, User user, Role role) {
+	public boolean afterActivateDrIsValid(RbacPolicy policy, Role role) {
 		Set<UserRoleActivation> urList = getUserRoleActivationWithRole(policy, role);
 		int total = urList.size();
-		return total<role.getDynamicCardinality();
+		RoleConstraint constr = getRoleCardinality(policy, role);
+		return total<constr.getDynamicConstr();
 	}
+
 
 	public Set<Role> getRolesAssignedToUser(RbacPolicy pol, User usr){
 		Set<Role> result = new HashSet<Role>();

@@ -12,7 +12,9 @@ import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.RoleConstraint;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserConstraint;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.utils.RbacUtils;
@@ -79,11 +81,18 @@ public class TestRbacAdministrativeCommands {
 		RbacPolicy rbac = new RbacPolicy("rbacViaModelMethods");
 
 		//create users
-		User u1 = new User("u1",1,1);
-		User u2 = new User("u2",1,1);
+		User u1 = new User("u1");
+		User u2 = new User("u2");
 
 		//create role
-		Role r1 = new Role("r1",2,1);
+		Role r1 = new Role("r1");
+
+		//create user cardinality constraints
+		UserConstraint u1Card = new UserConstraint(u1, 1,1);
+		UserConstraint u2Card = new UserConstraint(u2, 1,1);
+
+		//create role cardinality constraints
+		RoleConstraint r1Card = new RoleConstraint(r1, 2,1);
 
 		//create permissions
 		Permission p1 = new Permission("p1");
@@ -99,6 +108,13 @@ public class TestRbacAdministrativeCommands {
 		rbac.getPermission().add(p1);
 		rbac.getPermission().add(p2);
 
+		//add user constraints
+		rbac.getUserCard().add(u1Card);
+		rbac.getUserCard().add(u2Card);
+		
+		//add role constraints
+		rbac.getRoleCard().add(r1Card);
+		
 		//create UR relationships
 		UserRoleAssignment u1r1 = new UserRoleAssignment(u1,r1);
 		UserRoleAssignment u2r1 = new UserRoleAssignment(u2,r1);
@@ -125,15 +141,23 @@ public class TestRbacAdministrativeCommands {
 		RbacPolicy rbac = new RbacPolicy("rbacViaAdminCommand");
 
 		//create users
-		User u1 = new User("u1",1,1);
-		User u2 = new User("u2",1,1);
+		User u1 = new User("u1");
+		User u2 = new User("u2");
 
 		//create role
-		Role r1 = new Role("r1",2,1);
+		Role r1 = new Role("r1");
 
 		//create permissions
 		Permission p1 = new Permission("p1");
 		Permission p2= new Permission("p2");
+
+		//create user cardinality constraints
+		UserConstraint u1Card = new UserConstraint(u1, 1,1);
+		UserConstraint u2Card = new UserConstraint(u2, 1,1);
+
+		//create role cardinality constraints
+		RoleConstraint r1Card = new RoleConstraint(r1, 2,1);
+
 		
 		//add users to policy
 		//first add OK
@@ -152,6 +176,18 @@ public class TestRbacAdministrativeCommands {
 		//		second add false
 		assertFalse(rbacAdmin.addRole(rbac,r1));
 
+		//add user constraints to policy
+		assertTrue(rbacAdmin .addUserConstraint(rbac,u1Card));
+		assertTrue(rbacAdmin .addUserConstraint(rbac,u2Card));
+
+
+		//add user constraints to policy
+		assertFalse(rbacAdmin .addUserConstraint(rbac,u1Card));
+		assertFalse(rbacAdmin .addUserConstraint(rbac,u2Card));
+
+		//add role constraints to policy
+		assertTrue(rbacAdmin .addRoleConstraint(rbac,r1Card));
+		assertFalse(rbacAdmin .addRoleConstraint(rbac,r1Card));
 
 		//add permissions
 		//first add ok
