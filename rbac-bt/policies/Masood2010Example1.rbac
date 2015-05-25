@@ -1,4 +1,4 @@
-<RBAC id="1" name="Masood2010Example1">
+<RBAC id="1" name="rbacViaAdminCommand">
   <Users id="2">
     <user id="3" name="u1"/>
     <user id="4" name="u2"/>
@@ -6,28 +6,49 @@
   <Roles id="5">
     <role id="6" name="r1"/>
   </Roles>
-  <Permissions id="9">
-    <prms id="7" name="p1"/>
-    <prms id="8" name="p2"/>
+  <Permissions id="7">
+    <prms id="8" name="p1"/>
+    <prms id="9" name="p2"/>
   </Permissions>
-  <UserCardinality id="10">
-    <UserCard id="11" staticConstr="1" dynamicConstr="1">
+  <Su id="10">
+    <Su id="11" staticConstr="1">
       <user reference="3"/>
-    </UserCard>
-    <UserCard id="12" staticConstr="1" dynamicConstr="1">
-      <user reference="4"/>
-    </UserCard>
-  </UserCardinality>
-  <RoleCardinality id="13">
-    <RoleCard id="14" staticConstr="2" dynamicConstr="1">
+    </Su>
+  </Su>
+  <Du id="12">
+    <Du id="13" dynamicConstr="1">
+      <user reference="3"/>
+    </Du>
+  </Du>
+  <Sr id="14">
+    <Sr id="15" staticConstr="2">
       <role reference="6"/>
-    </RoleCard>
-  </RoleCardinality>
-  <URAssignments id="15"/>
-  <URActivations id="16"/>
-  <PRAssignments id="17"/>
-  <SSoDConstraints id="18"/>
-  <DSSoDConstraints id="19"/>
-  <ActivationRelations id="20"/>
-  <InheritanceRelations id="21"/>
+    </Sr>
+  </Sr>
+  <Dr id="16">
+    <Dr id="17" dynamicConstr="1">
+      <role reference="6"/>
+    </Dr>
+  </Dr>
+  <URAssignments id="18">
+    <AS id="19">
+      <user reference="4"/>
+      <role reference="6"/>
+    </AS>
+    <AS id="20">
+      <user reference="3"/>
+      <role reference="6"/>
+    </AS>
+  </URAssignments>
+  <URActivations id="21">
+    <AC id="22">
+      <user reference="4"/>
+      <role reference="6"/>
+    </AC>
+  </URActivations>
+  <PRAssignments id="23"/>
+  <SSoDConstraints id="24"/>
+  <DSSoDConstraints id="25"/>
+  <ActivationRelations id="26"/>
+  <InheritanceRelations id="27"/>
 </RBAC>

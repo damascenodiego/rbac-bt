@@ -4,38 +4,25 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.internal.runners.statements.Fail;
 
 import com.usp.icmc.labes.fsm.FsmModel;
-import com.usp.icmc.labes.fsm.FsmState;
-import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
-import com.usp.icmc.labes.rbac.acut.RbacRequest;
-import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestAssignPR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignPR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
-import com.usp.icmc.labes.rbac.acut.RbacState;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
+import com.usp.icmc.labes.rbac.model.Dr;
+import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
-import com.usp.icmc.labes.rbac.model.RoleConstraint;
+import com.usp.icmc.labes.rbac.model.Sr;
+import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
-import com.usp.icmc.labes.rbac.model.UserConstraint;
 import com.usp.icmc.labes.utils.FsmUtils;
 import com.usp.icmc.labes.utils.RbacUtils;
 
@@ -50,8 +37,6 @@ public class MainTest {
 	User u1,u2;
 	Role r1;
 	Permission p1,p2;
-	UserConstraint u1Card,u2Card;
-	RoleConstraint r1Card;
 
 	@Before
 	public void setupRbacPolicy() {
@@ -64,12 +49,18 @@ public class MainTest {
 		//create role
 		r1 = new Role("r1");
 
+		List<Su> su = new ArrayList<Su>();
+		List<Sr> sr = new ArrayList<Sr>();
+		List<Du> du = new ArrayList<Du>();
+		List<Dr> dr = new ArrayList<Dr>();
+		
 		//create user cardinality constraints
-		u1Card = new UserConstraint(u1, 1,1);
-		u2Card = new UserConstraint(u2, 1,1);
+		su.add(new Su(u1, 1));
+		du.add(new Du(u1, 1));
 
 		//create role cardinality constraints
-		r1Card = new RoleConstraint(r1, 2,1);
+		sr.add(new Sr(r1, 2));
+		dr.add(new Dr(r1, 1));
 
 		//create permissions
 		p1 = new Permission("p1");
@@ -83,15 +74,15 @@ public class MainTest {
 		assertTrue(rbacAdmin .addUser(rbac,u1));
 		//second add false
 		assertFalse(rbacAdmin.addUser(rbac,u1));
-
+		
 		//add user constraints to policy
-		assertTrue(rbacAdmin .addUserConstraint(rbac,u1Card));
-		assertTrue(rbacAdmin .addUserConstraint(rbac,u2Card));
+		for (Su el : su) assertTrue(rbacAdmin .addSu(rbac,el));
+		for (Du el : du) assertTrue(rbacAdmin .addDu(rbac,el));
 
 		//add role constraints to policy
-		assertTrue(rbacAdmin .addRoleConstraint(rbac,r1Card));
-
-
+		for (Sr el : sr) assertTrue(rbacAdmin .addSr(rbac,el));
+		for (Dr el : dr) assertTrue(rbacAdmin .addDr(rbac,el));
+		
 		//first add OK
 		assertTrue(rbacAdmin.addUser(rbac,u2));
 		// second add false

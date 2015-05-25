@@ -4,41 +4,27 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.usp.icmc.labes.fsm.FsmModel;
-import com.usp.icmc.labes.fsm.FsmState;
-import com.usp.icmc.labes.fsm.FsmTransition;
-import com.usp.icmc.labes.rbac.acut.RbacAcut;
-import com.usp.icmc.labes.rbac.acut.RbacRequest;
-import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestAssignPR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignPR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
-import com.usp.icmc.labes.rbac.acut.RbacState;
 import com.usp.icmc.labes.rbac.model.ActivationHierarchy;
 import com.usp.icmc.labes.rbac.model.DSoDConstraint;
+import com.usp.icmc.labes.rbac.model.Dr;
+import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Hierarchy;
 import com.usp.icmc.labes.rbac.model.InheritanceHierarchy;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
-import com.usp.icmc.labes.rbac.model.RoleConstraint;
 import com.usp.icmc.labes.rbac.model.SSoDConstraint;
 import com.usp.icmc.labes.rbac.model.SoDConstraint;
+import com.usp.icmc.labes.rbac.model.Sr;
+import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
-import com.usp.icmc.labes.rbac.model.UserConstraint;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 
@@ -64,8 +50,10 @@ public class RbacUtils {
 		xstream.alias("Hier", Hierarchy.class);
 		xstream.alias("Ah", ActivationHierarchy.class);
 		xstream.alias("Ih", InheritanceHierarchy.class);
-		xstream.alias("UserCard", UserConstraint.class);
-		xstream.alias("RoleCard", RoleConstraint.class);
+		xstream.alias("Su", Su.class);
+		xstream.alias("Sr", Sr.class);
+		xstream.alias("Du", Du.class);
+		xstream.alias("Dr", Dr.class);
 		xstream.processAnnotations(RbacPolicy.class);
 		xstream.processAnnotations(User.class);
 		xstream.processAnnotations(Role.class);
@@ -75,8 +63,10 @@ public class RbacUtils {
 		xstream.processAnnotations(PermissionRoleAssignment.class);
 		xstream.processAnnotations(SoDConstraint.class);
 		xstream.processAnnotations(SSoDConstraint.class);
-		xstream.processAnnotations(UserConstraint.class);
-		xstream.processAnnotations(RoleConstraint.class);
+		xstream.processAnnotations(Su.class);
+		xstream.processAnnotations(Sr.class);
+		xstream.processAnnotations(Du.class);
+		xstream.processAnnotations(Dr.class);
 		} 
 
 	public static RbacUtils getInstance() {
@@ -213,8 +203,8 @@ public class RbacUtils {
 		return result;
 	}
 
-	public UserConstraint getUserCardinality(RbacPolicy pol, User usr) {
-		for (UserConstraint card: pol.getUserCard()) {
+	public Su getSu(RbacPolicy pol, User usr) {
+		for (Su card: pol.getSu()) {
 			if(card.getUser().equals(usr)){
 				return card;
 			}
@@ -222,40 +212,63 @@ public class RbacUtils {
 		return null;
 	}
 
-	public RoleConstraint getRoleCardinality(RbacPolicy pol, Role role) {
-		for (RoleConstraint card: pol.getRoleCard()) {
-			if(card.getRole().equals(role)){
+	public Sr getSr(RbacPolicy pol, Role rol) {
+		for (Sr card: pol.getSr()) {
+			if(card.getRole().equals(rol)){
 				return card;
 			}
 		}
 		return null;
 	}
 
+	public Du getDu(RbacPolicy pol, User usr) {
+		for (Du card: pol.getDu()) {
+			if(card.getUser().equals(usr)){
+				return card;
+			}
+		}
+		return null;
+	}
+
+	public Dr getDr(RbacPolicy pol, Role rol) {
+		for (Dr card: pol.getDr()) {
+			if(card.getRole().equals(rol)){
+				return card;
+			}
+		}
+		return null;
+	}
+
+
 	public boolean afterAssignSuIsValid(RbacPolicy policy, User user) {
 		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithUser(policy, user);
 		int total = urList.size();
-		UserConstraint constr = getUserCardinality(policy, user);
+		Su constr = getSu(policy, user);
+		if(constr==null) return true; 
 		return total<constr.getStaticConstr();
 	}
 
 	public boolean afterAssignSrIsValid(RbacPolicy policy, Role role) {
 		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithRole(policy, role);
 		int total = urList.size();
-		RoleConstraint constr = getRoleCardinality(policy, role);
+		Sr constr = getSr(policy, role);
+		if(constr==null) return true;
 		return total<constr.getStaticConstr();
 	}
 
 	public boolean afterActivateDuIsValid(RbacPolicy policy, User user) {
 		Set<UserRoleActivation> urList = getUserRoleActivationWithUser(policy, user);
 		int total = urList.size();
-		UserConstraint constr = getUserCardinality(policy, user);
+		Du constr = getDu(policy, user);
+		if(constr==null) return true;
 		return total<constr.getDynamicConstr();
 	}
 
 	public boolean afterActivateDrIsValid(RbacPolicy policy, Role role) {
 		Set<UserRoleActivation> urList = getUserRoleActivationWithRole(policy, role);
 		int total = urList.size();
-		RoleConstraint constr = getRoleCardinality(policy, role);
+		Dr constr = getDr(policy, role);
+		if(constr==null) return true;
 		return total<constr.getDynamicConstr();
 	}
 

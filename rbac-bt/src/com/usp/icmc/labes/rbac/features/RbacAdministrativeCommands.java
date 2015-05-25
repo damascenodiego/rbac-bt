@@ -1,15 +1,14 @@
 package com.usp.icmc.labes.rbac.features;
 
-import java.util.List;
-import java.util.Set;
-
+import com.usp.icmc.labes.rbac.model.Dr;
+import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
-import com.usp.icmc.labes.rbac.model.RoleConstraint;
+import com.usp.icmc.labes.rbac.model.Sr;
+import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
-import com.usp.icmc.labes.rbac.model.UserConstraint;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.utils.RbacUtils;
@@ -164,17 +163,33 @@ public class RbacAdministrativeCommands {
 
 	}
 
-	public boolean addUserConstraint(RbacPolicy rbac, UserConstraint constr) {
-		if(!rbac.getUserCard().contains(constr)){
-			rbac.getUserCard().add(constr);
+	public boolean addSu(RbacPolicy rbac, Su constr) {
+		if(!rbac.getSu().contains(constr)){
+			rbac.getSu().add(constr);
 			return true;
 		}
 		return false;
 	}
 
-	public boolean addRoleConstraint(RbacPolicy rbac, RoleConstraint constr) {
-		if(!rbac.getRoleCard().contains(constr)){
-			rbac.getRoleCard().add(constr);
+	public boolean addSr(RbacPolicy rbac, Sr constr) {
+		if(!rbac.getSr().contains(constr)){
+			rbac.getSr().add(constr);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean addDu(RbacPolicy rbac, Du constr) {
+		if(!rbac.getDu().contains(constr)){
+			rbac.getDu().add(constr);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean addDr(RbacPolicy rbac, Dr constr) {
+		if(!rbac.getDr().contains(constr)){
+			rbac.getDr().add(constr);
 			return true;
 		}
 		return false;

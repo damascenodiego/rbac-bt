@@ -2,20 +2,17 @@ package com.usp.icmc.labes.rbac.model;
 
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-public class RoleConstraint {
+public class Sr {
 
 	@XStreamAsAttribute
 	private Role role;
 	@XStreamAsAttribute
 	private int staticConstr;
-	@XStreamAsAttribute
-	private int dynamicConstr;
 	
 
-	public RoleConstraint(Role r, int stat,int dyn){
+	public Sr(Role r, int stat){
 		role=r;
 		staticConstr = stat;
-		dynamicConstr = dyn;
 	}
 
 
@@ -29,22 +26,11 @@ public class RoleConstraint {
 	}
 
 
-	public int getDynamicConstr() {
-		return dynamicConstr;
-	}
-
-
 	public void setStaticConstr(int staticConstr) {
 		this.staticConstr = staticConstr;
 	}
 
 
-	public void setDynamicConstr(int dynamicConstr) {
-		this.dynamicConstr = dynamicConstr;
-	}
-
-	
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -62,7 +48,7 @@ public class RoleConstraint {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		RoleConstraint other = (RoleConstraint) obj;
+		Sr other = (Sr) obj;
 		if (role == null) {
 			if (other.role != null)
 				return false;
@@ -71,11 +57,10 @@ public class RoleConstraint {
 		return true;
 	}
 
-
 	@Override
 	public String toString() {
 		return "RoleConstraint [role=" + role + ", staticConstr="
-				+ staticConstr + ", dynamicConstr=" + dynamicConstr + "]";
+				+ staticConstr + "]";
 	}
 
 }

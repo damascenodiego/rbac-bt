@@ -10,45 +10,54 @@
     <prms id="8" name="p1"/>
     <prms id="9" name="p2"/>
   </Permissions>
-  <UserCardinality id="10">
-    <UserCard id="11" staticConstr="1" dynamicConstr="1">
+  <Su id="10">
+    <Su id="11" staticConstr="1">
       <user reference="3"/>
-    </UserCard>
-    <UserCard id="12" staticConstr="1" dynamicConstr="1">
-      <user reference="4"/>
-    </UserCard>
-  </UserCardinality>
-  <RoleCardinality id="13">
-    <RoleCard id="14" staticConstr="2" dynamicConstr="1">
+    </Su>
+  </Su>
+  <Du id="12">
+    <Du id="13" dynamicConstr="1">
+      <user reference="3"/>
+    </Du>
+  </Du>
+  <Sr id="14">
+    <Sr id="15" staticConstr="2">
       <role reference="6"/>
-    </RoleCard>
-  </RoleCardinality>
-  <URAssignments id="15">
-    <AS id="16">
+    </Sr>
+  </Sr>
+  <Dr id="16">
+    <Dr id="17" dynamicConstr="1">
+      <role reference="6"/>
+    </Dr>
+  </Dr>
+  <URAssignments id="18">
+    <AS id="19">
       <user reference="3"/>
       <role reference="6"/>
     </AS>
-    <AS id="17">
+    <AS id="20">
       <user reference="4"/>
       <role reference="6"/>
     </AS>
   </URAssignments>
-  <URActivations id="18">
-    <AC id="19">
+  <URActivations id="21">
+    <AC id="22">
       <user reference="3"/>
       <role reference="6"/>
     </AC>
   </URActivations>
-  <PRAssignments id="20">
-    <PA id="21">
+  <PRAssignments id="23">
+    <PA id="24">
       <permission reference="8"/>
       <role reference="6"/>
     </PA>
-    <PA id="22">
+    <PA id="25">
       <permission reference="9"/>
       <role reference="6"/>
     </PA>
   </PRAssignments>
-  <ActivationRelations id="23"/>
-  <InheritanceRelations id="24"/>
+  <SSoDConstraints id="26"/>
+  <DSSoDConstraints id="27"/>
+  <ActivationRelations id="28"/>
+  <InheritanceRelations id="29"/>
 </RBAC>

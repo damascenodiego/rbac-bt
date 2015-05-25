@@ -1,20 +1,27 @@
 package test.com.usp.icmc.labes;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
+import com.usp.icmc.labes.rbac.model.Dr;
+import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
-import com.usp.icmc.labes.rbac.model.RoleConstraint;
+import com.usp.icmc.labes.rbac.model.Sr;
+import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
-import com.usp.icmc.labes.rbac.model.UserConstraint;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.utils.RbacUtils;
@@ -87,13 +94,6 @@ public class TestRbacAdministrativeCommands {
 		//create role
 		Role r1 = new Role("r1");
 
-		//create user cardinality constraints
-		UserConstraint u1Card = new UserConstraint(u1, 1,1);
-		UserConstraint u2Card = new UserConstraint(u2, 1,1);
-
-		//create role cardinality constraints
-		RoleConstraint r1Card = new RoleConstraint(r1, 2,1);
-
 		//create permissions
 		Permission p1 = new Permission("p1");
 		Permission p2= new Permission("p2");
@@ -108,13 +108,27 @@ public class TestRbacAdministrativeCommands {
 		rbac.getPermission().add(p1);
 		rbac.getPermission().add(p2);
 
-		//add user constraints
-		rbac.getUserCard().add(u1Card);
-		rbac.getUserCard().add(u2Card);
+		List<Su> su = new ArrayList<Su>();
+		List<Sr> sr = new ArrayList<Sr>();
+		List<Du> du = new ArrayList<Du>();
+		List<Dr> dr = new ArrayList<Dr>();
+
+		//create user cardinality constraints
+		su.add(new Su(u1, 1));
+		du.add(new Du(u1, 1));
+
+		//create role cardinality constraints
+		sr.add(new Sr(r1, 2));
+		dr.add(new Dr(r1, 1));
 		
-		//add role constraints
-		rbac.getRoleCard().add(r1Card);
-		
+		//add user constraints to policy
+		for (Su el : su) rbac.getSu().add(el);
+		for (Du el : du) rbac.getDu().add(el);
+
+		//add role constraints to policy
+		for (Sr el : sr) rbac.getSr().add(el);
+		for (Dr el : dr) rbac.getDr().add(el);
+				
 		//create UR relationships
 		UserRoleAssignment u1r1 = new UserRoleAssignment(u1,r1);
 		UserRoleAssignment u2r1 = new UserRoleAssignment(u2,r1);
@@ -151,14 +165,6 @@ public class TestRbacAdministrativeCommands {
 		Permission p1 = new Permission("p1");
 		Permission p2= new Permission("p2");
 
-		//create user cardinality constraints
-		UserConstraint u1Card = new UserConstraint(u1, 1,1);
-		UserConstraint u2Card = new UserConstraint(u2, 1,1);
-
-		//create role cardinality constraints
-		RoleConstraint r1Card = new RoleConstraint(r1, 2,1);
-
-		
 		//add users to policy
 		//first add OK
 		assertTrue(rbacAdmin .addUser(rbac,u1));
@@ -176,18 +182,28 @@ public class TestRbacAdministrativeCommands {
 		//		second add false
 		assertFalse(rbacAdmin.addRole(rbac,r1));
 
-		//add user constraints to policy
-		assertTrue(rbacAdmin .addUserConstraint(rbac,u1Card));
-		assertTrue(rbacAdmin .addUserConstraint(rbac,u2Card));
+		List<Su> su = new ArrayList<Su>();
+		List<Sr> sr = new ArrayList<Sr>();
+		List<Du> du = new ArrayList<Du>();
+		List<Dr> dr = new ArrayList<Dr>();
+		
+		//create user cardinality constraints
+		su.add(new Su(u1, 1));
+		du.add(new Du(u1, 1));
 
-
+		//create role cardinality constraints
+		sr.add(new Sr(r1, 2));
+		dr.add(new Dr(r1, 1));
+		
 		//add user constraints to policy
-		assertFalse(rbacAdmin .addUserConstraint(rbac,u1Card));
-		assertFalse(rbacAdmin .addUserConstraint(rbac,u2Card));
+		for (Su el : su) assertTrue(rbacAdmin .addSu(rbac,el));
+		for (Du el : du) assertTrue(rbacAdmin .addDu(rbac,el));
 
 		//add role constraints to policy
-		assertTrue(rbacAdmin .addRoleConstraint(rbac,r1Card));
-		assertFalse(rbacAdmin .addRoleConstraint(rbac,r1Card));
+		for (Sr el : sr) assertTrue(rbacAdmin .addSr(rbac,el));
+		for (Dr el : dr) assertTrue(rbacAdmin .addDr(rbac,el));
+		
+
 
 		//add permissions
 		//first add ok

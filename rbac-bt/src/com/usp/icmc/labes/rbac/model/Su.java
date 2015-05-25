@@ -2,20 +2,17 @@ package com.usp.icmc.labes.rbac.model;
 
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-public class UserConstraint {
+public class Su {
 
 	@XStreamAsAttribute
 	private User user;
 	@XStreamAsAttribute
 	private int staticConstr;
-	@XStreamAsAttribute
-	private int dynamicConstr;
 	
 
-	public UserConstraint(User u, int stat,int dyn){
+	public Su(User u, int stat){
 		user = u;
 		staticConstr = stat;
-		dynamicConstr = dyn;
 	}
 
 
@@ -24,13 +21,13 @@ public class UserConstraint {
 	}
 
 
-	public int getStaticConstr() {
-		return staticConstr;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 
-	public int getDynamicConstr() {
-		return dynamicConstr;
+	public int getStaticConstr() {
+		return staticConstr;
 	}
 
 
@@ -38,10 +35,6 @@ public class UserConstraint {
 		this.staticConstr = staticConstr;
 	}
 
-
-	public void setDynamicConstr(int dynamicConstr) {
-		this.dynamicConstr = dynamicConstr;
-	}
 
 	@Override
 	public int hashCode() {
@@ -58,9 +51,9 @@ public class UserConstraint {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Su))
 			return false;
-		UserConstraint other = (UserConstraint) obj;
+		Su other = (Su) obj;
 		if (user == null) {
 			if (other.user != null)
 				return false;
@@ -69,11 +62,9 @@ public class UserConstraint {
 		return true;
 	}
 
-
 	@Override
 	public String toString() {
-		return "UserConstraint [user=" + user + ", staticConstr="
-				+ staticConstr + ", dynamicConstr=" + dynamicConstr + "]";
+		return "Su [user=" + user + ", staticConstr=" + staticConstr + "]";
 	}
 
 }
