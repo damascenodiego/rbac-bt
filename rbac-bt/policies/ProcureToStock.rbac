@@ -1,8 +1,8 @@
 <RBAC id="1" name="ProcureToStock">
   <Users id="2">
     <user id="3" name="Alice"/>
-    <user id="4" name="Bob"/>
-    <user id="5" name="Carol"/>
+    <user id="4" name="Carol"/>
+    <user id="5" name="Bob"/>
     <user id="6" name="Employee Name"/>
   </Users>
   <Roles id="7">
@@ -29,13 +29,129 @@
     <prms id="27" name="RecPaymentConf"/>
     <prms id="28" name="BlockGoods"/>
   </Permissions>
-  <UserCardinality id="29"/>
-  <RoleCardinality id="30"/>
-  <URAssignments id="31"/>
-  <URActivations id="32"/>
-  <PRAssignments id="33"/>
-  <SSoDConstraints id="34"/>
-  <DSSoDConstraints id="35"/>
-  <ActivationRelations id="36"/>
-  <InheritanceRelations id="37"/>
+  <Su id="29"/>
+  <Du id="30"/>
+  <Sr id="31"/>
+  <Dr id="32"/>
+  <URAssignments id="33">
+    <AS id="34">
+      <user reference="3"/>
+      <role reference="8"/>
+    </AS>
+    <AS id="35">
+      <user reference="3"/>
+      <role reference="9"/>
+    </AS>
+    <AS id="36">
+      <user reference="3"/>
+      <role reference="10"/>
+    </AS>
+    <AS id="37">
+      <user reference="3"/>
+      <role reference="11"/>
+    </AS>
+    <AS id="38">
+      <user reference="3"/>
+      <role reference="12"/>
+    </AS>
+    <AS id="39">
+      <user reference="5"/>
+      <role reference="8"/>
+    </AS>
+    <AS id="40">
+      <user reference="5"/>
+      <role reference="9"/>
+    </AS>
+    <AS id="41">
+      <user reference="5"/>
+      <role reference="10"/>
+    </AS>
+    <AS id="42">
+      <user reference="5"/>
+      <role reference="12"/>
+    </AS>
+    <AS id="43">
+      <user reference="4"/>
+      <role reference="11"/>
+    </AS>
+    <AS id="44">
+      <user reference="4"/>
+      <role reference="12"/>
+    </AS>
+    <AS id="45">
+      <user reference="6"/>
+      <role reference="8"/>
+    </AS>
+    <AS id="46">
+      <user reference="6"/>
+      <role reference="11"/>
+    </AS>
+  </URAssignments>
+  <URActivations id="47"/>
+  <PRAssignments id="48">
+    <PA id="49">
+      <permission reference="14"/>
+      <role reference="8"/>
+    </PA>
+    <PA id="50">
+      <permission reference="15"/>
+      <role reference="9"/>
+    </PA>
+    <PA id="51">
+      <permission reference="16"/>
+      <role reference="9"/>
+    </PA>
+    <PA id="52">
+      <permission reference="17"/>
+      <role reference="10"/>
+    </PA>
+    <PA id="53">
+      <permission reference="18"/>
+      <role reference="10"/>
+    </PA>
+    <PA id="54">
+      <permission reference="19"/>
+      <role reference="10"/>
+    </PA>
+    <PA id="55">
+      <permission reference="20"/>
+      <role reference="10"/>
+    </PA>
+    <PA id="56">
+      <permission reference="21"/>
+      <role reference="10"/>
+    </PA>
+    <PA id="57">
+      <permission reference="22"/>
+      <role reference="10"/>
+    </PA>
+    <PA id="58">
+      <permission reference="23"/>
+      <role reference="11"/>
+    </PA>
+    <PA id="59">
+      <permission reference="24"/>
+      <role reference="11"/>
+    </PA>
+    <PA id="60">
+      <permission reference="25"/>
+      <role reference="11"/>
+    </PA>
+    <PA id="61">
+      <permission reference="26"/>
+      <role reference="12"/>
+    </PA>
+    <PA id="62">
+      <permission reference="27"/>
+      <role reference="12"/>
+    </PA>
+    <PA id="63">
+      <permission reference="28"/>
+      <role reference="12"/>
+    </PA>
+  </PRAssignments>
+  <SSoDConstraints id="64"/>
+  <DSSoDConstraints id="65"/>
+  <ActivationRelations id="66"/>
+  <InheritanceRelations id="67"/>
 </RBAC>

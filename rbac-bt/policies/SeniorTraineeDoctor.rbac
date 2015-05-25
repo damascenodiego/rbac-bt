@@ -8,34 +8,50 @@
     <role id="7" name="TraineeDoctor"/>
   </Roles>
   <Permissions id="8"/>
-  <UserCardinality id="9">
-    <UserCard id="10" staticConstr="2" dynamicConstr="2">
+  <Su id="9">
+    <Su id="10" staticConstr="2">
       <user reference="3"/>
-    </UserCard>
-    <UserCard id="11" staticConstr="1" dynamicConstr="1">
+    </Su>
+    <Su id="11" staticConstr="1">
       <user reference="4"/>
-    </UserCard>
-  </UserCardinality>
-  <RoleCardinality id="12">
-    <RoleCard id="13" staticConstr="1" dynamicConstr="1">
+    </Su>
+  </Su>
+  <Du id="12">
+    <Du id="13" dynamicConstr="2">
+      <user reference="3"/>
+    </Du>
+    <Du id="14" dynamicConstr="1">
+      <user reference="4"/>
+    </Du>
+  </Du>
+  <Sr id="15">
+    <Sr id="16" staticConstr="1">
       <role reference="6"/>
-    </RoleCard>
-    <RoleCard id="14" staticConstr="2" dynamicConstr="2">
+    </Sr>
+    <Sr id="17" staticConstr="2">
       <role reference="7"/>
-    </RoleCard>
-  </RoleCardinality>
-  <URAssignments id="15"/>
-  <URActivations id="16"/>
-  <PRAssignments id="17"/>
-  <SSoDConstraints id="18">
-    <SSoD id="19" ss="1">
-      <sodSet id="20">
+    </Sr>
+  </Sr>
+  <Dr id="18">
+    <Dr id="19" dynamicConstr="1">
+      <role reference="6"/>
+    </Dr>
+    <Dr id="20" dynamicConstr="2">
+      <role reference="7"/>
+    </Dr>
+  </Dr>
+  <URAssignments id="21"/>
+  <URActivations id="22"/>
+  <PRAssignments id="23"/>
+  <SSoDConstraints id="24">
+    <SSoD id="25" ss="1">
+      <sodSet id="26">
         <role reference="6"/>
         <role reference="7"/>
       </sodSet>
     </SSoD>
   </SSoDConstraints>
-  <DSSoDConstraints id="21"/>
-  <ActivationRelations id="22"/>
-  <InheritanceRelations id="23"/>
+  <DSSoDConstraints id="27"/>
+  <ActivationRelations id="28"/>
+  <InheritanceRelations id="29"/>
 </RBAC>

@@ -13,55 +13,98 @@
     <role id="12" name="R4"/>
   </Roles>
   <Permissions id="13"/>
-  <UserCardinality id="14">
-    <UserCard id="15" staticConstr="-1" dynamicConstr="2">
+  <Su id="14"/>
+  <Du id="15">
+    <Du id="16" dynamicConstr="2">
       <user reference="3"/>
-    </UserCard>
-    <UserCard id="16" staticConstr="-1" dynamicConstr="2">
+    </Du>
+    <Du id="17" dynamicConstr="2">
       <user reference="4"/>
-    </UserCard>
-    <UserCard id="17" staticConstr="-1" dynamicConstr="2">
+    </Du>
+    <Du id="18" dynamicConstr="2">
       <user reference="5"/>
-    </UserCard>
-    <UserCard id="18" staticConstr="-1" dynamicConstr="2">
+    </Du>
+    <Du id="19" dynamicConstr="2">
       <user reference="6"/>
-    </UserCard>
-    <UserCard id="19" staticConstr="-1" dynamicConstr="1">
+    </Du>
+    <Du id="20" dynamicConstr="1">
       <user reference="7"/>
-    </UserCard>
-  </UserCardinality>
-  <RoleCardinality id="20">
-    <RoleCard id="21" staticConstr="-1" dynamicConstr="3">
+    </Du>
+  </Du>
+  <Sr id="21"/>
+  <Dr id="22">
+    <Dr id="23" dynamicConstr="3">
       <role reference="9"/>
-    </RoleCard>
-    <RoleCard id="22" staticConstr="-1" dynamicConstr="1">
+    </Dr>
+    <Dr id="24" dynamicConstr="1">
       <role reference="10"/>
-    </RoleCard>
-    <RoleCard id="23" staticConstr="-1" dynamicConstr="3">
+    </Dr>
+    <Dr id="25" dynamicConstr="3">
       <role reference="11"/>
-    </RoleCard>
-    <RoleCard id="24" staticConstr="-1" dynamicConstr="2">
+    </Dr>
+    <Dr id="26" dynamicConstr="2">
       <role reference="12"/>
-    </RoleCard>
-  </RoleCardinality>
-  <URAssignments id="25"/>
-  <URActivations id="26"/>
-  <PRAssignments id="27"/>
-  <SSoDConstraints id="28">
-    <SSoD id="29" ss="1">
-      <sodSet id="30">
+    </Dr>
+  </Dr>
+  <URAssignments id="27">
+    <AS id="28">
+      <user reference="3"/>
+      <role reference="9"/>
+    </AS>
+    <AS id="29">
+      <user reference="4"/>
+      <role reference="9"/>
+    </AS>
+    <AS id="30">
+      <user reference="6"/>
+      <role reference="9"/>
+    </AS>
+    <AS id="31">
+      <user reference="3"/>
+      <role reference="10"/>
+    </AS>
+    <AS id="32">
+      <user reference="4"/>
+      <role reference="10"/>
+    </AS>
+    <AS id="33">
+      <user reference="7"/>
+      <role reference="10"/>
+    </AS>
+    <AS id="34">
+      <user reference="3"/>
+      <role reference="11"/>
+    </AS>
+    <AS id="35">
+      <user reference="4"/>
+      <role reference="11"/>
+    </AS>
+    <AS id="36">
+      <user reference="6"/>
+      <role reference="11"/>
+    </AS>
+    <AS id="37">
+      <user reference="6"/>
+      <role reference="12"/>
+    </AS>
+  </URAssignments>
+  <URActivations id="38"/>
+  <PRAssignments id="39"/>
+  <SSoDConstraints id="40">
+    <SSoD id="41" ss="1">
+      <sodSet id="42">
         <role reference="9"/>
         <role reference="10"/>
       </sodSet>
     </SSoD>
-    <SSoD id="31" ss="1">
-      <sodSet id="32">
+    <SSoD id="43" ss="1">
+      <sodSet id="44">
         <role reference="11"/>
         <role reference="10"/>
       </sodSet>
     </SSoD>
   </SSoDConstraints>
-  <DSSoDConstraints id="33"/>
-  <ActivationRelations id="34"/>
-  <InheritanceRelations id="35"/>
+  <DSSoDConstraints id="45"/>
+  <ActivationRelations id="46"/>
+  <InheritanceRelations id="47"/>
 </RBAC>

@@ -1,27 +1,70 @@
 package test.com.usp.icmc.labes;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.ActivationHierarchy;
 import com.usp.icmc.labes.rbac.model.DSoDConstraint;
+import com.usp.icmc.labes.rbac.model.Dr;
+import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.InheritanceHierarchy;
 import com.usp.icmc.labes.rbac.model.Permission;
-import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
-import com.usp.icmc.labes.rbac.model.RoleConstraint;
 import com.usp.icmc.labes.rbac.model.SSoDConstraint;
+import com.usp.icmc.labes.rbac.model.Sr;
+import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
-import com.usp.icmc.labes.rbac.model.UserConstraint;
-import com.usp.icmc.labes.rbac.model.UserRoleActivation;
-import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
+import com.usp.icmc.labes.utils.FsmUtils;
 import com.usp.icmc.labes.utils.RbacUtils;
+
+
+class RbacUtilsThread extends Thread{
+
+	private RbacPolicy rbacPol;
+	public RbacUtilsThread(RbacPolicy pol) {
+		this.rbacPol = pol;
+	}
+	@Override
+	public void run() {
+		super.run();
+		try {
+			File f = new File("policies/"+rbacPol.getName()+".rbac");
+			System.out.println("WriteRbacPolicyAsXML started: "+ f.getAbsoluteFile());
+			RbacUtils.getInstance().WriteRbacPolicyAsXML(rbacPol, f);
+			System.out.println(">>>>> WriteRbacPolicyAsXML finished"+ f.getAbsoluteFile());
+
+			System.out.println("rbac2fsm started"+ f.getAbsoluteFile());
+			FsmModel fsm = FsmUtils.getInstance().rbac2Fsm(rbacPol);
+			System.out.println(">>>>> rbac2fsm finished"+ f.getAbsoluteFile());
+
+			System.out.println("WriteFsmAsDot started"+ f.getAbsoluteFile());
+			File fsmFile = new File("policies/"+rbacPol.getName()+".dot");
+			FsmUtils.getInstance().WriteFsmAsDot(fsm, fsmFile);
+			System.out.println(">>>>> WriteFsmAsDot finished"+ f.getAbsoluteFile());
+
+			System.out.println("generating fsm png"+ f.getAbsoluteFile());
+			String runDot = "dot -Tpng ./policies/"+rbacPol.getName()+".dot -o ./policies/"+rbacPol.getName()+".png";
+			Process p = Runtime.getRuntime().exec(runDot);
+			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String s;
+			while ((s = br.readLine()) != null) System.out.println("line: " + s);
+			p.waitFor();
+			System.out.println(runDot);
+			System.out.println ("exit: " + p.exitValue());
+			p.destroy();
+			System.out.println(">>>>> fsm png generated"+ f.getAbsoluteFile());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}
 
 public class TestExample {
 
@@ -30,18 +73,30 @@ public class TestExample {
 	private static RbacSupportingSystemFunctions rbacSys = RbacSupportingSystemFunctions.getInstance();
 	private static RbacUtils rbacUtils = RbacUtils.getInstance();
 
-
 	public static void main(String[] args) {
-		try {
-			RbacPolicy rbacPol = create_Masood2009P1();
-			File f = new File("policies/"+rbacPol.getName()+".rbac");
-			RbacUtils.getInstance().WriteRbacPolicyAsXML(rbacPol, f);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
+		policies.add(create_SeniorTraineeDoctor());
+		policies.add(create_ProcureToStock());
+		policies.add(create_Masood2010Example1());
+		policies.add(create_ExperiencePoints());
+		policies.add(create_Masood2009P1());
+		policies.add(create_Masood2009Example1());	
+		policies.add(create_Masood2009P2());
+		policies.add(create_user11roles2());
+		policies.add(create_Mondal2009Example1());
+		policies.add(create_SecureBank());
+		List<Thread> threads = new ArrayList<Thread>();
+		for (RbacPolicy pol : policies) {
+			threads.add(new RbacUtilsThread(pol));
+		}
+
+		for (Thread thread : threads) {
+			thread.start();
 		}
 
 	}
+	
 	private static RbacPolicy create_SeniorTraineeDoctor(){
 		RbacPolicy rbac = new RbacPolicy("SeniorTraineeDoctor");
 
@@ -53,11 +108,16 @@ public class TestExample {
 		rbac.getUser().add(u2);
 
 		//create user cardinality constraints
-		UserConstraint u1Card = new UserConstraint(u1, 2,2);
-		UserConstraint u2Card = new UserConstraint(u2, 1,1);
+		Su su1 = new Su(u1, 2);
+		Du du1 = new Du(u1, 2);
+		Su su2 = new Su(u2, 1);
+		Du du2 = new Du(u2, 1);
+
 		//add to policy
-		rbac.getUserCard().add(u1Card);
-		rbac.getUserCard().add(u2Card);
+		rbac.getSu().add(su1);
+		rbac.getSu().add(su2);
+		rbac.getDu().add(du1);
+		rbac.getDu().add(du2);
 
 		//create role
 		Role r1 = new Role("SeniorDoctor");
@@ -67,11 +127,16 @@ public class TestExample {
 		rbac.getRole().add(r2);
 
 		//create role cardinality constraints
-		RoleConstraint r1Card = new RoleConstraint(r1, 1,1);
-		RoleConstraint r2Card = new RoleConstraint(r2, 2,2);
+		Sr sr1 = new Sr(r1, 1);
+		Dr dr1 = new Dr(r1, 1);
+		Sr sr2 = new Sr(r2, 2);
+		Dr dr2 = new Dr(r2, 2);
+
 		//add to policy
-		rbac.getRoleCard().add(r1Card);
-		rbac.getRoleCard().add(r2Card);
+		rbac.getSr().add(sr1);
+		rbac.getDr().add(dr1);
+		rbac.getSr().add(sr2);
+		rbac.getDr().add(dr2);
 
 		Role [] sodSet = {r1,r2};
 		SSoDConstraint sod = new SSoDConstraint(sodSet, 1);
@@ -80,56 +145,19 @@ public class TestExample {
 
 		return rbac;
 	}
-	private static RbacPolicy create_Masood2010Example1(){
-		RbacPolicy rbac = new RbacPolicy("Masood2010Example1");
-
-		//create users
-		User u1 = new User("u1");
-		User u2 = new User("u2");
-		//add to policy
-		rbac.getUser().add(u1);
-		rbac.getUser().add(u2);
-
-		//create role
-		Role r1 = new Role("r1");
-		//add to policy
-		rbac.getRole().add(r1);
-
-		//create permission
-		Permission p1 = new Permission("p1");
-		Permission p2 = new Permission("p2");
-		//add to policy
-		rbac.getPermission().add(p1);
-		rbac.getPermission().add(p2);
-
-		//create user cardinality constraints
-		UserConstraint u1Card = new UserConstraint(u1, 1,1);
-		UserConstraint u2Card = new UserConstraint(u2, 1,1);
-		//add to policy
-		rbac.getUserCard().add(u1Card);
-		rbac.getUserCard().add(u2Card);
-
-
-		//create role cardinality constraints
-		RoleConstraint r1Card = new RoleConstraint(r1, 2,1);
-		//add to policy
-		rbac.getRoleCard().add(r1Card);
-
-		return rbac;
-	}
 	private static RbacPolicy create_ProcureToStock(){
 		RbacPolicy rbac = new RbacPolicy("ProcureToStock");
 
 		//create users
-		User u1 = new User("Alice");
-		User u2 = new User("Bob");
-		User u3 = new User("Carol");
-		User u4 = new User("Employee Name");
+		User alice = new User("Alice");
+		User bob = new User("Bob");
+		User carol = new User("Carol");
+		User employee = new User("Employee Name");
 		//add to policy
-		rbac.getUser().add(u1);
-		rbac.getUser().add(u2);
-		rbac.getUser().add(u3);
-		rbac.getUser().add(u4);
+		rbac.getUser().add(alice);
+		rbac.getUser().add(carol);
+		rbac.getUser().add(bob);
+		rbac.getUser().add(employee);
 
 		//create role
 		Role r1 = new Role("Role1");
@@ -178,17 +206,103 @@ public class TestExample {
 		rbac.getPermission().add(p14);
 		rbac.getPermission().add(p15);
 
+		rbacAdmin.assignUser(rbac, alice, r1);
+		rbacAdmin.assignUser(rbac, alice, r2);
+		rbacAdmin.assignUser(rbac, alice, r3);
+		rbacAdmin.assignUser(rbac, alice, r4);
+		rbacAdmin.assignUser(rbac, alice, r5);
+
+		rbacAdmin.assignUser(rbac, bob, r1);
+		rbacAdmin.assignUser(rbac, bob, r2);
+		rbacAdmin.assignUser(rbac, bob, r3);
+		rbacAdmin.assignUser(rbac, bob, r5);
+
+		rbacAdmin.assignUser(rbac, carol, r4);
+		rbacAdmin.assignUser(rbac, carol, r5);
+
+		rbacAdmin.assignUser(rbac, employee, r1);
+		rbacAdmin.assignUser(rbac, employee, r4);
+
+		rbacAdmin.grantPermission(rbac, p1, r1);
+
+		rbacAdmin.grantPermission(rbac, p2, r2);
+		rbacAdmin.grantPermission(rbac, p3, r2);
+
+		rbacAdmin.grantPermission(rbac, p4, r3);
+		rbacAdmin.grantPermission(rbac, p5, r3);
+		rbacAdmin.grantPermission(rbac, p6, r3);
+		rbacAdmin.grantPermission(rbac, p7, r3);
+		rbacAdmin.grantPermission(rbac, p8, r3);
+		rbacAdmin.grantPermission(rbac, p9, r3);
+
+		rbacAdmin.grantPermission(rbac, p10, r4);
+		rbacAdmin.grantPermission(rbac, p11, r4);
+		rbacAdmin.grantPermission(rbac, p12, r4);
+
+		rbacAdmin.grantPermission(rbac, p13, r5);
+		rbacAdmin.grantPermission(rbac, p14, r5);
+		rbacAdmin.grantPermission(rbac, p15, r5);
+
+		return rbac;
+	}
+	private static RbacPolicy create_Masood2010Example1(){
+		RbacPolicy rbac = new RbacPolicy("Masood2010Example1");
+
+		//create users
+		User u1 = new User("u1");
+		User u2 = new User("u2");
+		//add to policy
+		rbac.getUser().add(u1);
+		rbac.getUser().add(u2);
+
+		//create role
+		Role r1 = new Role("r1");
+		//add to policy
+		rbac.getRole().add(r1);
+
+		//create permission
+		Permission p1 = new Permission("p1");
+		Permission p2 = new Permission("p2");
+		//add to policy
+		rbac.getPermission().add(p1);
+		rbac.getPermission().add(p2);
+
+		//create user cardinality constraints
+		Su su1 = new Su(u1, 1);
+		Du du1 = new Du(u1, 1);
+		Su su2 = new Su(u2, 1);
+		Du du2 = new Du(u2, 1);
+		//add to policy
+		rbac.getSu().add(su1);
+		rbac.getSu().add(su2);
+		rbac.getDu().add(du1);
+		rbac.getDu().add(du2);
+
+		//create role cardinality constraints
+		Sr sr1 = new Sr(r1, 2);
+		Dr dr1 = new Dr(r1, 1);
+		//add to policy
+		rbac.getSr().add(sr1);
+		rbac.getDr().add(dr1);
+
+
+		rbacAdmin.assignUser(rbac, u1,r1);
+		rbacAdmin.assignUser(rbac, u2,r1);
+
+		rbacAdmin.grantPermission(rbac, p1,r1);
+		rbacAdmin.grantPermission(rbac, p2,r1);
+
 		return rbac;
 	}
 	private static RbacPolicy create_ExperiencePoints(){
 		RbacPolicy rbac = new RbacPolicy("ExperiencePoints");
 
 		//create users
-		//		User u1 = new User("u1");
-		//		User u2 = new User("u2");
+		User u1 = new User("u1");
+		User u2 = new User("u2");
 		//		//add to policy
-		//		rbac.getUser().add(u1);
-		//		rbac.getUser().add(u2);
+		rbac.getUser().add(u1);
+		rbac.getUser().add(u2);
 
 		//create role
 		Role admin = new Role("Admin");
@@ -212,65 +326,27 @@ public class TestExample {
 		rbac.getPermission().add(p3);
 		rbac.getPermission().add(p4);
 
-		return rbac;
-	}
-	private static RbacPolicy create_Masood2009Example1(){
-		RbacPolicy rbac = new RbacPolicy("Masood2009Example1");
+		rbacAdmin.grantPermission(rbac, p1, admin);
+		rbacAdmin.grantPermission(rbac, p2, admin);
+		rbacAdmin.grantPermission(rbac, p3, admin);
+		rbacAdmin.grantPermission(rbac, p4, admin);
 
-		//create users
-		User u1 = new User("John");
-		User u2 = new User("Mary");
+		rbacAdmin.grantPermission(rbac, p1, bronze);
+		rbacAdmin.grantPermission(rbac, p2, bronze);
+		rbacAdmin.grantPermission(rbac, p3, bronze);
 
-		//add users to policy
-		//first add OK
-		assertTrue(rbacAdmin .addUser(rbac,u1));
+		rbacAdmin.grantPermission(rbac, p1, silver);
+		rbacAdmin.grantPermission(rbac, p2, silver);
+		rbacAdmin.grantPermission(rbac, p3, silver);
+		rbacAdmin.grantPermission(rbac, p4, silver);
 
-		//first add OK
-		assertTrue(rbacAdmin.addUser(rbac,u2));
-
-		//create user cardinality constraints
-		UserConstraint u1Card = new UserConstraint(u1, 1,1);
-		UserConstraint u2Card = new UserConstraint(u2, 1,1);
-
-		//add user constraints to policy
-		assertTrue(rbacAdmin .addUserConstraint(rbac,u1Card));
-		assertTrue(rbacAdmin .addUserConstraint(rbac,u2Card));
-
-		//create role
-		Role r1 = new Role("Customer");
-
-		//add role to policy
-		//first add ok
-		assertTrue(rbacAdmin.addRole(rbac,r1));
-
-		//create role cardinality constraints
-		RoleConstraint r1Card = new RoleConstraint(r1, 2,1);
-
-		//add role constraints to policy
-		assertTrue(rbacAdmin .addRoleConstraint(rbac,r1Card));
-
-
-		//create permissions
-		Permission p1 = new Permission("Deposit");
-		Permission p2= new Permission("Withdraw");
-		//add permissions
-		//first add ok
-		assertTrue(rbacAdmin.addPermission(rbac,p1));
-		assertTrue(rbacAdmin.addPermission(rbac,p2));
-
-		//create UR relationships
-		//first ok
-		assertTrue(rbacAdmin.assignUser(rbac, u1,r1));
-		assertTrue(rbacAdmin.assignUser(rbac, u2,r1));
-
-		//create PR relationships
-		//first ok
-		assertTrue(rbacAdmin.grantPermission(rbac, p1,r1));
-		assertTrue(rbacAdmin.grantPermission(rbac, p2,r1));
+		rbacAdmin.grantPermission(rbac, p1, gold);
+		rbacAdmin.grantPermission(rbac, p2, gold);
+		rbacAdmin.grantPermission(rbac, p3, gold);
+		rbacAdmin.grantPermission(rbac, p4, gold);
 
 		return rbac;
 	}
-
 	private static RbacPolicy create_Masood2009P1(){
 		RbacPolicy rbac = new RbacPolicy("Masood2009P1");
 
@@ -288,14 +364,13 @@ public class TestExample {
 		rbacAdmin .addUser(rbac,u4);
 		rbacAdmin .addUser(rbac,u5);
 
-		
-		rbacAdmin .addUserConstraint(rbac,new UserConstraint(u1, -1,2));
-		rbacAdmin .addUserConstraint(rbac,new UserConstraint(u2, -1,2));
-		rbacAdmin .addUserConstraint(rbac,new UserConstraint(u3, -1,2));
-		rbacAdmin .addUserConstraint(rbac,new UserConstraint(u4, -1,2));
-		rbacAdmin .addUserConstraint(rbac,new UserConstraint(u5, -1,1));
 
-		
+		rbacAdmin .addDu(rbac,new Du(u1, 2));
+		rbacAdmin .addDu(rbac,new Du(u2, 2));
+		rbacAdmin .addDu(rbac,new Du(u3, 2));
+		rbacAdmin .addDu(rbac,new Du(u4, 2));
+		rbacAdmin .addDu(rbac,new Du(u5, 1));
+
 		//create role
 		Role r1 = new Role("R1");
 		Role r2 = new Role("R2");
@@ -309,16 +384,262 @@ public class TestExample {
 		rbacAdmin.addRole(rbac,r4);
 
 		//add role constraints to policy
-		rbacAdmin .addRoleConstraint(rbac,new RoleConstraint(r1, -1,3));
-		rbacAdmin .addRoleConstraint(rbac,new RoleConstraint(r2, -1,1));
-		rbacAdmin .addRoleConstraint(rbac,new RoleConstraint(r3, -1,3));
-		rbacAdmin .addRoleConstraint(rbac,new RoleConstraint(r4, -1,2));
+		rbacAdmin .addDr(rbac,new Dr(r1, 3));
+		rbacAdmin .addDr(rbac,new Dr(r2, 1));
+		rbacAdmin .addDr(rbac,new Dr(r3, 3));
+		rbacAdmin .addDr(rbac,new Dr(r4, 2));
 
 		Role[] ssodSet = {r1,r2};
 		rbac.getSsodConstraint().add(new SSoDConstraint(ssodSet, 1));
 		Role[] dsodSet = {r2,r3};
 		rbac.getSsodConstraint().add(new SSoDConstraint(dsodSet, 1));
+
+		rbacAdmin.assignUser(rbac, u1, r1);
+		rbacAdmin.assignUser(rbac, u2, r1);
+		rbacAdmin.assignUser(rbac, u4, r1);
+
+		rbacAdmin.assignUser(rbac, u1, r2);
+		rbacAdmin.assignUser(rbac, u2, r2);
+		rbacAdmin.assignUser(rbac, u5, r2);
+
+		rbacAdmin.assignUser(rbac, u1, r3);
+		rbacAdmin.assignUser(rbac, u2, r3);
+		rbacAdmin.assignUser(rbac, u4, r3);
+
+		rbacAdmin.assignUser(rbac, u4, r4);
+
+		return rbac;
+	}
+	private static RbacPolicy create_Masood2009Example1(){
+		RbacPolicy rbac = new RbacPolicy("Masood2009Example1");
+
+		//create users
+		User u1 = new User("John");
+		User u2 = new User("Mary");
+
+		//add users to policy
+		rbacAdmin .addUser(rbac,u1);
+		rbacAdmin .addUser(rbac,u2);
+
+
+		rbacAdmin .addSu(rbac,new Su(u1, 1));
+		rbacAdmin .addDu(rbac,new Du(u1, 1));
+
+		rbacAdmin .addSu(rbac,new Su(u2, 1));
+		rbacAdmin .addDu(rbac,new Du(u2, 1));
+
+		//create role
+		Role r1 = new Role("Customer");
+
+		//add role to policy
+		rbacAdmin.addRole(rbac,r1);
+
+		//add role constraints to policy
+		rbacAdmin .addSr(rbac,new Sr(r1, 2));
+		rbacAdmin .addDr(rbac,new Dr(r1, 1));
+
+		rbacAdmin.assignUser(rbac, u1, r1);
+		rbacAdmin.assignUser(rbac, u2, r1);
+
+		Permission p1 = new Permission("Deposit");
+		Permission p2 = new Permission("Withdraw");
+		rbacAdmin .addPermission(rbac, p1);
+		rbacAdmin .addPermission(rbac, p2);
+
+		rbacAdmin .grantPermission(rbac, p1, r1);
+		rbacAdmin .grantPermission(rbac, p2, r1);
+
+		return rbac;
+	}
+	private static RbacPolicy create_Masood2009P2(){
+		RbacPolicy rbac = new RbacPolicy("Masood2009P2");
+
+		//create users
+		User u1 = new User("U1");
+		User u2 = new User("U2");
+
+		//add users to policy
+		rbacAdmin .addUser(rbac,u1);
+		rbacAdmin .addUser(rbac,u2);
+
+
+		rbacAdmin .addDu(rbac,new Du(u1, 2));
+		rbacAdmin .addDu(rbac,new Du(u2, 2));
+
+		//create role
+		Role r1 = new Role("R1");
+		Role r2 = new Role("R2");
+		Role r3 = new Role("R3");
+		Role r4 = new Role("R4");
+		Role r5 = new Role("R5");
+		Role r6 = new Role("R6");
+
+		//add role to policy
+		rbacAdmin.addRole(rbac,r1);
+		rbacAdmin.addRole(rbac,r2);
+		rbacAdmin.addRole(rbac,r3);
+		rbacAdmin.addRole(rbac,r4);
+		rbacAdmin.addRole(rbac,r5);
+		rbacAdmin.addRole(rbac,r6);
+
+		//add role constraints to policy
+		rbacAdmin .addDr(rbac,new Dr(r1, 1));
+		rbacAdmin .addDr(rbac,new Dr(r2, 1));
+		rbacAdmin .addDr(rbac,new Dr(r3, 1));
+		rbacAdmin .addDr(rbac,new Dr(r4, 1));
+		rbacAdmin .addDr(rbac,new Dr(r5, 1));
+		rbacAdmin .addDr(rbac,new Dr(r6, 1));
+
+		Role[] ssodSet = {r1,r2};
+		rbac.getSsodConstraint().add(new SSoDConstraint(ssodSet, 1));
+		Role[] dsodSet = {r2,r3};
+		rbac.getSsodConstraint().add(new SSoDConstraint(dsodSet, 1));
+
+		rbacAdmin.assignUser(rbac, u1, r1);
+
+		Role[] roles ={r2,r3,r4,r5,r6};
+		for (Role r : roles) {
+			rbacAdmin.assignUser(rbac, u1, r);
+			rbacAdmin.assignUser(rbac, u2, r);
+		}
+
+		Role[] s1 = {r1,r2,r3};
+		Role[] s2 = {r4,r5};
+		Role[] d1 = {r1,r2};
+		Role[] d2 = {r2,r3,r4};
+
+		rbac.getSsodConstraint().add(new SSoDConstraint(s1, 2));
+		rbac.getSsodConstraint().add(new SSoDConstraint(s2, 1));
+		rbac.getDsodConstraint().add(new DSoDConstraint(d1, 1));
+		rbac.getDsodConstraint().add(new DSoDConstraint(d2, 2));
+
+		return rbac;
+	}
+	private static RbacPolicy create_user11roles2(){
+		RbacPolicy rbac = new RbacPolicy("user11roles2");
+	
+		//create users
+		for (int i = 0; i <= 11; i++) {
+			rbacAdmin .addUser(rbac,new User("U"+i));			
+		}
+	
+		//create role
+		for (int i = 0; i <= 2; i++) {
+			rbacAdmin .addRole(rbac,new Role("R"+i));			
+		}
+
+		for (int i = 0; i <= 4; i++) {
+			rbacAdmin .addPermission(rbac,new Permission("P"+i));			
+		}
+
+		
+		return rbac;
+	}
+	private static RbacPolicy create_Mondal2009Example1(){
+		RbacPolicy rbac = new RbacPolicy("Mondal2009Example1");
+	
+		//create users
+		for (int i = 0; i <= 16; i++) {
+			rbacAdmin .addUser(rbac,new User("U"+i));			
+		}
+	
+		//create role
+		for (int i = 0; i <= 4; i++) {
+			rbacAdmin .addRole(rbac,new Role("R"+i));			
+		}
+	
+		for (int i = 1; i <= 4; i++) {
+			rbacAdmin .addPermission(rbac,new Permission("P"+i));			
+		}
+	
+		rbacAdmin.assignUser(rbac, rbac.getUser().get(6), rbac.getRole().get(0));
+		rbacAdmin.assignUser(rbac, rbac.getUser().get(6), rbac.getRole().get(1));
+		
+		rbac.getActivationHierarchy().add(new ActivationHierarchy(rbac.getRole().get(1), rbac.getRole().get(4)));
+		rbac.getInheritanceHierarchy().add(new InheritanceHierarchy(rbac.getRole().get(1), rbac.getRole().get(4)));
+		rbac.getInheritanceHierarchy().add(new InheritanceHierarchy(rbac.getRole().get(0), rbac.getRole().get(2)));
+		
+		Role[] d1 = {rbac.getRole().get(1),rbac.getRole().get(3)};
+		rbac.getDsodConstraint().add(new DSoDConstraint(d1, 1));
+		
+		return rbac;
+	}
+	private static RbacPolicy create_SecureBank(){
+		RbacPolicy rbac = new RbacPolicy("SecureBank");
+
+		//create users
+		User dave = new User("Dave");
+		User sarah = new User("Sarah");
+		User john = new User("John");
+		User mark = new User("Mark");
+
+		//add users to policy
+		rbacAdmin .addUser(rbac,dave);
+		rbacAdmin .addUser(rbac,sarah);
+		rbacAdmin .addUser(rbac,john);
+		rbacAdmin .addUser(rbac,mark);
+
+		//create role
+		Role r1 = new Role("Teller");
+		Role r2 = new Role("LoanOfficer");
+		Role r3 = new Role("DayTime System Operator (DSO)");
+		Role r4 = new Role("NightTime System Operator (NSO)");
+		Role r5 = new Role("System Operator Manager (SOM)");
+
+		//add role to policy
+		rbacAdmin.addRole(rbac,r1);
+		rbacAdmin.addRole(rbac,r2);
+		rbacAdmin.addRole(rbac,r3);
+		rbacAdmin.addRole(rbac,r4);
+		rbacAdmin.addRole(rbac,r5);
+
+		Role[] dsodSet = {r1,r2};
+		rbac.getSsodConstraint().add(new SSoDConstraint(dsodSet, 1));
+
+		rbacAdmin.assignUser(rbac, dave,  r1);
+		rbacAdmin.assignUser(rbac, sarah, r2);
+		rbacAdmin.assignUser(rbac, john,  r3);
+		rbacAdmin.assignUser(rbac, john,  r4);
+		rbacAdmin.assignUser(rbac, mark,  r5);
+
+		Permission wrtf = new Permission("WRTF: Read and Write Teller Files");
+		Permission wrlf = new Permission("WRLF: Read and Write Loan Files");
+		Permission wrsof = new Permission("WRSOF: Read and Write System Operator Files");
+		
+		rbacAdmin.grantPermission(rbac, wrtf, r1);
+		rbacAdmin.grantPermission(rbac, wrlf, r2);
+		rbacAdmin.grantPermission(rbac, wrsof, r3);
+		rbacAdmin.grantPermission(rbac, wrsof, r4);
+		
+		
+		
+		rbac.getInheritanceHierarchy().add(new InheritanceHierarchy(r5, r4));
+		rbac.getInheritanceHierarchy().add(new InheritanceHierarchy(r5, r3));
+		rbac.getInheritanceHierarchy().add(new InheritanceHierarchy(r5, r2));
+		rbac.getInheritanceHierarchy().add(new InheritanceHierarchy(r5, r1));
+		
+		Role[] d1 ={r1,r2};
+		rbac.getDsodConstraint().add(new DSoDConstraint(d1, 1));
+//		Role[] d2 ={r3,r3};
+//		rbac.getDsodConstraint().add(new DSoDConstraint(d2, 1));
 		
 		return rbac;
 	}
 }
+
+
+
+// remove later
+//		ActivationHierarchy ah = new ActivationHierarchy(r1, r2);
+//		InheritanceHierarchy ih = new InheritanceHierarchy(r3, r4);
+//		rbac.getActivationHierarchy().add(ah);
+//		rbac.getInheritanceHierarchy().add(ih);
+//		rbacAdmin .addSr(rbac,new Sr(r4, 1));
+//		rbacAdmin .addSu(rbac,new Su(u4, 1));
+//
+//		rbacAdmin .assignUser(rbac, u1, r1);
+//		Permission p1 = new Permission("XXX");
+//		rbacAdmin .addPermission(rbac, p1);
+//		rbacSys. addActiveRole(rbac, u1,r1);
+//		rbacAdmin .grantPermission(rbac, p1, r1);
+
