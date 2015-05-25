@@ -1,0 +1,41 @@
+<RBAC id="1" name="SeniorTraineeDoctor">
+  <Users id="2">
+    <user id="3" name="Bob"/>
+    <user id="4" name="Alice"/>
+  </Users>
+  <Roles id="5">
+    <role id="6" name="SeniorDoctor"/>
+    <role id="7" name="TraineeDoctor"/>
+  </Roles>
+  <Permissions id="8"/>
+  <UserCardinality id="9">
+    <UserCard id="10" staticConstr="2" dynamicConstr="2">
+      <user reference="3"/>
+    </UserCard>
+    <UserCard id="11" staticConstr="1" dynamicConstr="1">
+      <user reference="4"/>
+    </UserCard>
+  </UserCardinality>
+  <RoleCardinality id="12">
+    <RoleCard id="13" staticConstr="1" dynamicConstr="1">
+      <role reference="6"/>
+    </RoleCard>
+    <RoleCard id="14" staticConstr="2" dynamicConstr="2">
+      <role reference="7"/>
+    </RoleCard>
+  </RoleCardinality>
+  <URAssignments id="15"/>
+  <URActivations id="16"/>
+  <PRAssignments id="17"/>
+  <SSoDConstraints id="18">
+    <SSoD id="19" ss="1">
+      <sodSet id="20">
+        <role reference="6"/>
+        <role reference="7"/>
+      </sodSet>
+    </SSoD>
+  </SSoDConstraints>
+  <DSSoDConstraints id="21"/>
+  <ActivationRelations id="22"/>
+  <InheritanceRelations id="23"/>
+</RBAC>

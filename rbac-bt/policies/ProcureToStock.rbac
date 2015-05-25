@@ -1,0 +1,41 @@
+<RBAC id="1" name="ProcureToStock">
+  <Users id="2">
+    <user id="3" name="Alice"/>
+    <user id="4" name="Bob"/>
+    <user id="5" name="Carol"/>
+    <user id="6" name="Employee Name"/>
+  </Users>
+  <Roles id="7">
+    <role id="8" name="Role1"/>
+    <role id="9" name="Role2"/>
+    <role id="10" name="Role3"/>
+    <role id="11" name="Role4"/>
+    <role id="12" name="Role5"/>
+  </Roles>
+  <Permissions id="13">
+    <prms id="14" name="CreatePR"/>
+    <prms id="15" name="ConfirmPR"/>
+    <prms id="16" name="CancelPR"/>
+    <prms id="17" name="!ReqPrice"/>
+    <prms id="18" name="!ReqExpert"/>
+    <prms id="19" name="?BestPrice"/>
+    <prms id="20" name="?BestExpert"/>
+    <prms id="21" name="?NoSupplier"/>
+    <prms id="22" name="SendPO"/>
+    <prms id="23" name="RecInvoice"/>
+    <prms id="24" name="RecCreditNote"/>
+    <prms id="25" name="NoCreditNoteRec"/>
+    <prms id="26" name="PaymentProcess"/>
+    <prms id="27" name="RecPaymentConf"/>
+    <prms id="28" name="BlockGoods"/>
+  </Permissions>
+  <UserCardinality id="29"/>
+  <RoleCardinality id="30"/>
+  <URAssignments id="31"/>
+  <URActivations id="32"/>
+  <PRAssignments id="33"/>
+  <SSoDConstraints id="34"/>
+  <DSSoDConstraints id="35"/>
+  <ActivationRelations id="36"/>
+  <InheritanceRelations id="37"/>
+</RBAC>

@@ -1,0 +1,67 @@
+<RBAC id="1" name="Masood2009P1">
+  <Users id="2">
+    <user id="3" name="U1"/>
+    <user id="4" name="U2"/>
+    <user id="5" name="U3"/>
+    <user id="6" name="U4"/>
+    <user id="7" name="U5"/>
+  </Users>
+  <Roles id="8">
+    <role id="9" name="R1"/>
+    <role id="10" name="R2"/>
+    <role id="11" name="R3"/>
+    <role id="12" name="R4"/>
+  </Roles>
+  <Permissions id="13"/>
+  <UserCardinality id="14">
+    <UserCard id="15" staticConstr="-1" dynamicConstr="2">
+      <user reference="3"/>
+    </UserCard>
+    <UserCard id="16" staticConstr="-1" dynamicConstr="2">
+      <user reference="4"/>
+    </UserCard>
+    <UserCard id="17" staticConstr="-1" dynamicConstr="2">
+      <user reference="5"/>
+    </UserCard>
+    <UserCard id="18" staticConstr="-1" dynamicConstr="2">
+      <user reference="6"/>
+    </UserCard>
+    <UserCard id="19" staticConstr="-1" dynamicConstr="1">
+      <user reference="7"/>
+    </UserCard>
+  </UserCardinality>
+  <RoleCardinality id="20">
+    <RoleCard id="21" staticConstr="-1" dynamicConstr="3">
+      <role reference="9"/>
+    </RoleCard>
+    <RoleCard id="22" staticConstr="-1" dynamicConstr="1">
+      <role reference="10"/>
+    </RoleCard>
+    <RoleCard id="23" staticConstr="-1" dynamicConstr="3">
+      <role reference="11"/>
+    </RoleCard>
+    <RoleCard id="24" staticConstr="-1" dynamicConstr="2">
+      <role reference="12"/>
+    </RoleCard>
+  </RoleCardinality>
+  <URAssignments id="25"/>
+  <URActivations id="26"/>
+  <PRAssignments id="27"/>
+  <SSoDConstraints id="28">
+    <SSoD id="29" ss="1">
+      <sodSet id="30">
+        <role reference="9"/>
+        <role reference="10"/>
+      </sodSet>
+    </SSoD>
+    <SSoD id="31" ss="1">
+      <sodSet id="32">
+        <role reference="11"/>
+        <role reference="10"/>
+      </sodSet>
+    </SSoD>
+  </SSoDConstraints>
+  <DSSoDConstraints id="33"/>
+  <ActivationRelations id="34"/>
+  <InheritanceRelations id="35"/>
+</RBAC>
