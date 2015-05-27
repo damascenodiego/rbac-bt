@@ -282,6 +282,16 @@ public class RbacUtils {
 		}
 		return result;
 	}
+	
+	public Set<Role> getRolesActivatedByUser(RbacPolicy pol, User usr){
+		Set<Role> result = new HashSet<Role>();
+		List<UserRoleActivation> userRoleActivation = pol.getUserRoleActivation();
+		for (UserRoleActivation ur : userRoleActivation) {
+			if(ur.getUser().equals(usr))
+				result.add(ur.getRole());
+		}
+		return result;
+	}
 
 	//	boolean assignUser(RbacPolicy pol, User usr, Role rol){
 	//		boolean userExists = userExists(pol, usr);

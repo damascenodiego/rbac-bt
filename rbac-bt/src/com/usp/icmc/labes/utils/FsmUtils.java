@@ -92,10 +92,10 @@ public class FsmUtils {
 		for (FsmTransition tr : transit) {
 			if(tr.getOutput().equals("deny")) continue;
 			pw.println(tr.getFrom().getName()
-						+" -- "
-						+tr.getInput()+"/"+tr.getOutput()
-						+" -> "
-						+tr.getTo().getName());
+					+" -- "
+					+tr.getInput()+"/"+tr.getOutput()
+					+" -> "
+					+tr.getTo().getName());
 		}
 		pw.println("}");
 		pw.close();
@@ -110,14 +110,14 @@ public class FsmUtils {
 			if(tr.getOutput().equals("deny")) continue;
 			pw.println(
 					"\""+tr.getFrom().getName()+"\","
-					+"\""+tr.getInput()+"\","
-					+"\""+tr.getOutput()+"\","
-					+"\""+tr.getTo().getName()+"\",");
+							+"\""+tr.getInput()+"\","
+							+"\""+tr.getOutput()+"\","
+							+"\""+tr.getTo().getName()+"\",");
 		}
 		pw.println("}");
 		pw.close();
 	}
-	
+
 	public FsmModel rbac2Fsm(RbacPolicy rbac) {
 		rbac.getUserRoleAssignment().clear();
 		List<RbacRequest> input = new ArrayList<RbacRequest>();
@@ -128,10 +128,10 @@ public class FsmUtils {
 				input.add(new RbacRequestActivateUR(usr, rol));
 				input.add(new RbacRequestDeactivateUR(usr, rol));
 			}
-//			for (Permission prms: rbac.getPermission()) {
-//				input.add(new RbacRequestAssignPR(prms, rol));
-//				input.add(new RbacRequestDeassignPR(prms, rol));
-//			}
+			//			for (Permission prms: rbac.getPermission()) {
+			//				input.add(new RbacRequestAssignPR(prms, rol));
+			//				input.add(new RbacRequestDeassignPR(prms, rol));
+			//			}
 		}
 
 		RbacAcut acut = new RbacAcut(rbac);
@@ -164,5 +164,70 @@ public class FsmUtils {
 			}
 		}
 		return rbac2fsm;
+	}
+
+	public FsmModel rbac2FsmConcurrent(RbacPolicy rbac) {
+		rbac.getUserRoleAssignment().clear();
+		List<RbacRequest> input = new ArrayList<RbacRequest>();
+		for (Role rol: rbac.getRole()) {
+			for (User usr: rbac.getUser()) {
+				input.add(new RbacRequestAssignUR(usr, rol));
+				input.add(new RbacRequestDeassignUR(usr, rol));
+				input.add(new RbacRequestActivateUR(usr, rol));
+				input.add(new RbacRequestDeactivateUR(usr, rol));
+			}
+			//			for (Permission prms: rbac.getPermission()) {
+			//				input.add(new RbacRequestAssignPR(prms, rol));
+			//				input.add(new RbacRequestDeassignPR(prms, rol));
+			//			}
+		}
+
+		RbacAcut acut = new RbacAcut(rbac);
+
+		RbacState 	origin 			= null;
+		boolean 	out 			= false;
+		RbacState	 destination 	= null;
+
+		FsmModel rbac2fsm = new FsmModel(rbac.getName());
+
+		Queue<RbacState> toVisit = new LinkedList<RbacState>();
+		toVisit.add(acut.getCurrentState());
+
+		List<RbacState> visited = new ArrayList<RbacState>();
+
+		while (!toVisit.isEmpty()) {
+			origin = toVisit.remove();
+			acut.reset(origin);
+			if(!visited.contains(origin)){
+				visited.add(origin);
+				rbac2fsm.addState(new FsmState(origin.getName()));
+				for (RbacRequest in : input) {
+					out = acut.request(in);
+					destination = acut.getCurrentState();
+					rbac2fsm.addTransition(new FsmTransition(new FsmState(origin.getName()), new FsmState(destination.getName()), in.toString(), (out? "grant" : "deny")));
+					if(!visited.contains(destination)) 
+						toVisit.add(destination);
+					acut.reset(origin);
+				}
+			}
+		}
+		return rbac2fsm;
+	}
+}
+
+class ConcurrentVisitRbacState extends Thread{
+
+	RbacState state;
+	
+	
+	
+	
+	public ConcurrentVisitRbacState(RbacState s) {
+		this.state = s;
+	}
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		super.run();
 	}
 }

@@ -1,5 +1,6 @@
 package com.usp.icmc.labes.fsm;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FsmState extends FsmElement {
@@ -21,6 +22,8 @@ public class FsmState extends FsmElement {
 	}
 	public FsmState(String n) {
 		super(n);
+		in  = new ArrayList<FsmTransition>();
+		out = new ArrayList<FsmTransition>();
 		type = StateType.SIMPLE_STATE;
 	}
 	

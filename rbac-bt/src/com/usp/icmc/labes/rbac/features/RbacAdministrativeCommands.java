@@ -1,11 +1,19 @@
 package com.usp.icmc.labes.rbac.features;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.usp.icmc.labes.rbac.model.Dr;
 import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.SSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Sr;
 import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
@@ -91,16 +99,30 @@ public class RbacAdministrativeCommands {
 		boolean userExists 			= utils.userExists(policy, user);
 		boolean roleExists 			= utils.roleExists(policy,role); 
 
-		UserRoleAssignment ur 		= utils.getUserRoleAssignment(policy, user, role);
-		boolean userRoleAssigned 	= (ur!=null);
-
+		Set<Role> rolesAssigned = utils.getRolesAssignedToUser(policy, user);
+		boolean userRoleAssigned 	= rolesAssigned.contains(role);
+		
+		rolesAssigned.add(role);
+		
 		boolean nextSuIsValid 		= utils.afterAssignSuIsValid(policy, user);
 		boolean nextSrIsValid 		= utils.afterAssignSrIsValid(policy, role);
 
+		Map<SSoDConstraint, Set<Role> > totalRolesAssigned = new HashMap<SSoDConstraint, Set<Role> > ();
+		boolean ssdValid = true;
+		for (SSoDConstraint ssd : policy.getSsodConstraint()) {
+			Set<Role> as = new HashSet<Role>();
+			for (Role r : ssd.getSodSet()) {
+				if(rolesAssigned.contains(r)) as.add(r);
+			}
+			totalRolesAssigned.put(ssd, as);
+			if(ssd.getCardinality()<as.size()) ssdValid = false;
+		}
+		
 		if(		userExists &&
 				roleExists &&
 				nextSuIsValid &&
 				nextSrIsValid &&
+				ssdValid &&
 				!userRoleAssigned
 				){
 			policy.getUserRoleAssignment().add(new UserRoleAssignment(user,role));

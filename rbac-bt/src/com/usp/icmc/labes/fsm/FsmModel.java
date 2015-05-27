@@ -15,20 +15,20 @@ public class FsmModel {
 		name = n;
 	}
 
-	public List<FsmState> getStates() {
+	public synchronized List<FsmState> getStates() {
 		return this.states;
 	}
 
-	public List<FsmTransition> getTransitions() {
+	public synchronized List<FsmTransition> getTransitions() {
 		return this.transitions;
 	}
 
-	public void addState(FsmState el){
+	public synchronized void addState(FsmState el){
 		if(!this.states.contains(el))
 			this.states.add(el);
 	}
 
-	public void addTransition(FsmTransition el){
+	public synchronized void addTransition(FsmTransition el){
 		if(!states.contains(el.getFrom())) 
 			states.add(el.getFrom());
 		
@@ -39,12 +39,12 @@ public class FsmModel {
 			this.transitions.add(el);
 	}
 
-	public String getName() {
+	public synchronized String getName() {
 		return name;
 	}
 
 	@Override
-	public int hashCode() {
+	public synchronized int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((states == null) ? 0 : states.hashCode());
@@ -54,7 +54,7 @@ public class FsmModel {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public synchronized boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
