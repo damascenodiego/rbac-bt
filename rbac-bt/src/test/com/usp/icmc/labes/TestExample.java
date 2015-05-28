@@ -44,22 +44,27 @@ class RbacUtilsThread extends Thread{
 			FsmModel fsm = FsmUtils.getInstance().rbac2Fsm(rbacPol);
 			System.out.println(">>>>> rbac2fsm finished"+ f.getAbsoluteFile());
 
+			System.out.println("WriteFsm  started"+ f.getAbsoluteFile());
+			File fsmFile = new File("policies/"+rbacPol.getName()+".fsm");
+			FsmUtils.getInstance().WriteFsm(fsm, fsmFile);
+			System.out.println(">>>>> WriteFsm finished"+ f.getAbsoluteFile());
+			
 			System.out.println("WriteFsmAsDot started"+ f.getAbsoluteFile());
-			File fsmFile = new File("policies/"+rbacPol.getName()+".dot");
-			FsmUtils.getInstance().WriteFsmAsDot(fsm, fsmFile);
+			File fsmFileFormat = new File("policies/"+rbacPol.getName()+".dot");
+			FsmUtils.getInstance().WriteFsmAsDot(fsm, fsmFileFormat);
 			System.out.println(">>>>> WriteFsmAsDot finished"+ f.getAbsoluteFile());
 
-			System.out.println("generating fsm png"+ f.getAbsoluteFile());
-			String runDot = "dot -Tpng ./policies/"+rbacPol.getName()+".dot -o ./policies/"+rbacPol.getName()+".png";
-			Process p = Runtime.getRuntime().exec(runDot);
-			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String s;
-			while ((s = br.readLine()) != null) System.out.println("line: " + s);
-			p.waitFor();
-			System.out.println(runDot);
-			System.out.println ("exit: " + p.exitValue());
-			p.destroy();
-			System.out.println(">>>>> fsm png generated"+ f.getAbsoluteFile());
+//			System.out.println("generating fsm png"+ f.getAbsoluteFile());
+//			String runDot = "dot -Tpng ./policies/"+rbacPol.getName()+".dot -o ./policies/"+rbacPol.getName()+".png";
+//			Process p = Runtime.getRuntime().exec(runDot);
+//			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+//			String s;
+//			while ((s = br.readLine()) != null) System.out.println("line: " + s);
+//			p.waitFor();
+//			System.out.println(runDot);
+//			System.out.println ("exit: " + p.exitValue());
+//			p.destroy();
+//			System.out.println(">>>>> fsm png generated"+ f.getAbsoluteFile());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -77,15 +82,15 @@ public class TestExample {
 
 		List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
 		policies.add(create_SeniorTraineeDoctor());
-//		policies.add(create_ProcureToStock());
+		policies.add(create_ProcureToStock());
 		policies.add(create_Masood2010Example1());
 		policies.add(create_ExperiencePoints());
-//		policies.add(create_Masood2009P1());
-//		policies.add(create_Masood2009Example1());	
-//		policies.add(create_Masood2009P2());
-//		policies.add(create_user11roles2());
-//		policies.add(create_Mondal2009Example1());
-//		policies.add(create_SecureBank());
+		policies.add(create_Masood2009P1());
+		policies.add(create_Masood2009Example1());	
+		policies.add(create_Masood2009P2());
+		policies.add(create_user11roles2());
+		policies.add(create_Mondal2009Example1());
+		policies.add(create_SecureBank());
 		List<Thread> threads = new ArrayList<Thread>();
 		for (RbacPolicy pol : policies) {
 			threads.add(new RbacUtilsThread(pol));
@@ -152,25 +157,25 @@ public class TestExample {
 		User alice = new User("Alice");
 		User bob = new User("Bob");
 		User carol = new User("Carol");
-//		User employee = new User("Employee Name");
+		User employee = new User("Employee Name");
 		//add to policy
 		rbac.getUser().add(alice);
 		rbac.getUser().add(carol);
 		rbac.getUser().add(bob);
-//		rbac.getUser().add(employee);
+		rbac.getUser().add(employee);
 
 		//create role
 		Role r1 = new Role("Role1");
 		Role r2 = new Role("Role2");
 		Role r3 = new Role("Role3");
-//		Role r4 = new Role("Role4");
-//		Role r5 = new Role("Role5");
+		Role r4 = new Role("Role4");
+		Role r5 = new Role("Role5");
 		//add to policy
 		rbac.getRole().add(r1);
 		rbac.getRole().add(r2);
 		rbac.getRole().add(r3);
-//		rbac.getRole().add(r4);
-//		rbac.getRole().add(r5);
+		rbac.getRole().add(r4);
+		rbac.getRole().add(r5);
 
 		//create permission
 		Permission p1 = new Permission("CreatePR");
@@ -209,19 +214,19 @@ public class TestExample {
 		rbacAdmin.assignUser(rbac, alice, r1);
 		rbacAdmin.assignUser(rbac, alice, r2);
 		rbacAdmin.assignUser(rbac, alice, r3);
-//		rbacAdmin.assignUser(rbac, alice, r4);
-//		rbacAdmin.assignUser(rbac, alice, r5);
+		rbacAdmin.assignUser(rbac, alice, r4);
+		rbacAdmin.assignUser(rbac, alice, r5);
 
 		rbacAdmin.assignUser(rbac, bob, r1);
 		rbacAdmin.assignUser(rbac, bob, r2);
 		rbacAdmin.assignUser(rbac, bob, r3);
-//		rbacAdmin.assignUser(rbac, bob, r5);
+		rbacAdmin.assignUser(rbac, bob, r5);
 
-//		rbacAdmin.assignUser(rbac, carol, r4);
-//		rbacAdmin.assignUser(rbac, carol, r5);
+		rbacAdmin.assignUser(rbac, carol, r4);
+		rbacAdmin.assignUser(rbac, carol, r5);
 
-//		rbacAdmin.assignUser(rbac, employee, r1);
-//		rbacAdmin.assignUser(rbac, employee, r4);
+		rbacAdmin.assignUser(rbac, employee, r1);
+		rbacAdmin.assignUser(rbac, employee, r4);
 
 		rbacAdmin.grantPermission(rbac, p1, r1);
 
@@ -235,13 +240,13 @@ public class TestExample {
 		rbacAdmin.grantPermission(rbac, p8, r3);
 		rbacAdmin.grantPermission(rbac, p9, r3);
 
-//		rbacAdmin.grantPermission(rbac, p10, r4);
-//		rbacAdmin.grantPermission(rbac, p11, r4);
-//		rbacAdmin.grantPermission(rbac, p12, r4);
+		rbacAdmin.grantPermission(rbac, p10, r4);
+		rbacAdmin.grantPermission(rbac, p11, r4);
+		rbacAdmin.grantPermission(rbac, p12, r4);
 
-//		rbacAdmin.grantPermission(rbac, p13, r5);
-//		rbacAdmin.grantPermission(rbac, p14, r5);
-//		rbacAdmin.grantPermission(rbac, p15, r5);
+		rbacAdmin.grantPermission(rbac, p13, r5);
+		rbacAdmin.grantPermission(rbac, p14, r5);
+		rbacAdmin.grantPermission(rbac, p15, r5);
 
 		return rbac;
 	}
@@ -593,9 +598,6 @@ public class TestExample {
 		rbacAdmin.addRole(rbac,r4);
 		rbacAdmin.addRole(rbac,r5);
 
-		Role[] dsodSet = {r1,r2};
-		rbac.getSsodConstraint().add(new SSoDConstraint(dsodSet, 1));
-
 		rbacAdmin.assignUser(rbac, dave,  r1);
 		rbacAdmin.assignUser(rbac, sarah, r2);
 		rbacAdmin.assignUser(rbac, john,  r3);
@@ -617,6 +619,9 @@ public class TestExample {
 		rbac.getInheritanceHierarchy().add(new InheritanceHierarchy(r5, r3));
 		rbac.getInheritanceHierarchy().add(new InheritanceHierarchy(r5, r2));
 		rbac.getInheritanceHierarchy().add(new InheritanceHierarchy(r5, r1));
+
+//		Role[] s1 = {r3,r4};
+//		rbac.getSsodConstraint().add(new SSoDConstraint(s1, 1));
 		
 		Role[] d1 ={r1,r2};
 		rbac.getDsodConstraint().add(new DSoDConstraint(d1, 1));

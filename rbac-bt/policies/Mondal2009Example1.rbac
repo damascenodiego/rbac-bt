@@ -1,0 +1,75 @@
+<RBAC id="1" name="Mondal2009Example1">
+  <Users id="2">
+    <user id="3" name="U0"/>
+    <user id="4" name="U1"/>
+    <user id="5" name="U2"/>
+    <user id="6" name="U3"/>
+    <user id="7" name="U4"/>
+    <user id="8" name="U5"/>
+    <user id="9" name="U6"/>
+    <user id="10" name="U7"/>
+    <user id="11" name="U8"/>
+    <user id="12" name="U9"/>
+    <user id="13" name="U10"/>
+    <user id="14" name="U11"/>
+    <user id="15" name="U12"/>
+    <user id="16" name="U13"/>
+    <user id="17" name="U14"/>
+    <user id="18" name="U15"/>
+    <user id="19" name="U16"/>
+  </Users>
+  <Roles id="20">
+    <role id="21" name="R0"/>
+    <role id="22" name="R1"/>
+    <role id="23" name="R2"/>
+    <role id="24" name="R3"/>
+    <role id="25" name="R4"/>
+  </Roles>
+  <Permissions id="26">
+    <prms id="27" name="P1"/>
+    <prms id="28" name="P2"/>
+    <prms id="29" name="P3"/>
+    <prms id="30" name="P4"/>
+  </Permissions>
+  <Su id="31"/>
+  <Du id="32"/>
+  <Sr id="33"/>
+  <Dr id="34"/>
+  <URAssignments id="35">
+    <AS id="36">
+      <user reference="9"/>
+      <role reference="21"/>
+    </AS>
+    <AS id="37">
+      <user reference="9"/>
+      <role reference="22"/>
+    </AS>
+  </URAssignments>
+  <URActivations id="38"/>
+  <PRAssignments id="39"/>
+  <SSoDConstraints id="40"/>
+  <DSSoDConstraints id="41">
+    <DSoD id="42" ds="1">
+      <sodSet id="43">
+        <role reference="24"/>
+        <role reference="22"/>
+      </sodSet>
+    </DSoD>
+  </DSSoDConstraints>
+  <ActivationRelations id="44">
+    <Ah id="45">
+      <senior reference="22"/>
+      <junior reference="25"/>
+    </Ah>
+  </ActivationRelations>
+  <InheritanceRelations id="46">
+    <Ih id="47">
+      <senior reference="22"/>
+      <junior reference="25"/>
+    </Ih>
+    <Ih id="48">
+      <senior reference="21"/>
+      <junior reference="23"/>
+    </Ih>
+  </InheritanceRelations>
+</RBAC>

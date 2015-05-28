@@ -3,100 +3,155 @@
     <user id="3" name="Alice"/>
     <user id="4" name="Carol"/>
     <user id="5" name="Bob"/>
+    <user id="6" name="Employee Name"/>
   </Users>
-  <Roles id="6">
-    <role id="7" name="Role1"/>
-    <role id="8" name="Role2"/>
-    <role id="9" name="Role3"/>
+  <Roles id="7">
+    <role id="8" name="Role1"/>
+    <role id="9" name="Role2"/>
+    <role id="10" name="Role3"/>
+    <role id="11" name="Role4"/>
+    <role id="12" name="Role5"/>
   </Roles>
-  <Permissions id="10">
-    <prms id="11" name="CreatePR"/>
-    <prms id="12" name="ConfirmPR"/>
-    <prms id="13" name="CancelPR"/>
-    <prms id="14" name="!ReqPrice"/>
-    <prms id="15" name="!ReqExpert"/>
-    <prms id="16" name="?BestPrice"/>
-    <prms id="17" name="?BestExpert"/>
-    <prms id="18" name="?NoSupplier"/>
-    <prms id="19" name="SendPO"/>
-    <prms id="20" name="RecInvoice"/>
-    <prms id="21" name="RecCreditNote"/>
-    <prms id="22" name="NoCreditNoteRec"/>
-    <prms id="23" name="PaymentProcess"/>
-    <prms id="24" name="RecPaymentConf"/>
-    <prms id="25" name="BlockGoods"/>
+  <Permissions id="13">
+    <prms id="14" name="CreatePR"/>
+    <prms id="15" name="ConfirmPR"/>
+    <prms id="16" name="CancelPR"/>
+    <prms id="17" name="!ReqPrice"/>
+    <prms id="18" name="!ReqExpert"/>
+    <prms id="19" name="?BestPrice"/>
+    <prms id="20" name="?BestExpert"/>
+    <prms id="21" name="?NoSupplier"/>
+    <prms id="22" name="SendPO"/>
+    <prms id="23" name="RecInvoice"/>
+    <prms id="24" name="RecCreditNote"/>
+    <prms id="25" name="NoCreditNoteRec"/>
+    <prms id="26" name="PaymentProcess"/>
+    <prms id="27" name="RecPaymentConf"/>
+    <prms id="28" name="BlockGoods"/>
   </Permissions>
-  <Su id="26"/>
-  <Du id="27"/>
-  <Sr id="28"/>
-  <Dr id="29"/>
-  <URAssignments id="30">
-    <AS id="31">
-      <user reference="3"/>
-      <role reference="7"/>
-    </AS>
-    <AS id="32">
+  <Su id="29"/>
+  <Du id="30"/>
+  <Sr id="31"/>
+  <Dr id="32"/>
+  <URAssignments id="33">
+    <AS id="34">
       <user reference="3"/>
       <role reference="8"/>
-    </AS>
-    <AS id="33">
-      <user reference="3"/>
-      <role reference="9"/>
-    </AS>
-    <AS id="34">
-      <user reference="5"/>
-      <role reference="7"/>
     </AS>
     <AS id="35">
-      <user reference="5"/>
-      <role reference="8"/>
+      <user reference="3"/>
+      <role reference="9"/>
     </AS>
     <AS id="36">
+      <user reference="3"/>
+      <role reference="10"/>
+    </AS>
+    <AS id="37">
+      <user reference="3"/>
+      <role reference="11"/>
+    </AS>
+    <AS id="38">
+      <user reference="3"/>
+      <role reference="12"/>
+    </AS>
+    <AS id="39">
+      <user reference="5"/>
+      <role reference="8"/>
+    </AS>
+    <AS id="40">
       <user reference="5"/>
       <role reference="9"/>
     </AS>
+    <AS id="41">
+      <user reference="5"/>
+      <role reference="10"/>
+    </AS>
+    <AS id="42">
+      <user reference="5"/>
+      <role reference="12"/>
+    </AS>
+    <AS id="43">
+      <user reference="4"/>
+      <role reference="11"/>
+    </AS>
+    <AS id="44">
+      <user reference="4"/>
+      <role reference="12"/>
+    </AS>
+    <AS id="45">
+      <user reference="6"/>
+      <role reference="8"/>
+    </AS>
+    <AS id="46">
+      <user reference="6"/>
+      <role reference="11"/>
+    </AS>
   </URAssignments>
-  <URActivations id="37"/>
-  <PRAssignments id="38">
-    <PA id="39">
-      <permission reference="11"/>
-      <role reference="7"/>
-    </PA>
-    <PA id="40">
-      <permission reference="12"/>
-      <role reference="8"/>
-    </PA>
-    <PA id="41">
-      <permission reference="13"/>
-      <role reference="8"/>
-    </PA>
-    <PA id="42">
+  <URActivations id="47"/>
+  <PRAssignments id="48">
+    <PA id="49">
       <permission reference="14"/>
-      <role reference="9"/>
+      <role reference="8"/>
     </PA>
-    <PA id="43">
+    <PA id="50">
       <permission reference="15"/>
       <role reference="9"/>
     </PA>
-    <PA id="44">
+    <PA id="51">
       <permission reference="16"/>
       <role reference="9"/>
     </PA>
-    <PA id="45">
+    <PA id="52">
       <permission reference="17"/>
-      <role reference="9"/>
+      <role reference="10"/>
     </PA>
-    <PA id="46">
+    <PA id="53">
       <permission reference="18"/>
-      <role reference="9"/>
+      <role reference="10"/>
     </PA>
-    <PA id="47">
+    <PA id="54">
       <permission reference="19"/>
-      <role reference="9"/>
+      <role reference="10"/>
+    </PA>
+    <PA id="55">
+      <permission reference="20"/>
+      <role reference="10"/>
+    </PA>
+    <PA id="56">
+      <permission reference="21"/>
+      <role reference="10"/>
+    </PA>
+    <PA id="57">
+      <permission reference="22"/>
+      <role reference="10"/>
+    </PA>
+    <PA id="58">
+      <permission reference="23"/>
+      <role reference="11"/>
+    </PA>
+    <PA id="59">
+      <permission reference="24"/>
+      <role reference="11"/>
+    </PA>
+    <PA id="60">
+      <permission reference="25"/>
+      <role reference="11"/>
+    </PA>
+    <PA id="61">
+      <permission reference="26"/>
+      <role reference="12"/>
+    </PA>
+    <PA id="62">
+      <permission reference="27"/>
+      <role reference="12"/>
+    </PA>
+    <PA id="63">
+      <permission reference="28"/>
+      <role reference="12"/>
     </PA>
   </PRAssignments>
-  <SSoDConstraints id="48"/>
-  <DSSoDConstraints id="49"/>
-  <ActivationRelations id="50"/>
-  <InheritanceRelations id="51"/>
+  <SSoDConstraints id="64"/>
+  <DSSoDConstraints id="65"/>
+  <ActivationRelations id="66"/>
+  <InheritanceRelations id="67"/>
 </RBAC>

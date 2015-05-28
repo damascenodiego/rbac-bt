@@ -2,12 +2,16 @@ package com.usp.icmc.labes.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.usp.icmc.labes.fsm.FsmElement;
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmState;
@@ -25,9 +29,20 @@ import com.usp.icmc.labes.rbac.model.User;
 
 public class FsmUtils {
 
+	private XStream xstream;
+
 	static FsmUtils instance;
 
-	private FsmUtils() {}
+	private FsmUtils() {
+		xstream = new XStream(new DomDriver());
+		xstream.setMode(XStream.ID_REFERENCES);
+		xstream.alias("FSM", FsmModel.class);
+		xstream.alias("state", FsmState.class);
+		xstream.alias("transition", FsmTransition.class);
+		xstream.processAnnotations(FsmModel.class);
+		xstream.processAnnotations(FsmState.class);
+		xstream.processAnnotations(FsmTransition.class);
+	}
 
 	public static  FsmUtils getInstance() {
 		if(instance ==null){
@@ -46,7 +61,7 @@ public class FsmUtils {
 
 		List<FsmState> states = fsm.getStates();
 
-		for (FsmElement el : states) {
+		for (FsmState el : states) {
 			pw.println("    node [");
 			pw.println("        id "+states.indexOf(el));
 			pw.println("        label \""+el.getName()+"\"");
@@ -156,7 +171,8 @@ public class FsmUtils {
 				for (RbacRequest in : input) {
 					out = acut.request(in);
 					destination = acut.getCurrentState();
-					rbac2fsm.addTransition(new FsmTransition(new FsmState(origin.getName()), new FsmState(destination.getName()), in.toString(), (out? "grant" : "deny")));
+					rbac2fsm.addState(new FsmState(destination.getName()));
+					rbac2fsm.addTransition(new FsmTransition(rbac2fsm.getState(origin.getName()), rbac2fsm.getState(destination.getName()), in.toString(), (out? "grant" : "deny")));
 					if(!visited.contains(destination)) 
 						toVisit.add(destination);
 					acut.reset(origin);
@@ -204,7 +220,8 @@ public class FsmUtils {
 				for (RbacRequest in : input) {
 					out = acut.request(in);
 					destination = acut.getCurrentState();
-					rbac2fsm.addTransition(new FsmTransition(new FsmState(origin.getName()), new FsmState(destination.getName()), in.toString(), (out? "grant" : "deny")));
+					rbac2fsm.addState(new FsmState(destination.getName()));
+					rbac2fsm.addTransition(new FsmTransition(rbac2fsm.getState(origin.getName()), rbac2fsm.getState(destination.getName()), in.toString(), (out? "grant" : "deny")));
 					if(!visited.contains(destination)) 
 						toVisit.add(destination);
 					acut.reset(origin);
@@ -212,6 +229,12 @@ public class FsmUtils {
 			}
 		}
 		return rbac2fsm;
+	}
+
+	public void WriteFsm(FsmModel fsm, File fsmFile) throws FileNotFoundException {
+		OutputStream fos = new FileOutputStream(fsmFile);
+		xstream.toXML(fsm, fos);
+
 	}
 }
 

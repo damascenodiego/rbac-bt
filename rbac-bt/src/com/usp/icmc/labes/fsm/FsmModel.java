@@ -3,10 +3,13 @@ package com.usp.icmc.labes.fsm;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+
 public class FsmModel {
 
 	List<FsmState> states;
 	List<FsmTransition> transitions;
+	@XStreamAsAttribute
 	String name; 
 
 	public FsmModel(String n) {
@@ -17,6 +20,22 @@ public class FsmModel {
 
 	public synchronized List<FsmState> getStates() {
 		return this.states;
+	}
+	
+	public synchronized FsmState getState(String name) {
+		for (FsmState fsmState : states) {
+			if(fsmState.getName().equals(name)) 
+				return fsmState;
+		}
+		return null;
+	}
+	
+	public synchronized FsmState getState(FsmState s) {
+		for (FsmState fsmState : states) {
+			if(fsmState.equals(s)) 
+				return fsmState;
+		}
+		return null;
 	}
 
 	public synchronized List<FsmTransition> getTransitions() {
@@ -31,7 +50,7 @@ public class FsmModel {
 	public synchronized void addTransition(FsmTransition el){
 		if(!states.contains(el.getFrom())) 
 			states.add(el.getFrom());
-		
+
 		if(!states.contains(el.getTo())) 
 			states.add(el.getTo());
 

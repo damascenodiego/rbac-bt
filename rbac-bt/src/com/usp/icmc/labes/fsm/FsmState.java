@@ -3,28 +3,20 @@ package com.usp.icmc.labes.fsm;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FsmState extends FsmElement {
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-	public enum StateType{
-		INITIAL_STATE,
-		SIMPLE_STATE,
-		FINAL_STATE,
-	}
+public class FsmState {
 
-	private StateType type;
-	
+	@XStreamAsAttribute
+	private String name;
+
 	private List<FsmTransition> in;
 	private List<FsmTransition> out;
 	
-	public FsmState(String n,StateType t) {
-		super(n);
-		type = t;
-	}
 	public FsmState(String n) {
-		super(n);
+		name = n;
 		in  = new ArrayList<FsmTransition>();
 		out = new ArrayList<FsmTransition>();
-		type = StateType.SIMPLE_STATE;
 	}
 	
 	
@@ -35,43 +27,34 @@ public class FsmState extends FsmElement {
 	public List<FsmTransition> getOut() {
 		return out;
 	}
-	
-	public StateType getType() {
-		return type;
+
+	public String getName() {
+		return name;
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((in == null) ? 0 : in.hashCode());
-		result = prime * result + ((out == null) ? 0 : out.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
-		if (!(obj instanceof FsmState))
+		if (getClass() != obj.getClass())
 			return false;
 		FsmState other = (FsmState) obj;
-		if (in == null) {
-			if (other.in != null)
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!in.equals(other.in))
-			return false;
-		if (out == null) {
-			if (other.out != null)
-				return false;
-		} else if (!out.equals(other.out))
-			return false;
-		if (type != other.type)
+		} else if (!name.equals(other.name))
 			return false;
 		return true;
 	}
-	
-	
 	
 }

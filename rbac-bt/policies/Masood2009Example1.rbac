@@ -1,0 +1,64 @@
+<RBAC id="1" name="Masood2009Example1">
+  <Users id="2">
+    <user id="3" name="John"/>
+    <user id="4" name="Mary"/>
+  </Users>
+  <Roles id="5">
+    <role id="6" name="Customer"/>
+  </Roles>
+  <Permissions id="7">
+    <prms id="8" name="Deposit"/>
+    <prms id="9" name="Withdraw"/>
+  </Permissions>
+  <Su id="10">
+    <Su id="11" staticConstr="1">
+      <user reference="3"/>
+    </Su>
+    <Su id="12" staticConstr="1">
+      <user reference="4"/>
+    </Su>
+  </Su>
+  <Du id="13">
+    <Du id="14" dynamicConstr="1">
+      <user reference="3"/>
+    </Du>
+    <Du id="15" dynamicConstr="1">
+      <user reference="4"/>
+    </Du>
+  </Du>
+  <Sr id="16">
+    <Sr id="17" staticConstr="2">
+      <role reference="6"/>
+    </Sr>
+  </Sr>
+  <Dr id="18">
+    <Dr id="19" dynamicConstr="1">
+      <role reference="6"/>
+    </Dr>
+  </Dr>
+  <URAssignments id="20">
+    <AS id="21">
+      <user reference="3"/>
+      <role reference="6"/>
+    </AS>
+    <AS id="22">
+      <user reference="4"/>
+      <role reference="6"/>
+    </AS>
+  </URAssignments>
+  <URActivations id="23"/>
+  <PRAssignments id="24">
+    <PA id="25">
+      <permission reference="8"/>
+      <role reference="6"/>
+    </PA>
+    <PA id="26">
+      <permission reference="9"/>
+      <role reference="6"/>
+    </PA>
+  </PRAssignments>
+  <SSoDConstraints id="27"/>
+  <DSSoDConstraints id="28"/>
+  <ActivationRelations id="29"/>
+  <InheritanceRelations id="30"/>
+</RBAC>

@@ -1,6 +1,6 @@
 package com.usp.icmc.labes.fsm;
 
-public class FsmTransition extends FsmElement {
+public class FsmTransition {
 	
 	private String input;
 	private String output;
@@ -34,7 +34,7 @@ public class FsmTransition extends FsmElement {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = 1;
 		result = prime * result + ((from == null) ? 0 : from.hashCode());
 		result = prime * result + ((input == null) ? 0 : input.hashCode());
 		result = prime * result + ((output == null) ? 0 : output.hashCode());
@@ -46,9 +46,9 @@ public class FsmTransition extends FsmElement {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
-		if (!(obj instanceof FsmTransition))
+		if (getClass() != obj.getClass())
 			return false;
 		FsmTransition other = (FsmTransition) obj;
 		if (from == null) {
@@ -73,5 +73,6 @@ public class FsmTransition extends FsmElement {
 			return false;
 		return true;
 	}
+
 
 }

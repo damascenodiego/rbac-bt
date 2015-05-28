@@ -1,0 +1,26 @@
+digraph rbac2Fsm {
+  00001010 -> 10001010 [ label ="AS(John,Customer)/grant"];
+  00001010 -> 00101010 [ label ="AS(Mary,Customer)/grant"];
+  10001010 -> 00001010 [ label ="DS(John,Customer)/grant"];
+  10001010 -> 11001010 [ label ="AC(John,Customer)/grant"];
+  10001010 -> 10101010 [ label ="AS(Mary,Customer)/grant"];
+  00101010 -> 10101010 [ label ="AS(John,Customer)/grant"];
+  00101010 -> 00001010 [ label ="DS(Mary,Customer)/grant"];
+  00101010 -> 00111010 [ label ="AC(Mary,Customer)/grant"];
+  11001010 -> 00001010 [ label ="DS(John,Customer)/grant"];
+  11001010 -> 10001010 [ label ="DC(John,Customer)/grant"];
+  11001010 -> 11101010 [ label ="AS(Mary,Customer)/grant"];
+  10101010 -> 00101010 [ label ="DS(John,Customer)/grant"];
+  10101010 -> 11101010 [ label ="AC(John,Customer)/grant"];
+  10101010 -> 10001010 [ label ="DS(Mary,Customer)/grant"];
+  10101010 -> 10111010 [ label ="AC(Mary,Customer)/grant"];
+  00111010 -> 10111010 [ label ="AS(John,Customer)/grant"];
+  00111010 -> 00001010 [ label ="DS(Mary,Customer)/grant"];
+  00111010 -> 00101010 [ label ="DC(Mary,Customer)/grant"];
+  11101010 -> 00101010 [ label ="DS(John,Customer)/grant"];
+  11101010 -> 10101010 [ label ="DC(John,Customer)/grant"];
+  11101010 -> 11001010 [ label ="DS(Mary,Customer)/grant"];
+  10111010 -> 00111010 [ label ="DS(John,Customer)/grant"];
+  10111010 -> 10001010 [ label ="DS(Mary,Customer)/grant"];
+  10111010 -> 10101010 [ label ="DC(Mary,Customer)/grant"];
+}
