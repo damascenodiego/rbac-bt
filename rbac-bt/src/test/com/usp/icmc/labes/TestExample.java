@@ -38,21 +38,21 @@ class RbacUtilsThread extends Thread{
 			File f = new File("policies/"+rbacPol.getName()+".rbac");
 			System.out.println("WriteRbacPolicyAsXML started: "+ f.getAbsoluteFile());
 			RbacUtils.getInstance().WriteRbacPolicyAsXML(rbacPol, f);
-			System.out.println(">>>>> WriteRbacPolicyAsXML finished"+ f.getAbsoluteFile());
+//			System.out.println(">>>>> WriteRbacPolicyAsXML finished"+ f.getAbsoluteFile());
 
 			System.out.println("rbac2fsm started"+ f.getAbsoluteFile());
 			FsmModel fsm = FsmUtils.getInstance().rbac2Fsm(rbacPol);
-			System.out.println(">>>>> rbac2fsm finished"+ f.getAbsoluteFile());
+//			System.out.println(">>>>> rbac2fsm finished"+ f.getAbsoluteFile());
 
 			System.out.println("WriteFsm  started"+ f.getAbsoluteFile());
 			File fsmFile = new File("policies/"+rbacPol.getName()+".fsm");
 			FsmUtils.getInstance().WriteFsm(fsm, fsmFile);
-			System.out.println(">>>>> WriteFsm finished"+ f.getAbsoluteFile());
+//			System.out.println(">>>>> WriteFsm finished"+ f.getAbsoluteFile());
 			
 			System.out.println("WriteFsmAsDot started"+ f.getAbsoluteFile());
 			File fsmFileFormat = new File("policies/"+rbacPol.getName()+".dot");
 			FsmUtils.getInstance().WriteFsmAsDot(fsm, fsmFileFormat);
-			System.out.println(">>>>> WriteFsmAsDot finished"+ f.getAbsoluteFile());
+//			System.out.println(">>>>> WriteFsmAsDot finished"+ f.getAbsoluteFile());
 
 //			System.out.println("generating fsm png"+ f.getAbsoluteFile());
 //			String runDot = "dot -Tpng ./policies/"+rbacPol.getName()+".dot -o ./policies/"+rbacPol.getName()+".png";
@@ -81,12 +81,12 @@ public class TestExample {
 	public static void main(String[] args) {
 
 		List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
-		policies.add(create_SeniorTraineeDoctor());
+//		policies.add(create_SeniorTraineeDoctor());
 		policies.add(create_ProcureToStock());
-		policies.add(create_Masood2010Example1());
+//		policies.add(create_Masood2010Example1());
 		policies.add(create_ExperiencePoints());
 		policies.add(create_Masood2009P1());
-		policies.add(create_Masood2009Example1());	
+		//// policies.add(create_Masood2009Example1());	
 		policies.add(create_Masood2009P2());
 		policies.add(create_user11roles2());
 		policies.add(create_Mondal2009Example1());
