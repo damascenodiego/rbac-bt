@@ -175,6 +175,9 @@ public class FsmUtils {
 					rbac2fsm.addTransition(new FsmTransition(rbac2fsm.getState(origin.getName()), rbac2fsm.getState(destination.getName()), in.toString(), (out? "grant" : "deny")));
 					if(!visited.contains(destination)) 
 						toVisit.add(destination);
+					else{
+						toVisit.remove(destination);
+					}
 					acut.reset(origin);
 				}
 			}
