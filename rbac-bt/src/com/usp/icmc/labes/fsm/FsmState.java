@@ -3,18 +3,13 @@ package com.usp.icmc.labes.fsm;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-
-public class FsmState {
-
-	@XStreamAsAttribute
-	private String name;
+public class FsmState extends FsmElement{
 
 	private List<FsmTransition> in;
 	private List<FsmTransition> out;
 	
 	public FsmState(String n) {
-		name = n;
+		super(n);
 		in  = new ArrayList<FsmTransition>();
 		out = new ArrayList<FsmTransition>();
 	}
@@ -28,33 +23,38 @@ public class FsmState {
 		return out;
 	}
 
-	public String getName() {
-		return name;
-	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		int result = super.hashCode();
+		result = prime * result + ((in == null) ? 0 : in.hashCode());
+		result = prime * result + ((out == null) ? 0 : out.hashCode());
 		return result;
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		FsmState other = (FsmState) obj;
-		if (name == null) {
-			if (other.name != null)
+		if (in == null) {
+			if (other.in != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!in.equals(other.in))
+			return false;
+		if (out == null) {
+			if (other.out != null)
+				return false;
+		} else if (!out.equals(other.out))
 			return false;
 		return true;
 	}
+
 	
 }

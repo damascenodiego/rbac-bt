@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.usp.icmc.labes.rbac.model.DSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
@@ -13,7 +14,6 @@ import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
-import com.usp.icmc.labes.rbac.model.DSoDConstraint;
 import com.usp.icmc.labes.utils.RbacUtils;
 
 public class RbacSupportingSystemFunctions {

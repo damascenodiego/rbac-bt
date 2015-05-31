@@ -12,7 +12,6 @@ import java.util.Queue;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.usp.icmc.labes.fsm.FsmElement;
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
@@ -172,7 +171,7 @@ public class FsmUtils {
 					out = acut.request(in);
 					destination = acut.getCurrentState();
 					rbac2fsm.addState(new FsmState(destination.getName()));
-					rbac2fsm.addTransition(new FsmTransition(rbac2fsm.getState(origin.getName()), rbac2fsm.getState(destination.getName()), in.toString(), (out? "grant" : "deny")));
+					rbac2fsm.addTransition(new FsmTransition(rbac2fsm.getState(origin.getName()), in.toString(), (out? "grant" : "deny"), rbac2fsm.getState(destination.getName())));
 					if(!visited.contains(destination)) 
 						toVisit.add(destination);
 					else{
@@ -224,7 +223,7 @@ public class FsmUtils {
 					out = acut.request(in);
 					destination = acut.getCurrentState();
 					rbac2fsm.addState(new FsmState(destination.getName()));
-					rbac2fsm.addTransition(new FsmTransition(rbac2fsm.getState(origin.getName()), rbac2fsm.getState(destination.getName()), in.toString(), (out? "grant" : "deny")));
+					rbac2fsm.addTransition(new FsmTransition(rbac2fsm.getState(origin.getName()), in.toString(), (out? "grant" : "deny"), rbac2fsm.getState(destination.getName())));
 					if(!visited.contains(destination)) 
 						toVisit.add(destination);
 					acut.reset(origin);

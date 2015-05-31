@@ -1,16 +1,18 @@
 package com.usp.icmc.labes.fsm;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
+
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 public abstract class FsmElement {
 	
-	private Map<String,String> properties;
+	private Properties properties;
 	
+	@XStreamAsAttribute
 	private String name;
 	
 	public FsmElement() {
-		properties = new HashMap<String,String>();
+		properties = new Properties();
 	}
 	
 	public FsmElement(String n) {
@@ -18,15 +20,8 @@ public abstract class FsmElement {
 		name = n;
 	}
 	
-	public String getProperty(String key) {
-		return properties.get(key);
-	}
-	
-	public void addProperty(String key, String value) {
-		properties.put(key,value);
-	}
-	public String delProperty(String key) {
-		return properties.remove(key);
+	public Properties getProperties() {
+		return properties;
 	}
 	
 	public String getName() {

@@ -1,14 +1,15 @@
 package com.usp.icmc.labes.fsm;
 
-public class FsmTransition {
-	
+public class FsmTransition extends FsmElement{
+
+	private FsmState from;
+
 	private String input;
 	private String output;
 	
-	private FsmState from;
 	private FsmState to;
 	
-	public FsmTransition(FsmState f, FsmState t, String in, String out) {
+	public FsmTransition(FsmState f, String in, String out, FsmState t) {
 		from = f;
 		to = t;
 		input = in;
@@ -34,7 +35,7 @@ public class FsmTransition {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((from == null) ? 0 : from.hashCode());
 		result = prime * result + ((input == null) ? 0 : input.hashCode());
 		result = prime * result + ((output == null) ? 0 : output.hashCode());
@@ -46,7 +47,7 @@ public class FsmTransition {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
@@ -74,5 +75,9 @@ public class FsmTransition {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return from+" -- "+input+"/"+output+" -> "+to;
+	}
 
 }

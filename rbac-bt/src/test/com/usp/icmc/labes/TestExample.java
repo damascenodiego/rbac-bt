@@ -1,8 +1,6 @@
 package test.com.usp.icmc.labes;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,13 +42,13 @@ class RbacUtilsThread extends Thread{
 			FsmModel fsm = FsmUtils.getInstance().rbac2Fsm(rbacPol);
 			//			System.out.println(">>>>> rbac2fsm finished"+ f.getAbsoluteFile());
 
-			System.out.println("WriteFsm  started: "+ f.getAbsoluteFile());
 			File fsmFile = new File("policies/"+rbacPol.getName()+".fsm");
+			System.out.println("WriteFsm  started: "+ fsmFile.getAbsoluteFile());
 			FsmUtils.getInstance().WriteFsm(fsm, fsmFile);
 			//			System.out.println(">>>>> WriteFsm finished"+ f.getAbsoluteFile());
 
-			System.out.println("WriteFsmAsDot started: "+ f.getAbsoluteFile());
 			File fsmFileFormat = new File("policies/"+rbacPol.getName()+".dot");
+			System.out.println("WriteFsmAsDot started: "+ fsmFileFormat.getAbsoluteFile());
 			FsmUtils.getInstance().WriteFsmAsDot(fsm, fsmFileFormat);
 			//			System.out.println(">>>>> WriteFsmAsDot finished"+ f.getAbsoluteFile());
 
@@ -64,7 +62,7 @@ class RbacUtilsThread extends Thread{
 			//			System.out.println(runDot);
 			//			System.out.println ("exit: " + p.exitValue());
 			//			p.destroy();
-			//			System.out.println(">>>>> fsm png generated"+ f.getAbsoluteFile());
+			System.out.println(">>>>> "+ rbacPol.getName()+" <<<<<");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -81,11 +79,11 @@ public class TestExample {
 	public static void main(String[] args) {
 
 		List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
-		//		policies.add(create_SeniorTraineeDoctor()); //XXX OK
+		policies.add(create_SeniorTraineeDoctor()); //XXX OK
 		//		policies.add(create_ProcureToStock());
-		//		policies.add(create_Masood2010Example1()); //XXX OK
-		//		policies.add(create_ExperiencePointsv2()); //XXX OK
-				policies.add(create_Masood2009P2());
+		policies.add(create_Masood2010Example1()); //XXX OK
+		policies.add(create_ExperiencePointsv2()); //XXX OK
+		//				policies.add(create_Masood2009P2());
 		//		policies.add(create_Masood2009P1());
 		//// policies.add(create_Masood2009Example1()); //XXX similar to Masood2010Example1
 		//		policies.add(create_user11roles2());

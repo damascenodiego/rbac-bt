@@ -6,11 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.usp.icmc.labes.fsm.FsmModel;
@@ -18,14 +14,10 @@ import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.DSoDConstraint;
-import com.usp.icmc.labes.rbac.model.Dr;
-import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.SSoDConstraint;
-import com.usp.icmc.labes.rbac.model.Sr;
-import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.utils.FsmUtils;
 import com.usp.icmc.labes.utils.RbacUtils;

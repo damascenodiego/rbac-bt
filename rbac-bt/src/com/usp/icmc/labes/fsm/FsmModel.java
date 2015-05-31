@@ -3,34 +3,30 @@ package com.usp.icmc.labes.fsm;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-
-public class FsmModel {
+public class FsmModel extends FsmElement{
 
 	List<FsmState> states;
 	List<FsmTransition> transitions;
-	@XStreamAsAttribute
-	String name; 
 
 	public FsmModel(String n) {
+		super(n);
 		this.states = new ArrayList<FsmState>();
 		this.transitions = new ArrayList<FsmTransition>();
-		name = n;
 	}
 
-	public synchronized List<FsmState> getStates() {
+	public List<FsmState> getStates() {
 		return this.states;
 	}
-	
-	public synchronized FsmState getState(String name) {
+
+	public FsmState getState(String name) {
 		for (FsmState fsmState : states) {
 			if(fsmState.getName().equals(name)) 
 				return fsmState;
 		}
 		return null;
 	}
-	
-	public synchronized FsmState getState(FsmState s) {
+
+	public FsmState getState(FsmState s) {
 		for (FsmState fsmState : states) {
 			if(fsmState.equals(s)) 
 				return fsmState;
@@ -38,34 +34,27 @@ public class FsmModel {
 		return null;
 	}
 
-	public synchronized List<FsmTransition> getTransitions() {
+	public List<FsmTransition> getTransitions() {
 		return this.transitions;
 	}
 
-	public synchronized void addState(FsmState el){
+	public void addState(FsmState el){
 		if(!this.states.contains(el))
 			this.states.add(el);
 	}
 
-	public synchronized void addTransition(FsmTransition el){
-		if(!states.contains(el.getFrom())) 
-			states.add(el.getFrom());
-
-		if(!states.contains(el.getTo())) 
-			states.add(el.getTo());
-
-		if(!this.transitions.contains(el))
+	public void addTransition(FsmTransition el){
+		if(!this.transitions.contains(el)){
 			this.transitions.add(el);
-	}
-
-	public synchronized String getName() {
-		return name;
+			addState(el.getFrom());
+			addState(el.getTo());
+		}
 	}
 
 	@Override
-	public synchronized int hashCode() {
+	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((states == null) ? 0 : states.hashCode());
 		result = prime * result
 				+ ((transitions == null) ? 0 : transitions.hashCode());
@@ -73,12 +62,12 @@ public class FsmModel {
 	}
 
 	@Override
-	public synchronized boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
-		if (!(obj instanceof FsmModel))
+		if (getClass() != obj.getClass())
 			return false;
 		FsmModel other = (FsmModel) obj;
 		if (states == null) {
@@ -93,6 +82,5 @@ public class FsmModel {
 			return false;
 		return true;
 	}
-
 
 }
