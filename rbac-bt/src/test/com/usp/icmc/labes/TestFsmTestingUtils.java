@@ -21,13 +21,20 @@ public class TestFsmTestingUtils {
 		try {
 			File fsmFile = new File("policies/examples/Masood2010Example1.fsm");
 			FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
-			List<FsmPath> paths = testingUtils.stateCoverSet(fsm);
+			List<FsmPath> qSet = testingUtils.stateCoverSet(fsm);
 			System.out.println(fsmFile.getName());
-			for (FsmPath s: paths) {
+			System.out.println("State Cover Set (Q)");
+			for (FsmPath s: qSet) {
+				System.out.println(s.toString());
+			}
+			
+			List<FsmPath> pSet = testingUtils.transitionCoverSet(fsm);
+			System.out.println("Transition Cover Set (T)");
+			for (FsmPath s: pSet) {
 				System.out.println(s.toString());
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 	}
 

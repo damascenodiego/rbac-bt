@@ -66,7 +66,7 @@ public class FsmPath extends FsmElement{
 	public String toString() {
 		String out = getName();
 		if(this.paths.size()<1) 
-			return out;
+			return out +": EMPTY";
 		out += ": "+getInitialState().getName();
 		FsmTransition tr;
 		for (int i = 0; i < paths.size(); i++) {

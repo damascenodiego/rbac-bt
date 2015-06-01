@@ -80,7 +80,6 @@ public class FsmTestingUtils {
 	}
 
 	public List<FsmPath> stateCoverSet(FsmModel fsm){
-//		Map<FsmState,FsmPath> qSets = new HashMap<FsmState,FsmPath>();
 		FsmPath[] qSets = new FsmPath[fsm.getStates().size()];
 		for (int i = 0; i < fsm.getStates().size(); i++) {
 			qSets[i] = new FsmPath(fsm.getStates().get(i).getName());
@@ -106,5 +105,28 @@ public class FsmTestingUtils {
 			}
 		}
 		return Arrays.asList(qSets);
+	}
+
+	public List<FsmPath> transitionCoverSet(FsmModel fsm) {
+		List<FsmPath> qSet = stateCoverSet(fsm);
+		List<FsmPath> pSet = new ArrayList<FsmPath>();
+
+		for (FsmPath path : qSet) {
+			FsmState finalState = null;
+			if(path.getPath().isEmpty()){
+				finalState = fsm.getInitialState();
+			}
+			else{
+				finalState = path.getFinalState();
+			}
+
+			for (FsmTransition tr : finalState.getOut()) {
+				FsmPath pSetEl = new FsmPath(finalState.getName()+"+"+tr.getInput());
+				pSetEl.getPath().addAll(path.getPath());
+				pSetEl.addTransition(tr);
+				pSet.add(pSetEl);
+			}
+		}
+		return pSet;
 	}
 }
