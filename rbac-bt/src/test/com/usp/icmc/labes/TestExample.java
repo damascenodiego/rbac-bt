@@ -79,12 +79,13 @@ public class TestExample {
 	public static void main(String[] args) {
 
 		List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
-		policies.add(create_SeniorTraineeDoctor()); //XXX OK
-		//		policies.add(create_ProcureToStock());
-		policies.add(create_Masood2010Example1()); //XXX OK
-		policies.add(create_ExperiencePointsv2()); //XXX OK
+		//				policies.add(create_SeniorTraineeDoctor()); //XXX OK
+//				policies.add(create_ProcureToStock());
+		//				policies.add(create_Masood2010Example1()); //XXX OK
+//				policies.add(create_ExperiencePointsv2()); //XXX OK
 		//				policies.add(create_Masood2009P2());
 		//		policies.add(create_Masood2009P1());
+		//		policies.add(create_Masood2009P2());
 		//// policies.add(create_Masood2009Example1()); //XXX similar to Masood2010Example1
 		//		policies.add(create_user11roles2());
 		//		policies.add(create_Mondal2009Example1());

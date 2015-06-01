@@ -1,3 +1,4 @@
+digraph rbac2Fsm {
   00000000 -> 10000000 [ label ="AS(Bob,SeniorDoctor)/grant"];
   00000000 -> 00001000 [ label ="AS(Alice,SeniorDoctor)/grant"];
   00000000 -> 00100000 [ label ="AS(Bob,TraineeDoctor)/grant"];

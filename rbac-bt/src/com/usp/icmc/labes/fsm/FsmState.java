@@ -23,38 +23,9 @@ public class FsmState extends FsmElement{
 		return out;
 	}
 
-
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((in == null) ? 0 : in.hashCode());
-		result = prime * result + ((out == null) ? 0 : out.hashCode());
-		return result;
+	public String toString() {
+		return super.getName();
 	}
 
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		FsmState other = (FsmState) obj;
-		if (in == null) {
-			if (other.in != null)
-				return false;
-		} else if (!in.equals(other.in))
-			return false;
-		if (out == null) {
-			if (other.out != null)
-				return false;
-		} else if (!out.equals(other.out))
-			return false;
-		return true;
-	}
-
-	
 }

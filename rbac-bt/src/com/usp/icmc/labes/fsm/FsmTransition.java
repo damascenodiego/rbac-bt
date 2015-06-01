@@ -14,6 +14,8 @@ public class FsmTransition extends FsmElement{
 		to = t;
 		input = in;
 		output = out;
+		f.getOut().add(this);
+		t.getIn().add(this);
 	}
 	
 	public FsmState getFrom() {
@@ -80,4 +82,8 @@ public class FsmTransition extends FsmElement{
 		return from+" -- "+input+"/"+output+" -> "+to;
 	}
 
+	@Override
+	public String getName() {
+		return toString();
+	}
 }

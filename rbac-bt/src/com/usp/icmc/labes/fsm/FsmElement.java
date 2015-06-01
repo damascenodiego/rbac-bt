@@ -28,15 +28,17 @@ public abstract class FsmElement {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result
-				+ ((properties == null) ? 0 : properties.hashCode());
 		return result;
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -44,7 +46,7 @@ public abstract class FsmElement {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof FsmElement))
+		if (getClass() != obj.getClass())
 			return false;
 		FsmElement other = (FsmElement) obj;
 		if (name == null) {
@@ -52,14 +54,13 @@ public abstract class FsmElement {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (properties == null) {
-			if (other.properties != null)
-				return false;
-		} else if (!properties.equals(other.properties))
-			return false;
 		return true;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "FsmElement [name=" + name + "]";
+	}
+
 	
 }
