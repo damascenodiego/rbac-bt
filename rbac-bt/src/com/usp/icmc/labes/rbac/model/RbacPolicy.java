@@ -6,7 +6,7 @@ import java.util.List;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-public class RbacPolicy{
+public class RbacPolicy implements RbacTuple{
 	
 	@XStreamAsAttribute
 	private String name;

@@ -2,7 +2,6 @@ package test.com.usp.icmc.labes;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 

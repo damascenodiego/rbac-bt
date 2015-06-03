@@ -2,6 +2,7 @@ package test.com.usp.icmc.labes;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -356,16 +357,20 @@ public class SoDTest {
 
 	@Test
 	public void testMutantsSSDDSDWithout(){
-		RbacPolicy ssd02 = policySSD02();
-		RbacPolicy dsd02 = policyDSD02();
-		RbacPolicy dsd03 = policyDSD03();
-		
-		FsmModel fsm_ssd02 = fsmUtils.rbac2Fsm(ssd02);
-		FsmModel fsm_dsd02 = fsmUtils.rbac2Fsm(dsd02);
-		FsmModel fsm_dsd03 = fsmUtils.rbac2Fsm(dsd03);
-		
-		assertTrue(fsm_ssd02.equals(fsm_dsd02));
-		assertTrue(fsm_ssd02.equals(fsm_dsd03));
-		assertTrue(fsm_dsd02.equals(fsm_dsd03));
+		try {
+			RbacPolicy ssd02 = policySSD02();
+			RbacPolicy dsd02 = policyDSD02();
+			RbacPolicy dsd03 = policyDSD03();
+			
+			FsmModel fsm_ssd02 = fsmUtils.rbac2Fsm(ssd02);
+			FsmModel fsm_dsd02 = fsmUtils.rbac2Fsm(dsd02);
+			FsmModel fsm_dsd03 = fsmUtils.rbac2Fsm(dsd03);
+			
+			assertTrue(fsm_ssd02.equals(fsm_dsd02));
+			assertTrue(fsm_ssd02.equals(fsm_dsd03));
+			assertTrue(fsm_dsd02.equals(fsm_dsd03));
+		} catch (Exception e) {
+			fail();
+		}
 	}
 }

@@ -231,10 +231,9 @@ public class MainTest {
 		//				}
 		//			}
 		//			
-		FsmModel rbac2fsm = FsmUtils.getInstance().rbac2Fsm(pol);
-
 		try{
-
+			FsmModel rbac2fsm = FsmUtils.getInstance().rbac2Fsm(pol);
+			
 			File example = new File("policies/Masood2010Example1.rbac");
 			RbacUtils.getInstance().WriteRbacPolicyAsXML(pol, example);
 

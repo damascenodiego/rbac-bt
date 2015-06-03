@@ -9,7 +9,7 @@ import com.usp.icmc.labes.rbac.model.Dr;
 import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
-import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.SSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Sr;
@@ -34,7 +34,7 @@ public class RbacAdministrativeCommands {
 	private RbacAdministrativeCommands() {}
 
 	// core rbac
-	public boolean addUser(RbacPolicy policy, User user){
+	public boolean addUser(RbacTuple policy, User user){
 		boolean userExists = utils.userExists(policy, user);
 		if(!userExists){
 			policy.getUser().add(user);
@@ -43,7 +43,7 @@ public class RbacAdministrativeCommands {
 		return false;
 	}
 
-	public boolean deleteUser(RbacPolicy policy, User user){
+	public boolean deleteUser(RbacTuple policy, User user){
 		boolean userExists = utils.userExists(policy, user);
 		if(userExists){
 			policy.getUser().remove(user);
@@ -53,7 +53,7 @@ public class RbacAdministrativeCommands {
 		}
 		return false;
 	}
-	public boolean addRole(RbacPolicy policy, Role role){
+	public boolean addRole(RbacTuple policy, Role role){
 		boolean roleExists = utils.roleExists(policy, role);
 		if(!roleExists){
 			policy.getRole().add(role);
@@ -62,7 +62,7 @@ public class RbacAdministrativeCommands {
 		return false;
 	}
 
-	public boolean deleteRole(RbacPolicy policy, Role role){
+	public boolean deleteRole(RbacTuple policy, Role role){
 		boolean roleExists = utils.roleExists(policy, role);
 		if(roleExists){
 			policy.getRole().remove(role);
@@ -73,7 +73,7 @@ public class RbacAdministrativeCommands {
 		return false;
 	}
 
-	public boolean addPermission(RbacPolicy policy, Permission prms){
+	public boolean addPermission(RbacTuple policy, Permission prms){
 		boolean prmsExists = utils.permissionExists(policy, prms);
 		if(!prmsExists){
 			policy.getPermission().add(prms);
@@ -82,7 +82,7 @@ public class RbacAdministrativeCommands {
 		return false;
 	}
 
-	public boolean deletePermission(RbacPolicy policy, Permission prms){
+	public boolean deletePermission(RbacTuple policy, Permission prms){
 		boolean prmsExists = utils.permissionExists(policy, prms);
 		if(prmsExists){
 			policy.getPermission().remove(prms);
@@ -93,7 +93,7 @@ public class RbacAdministrativeCommands {
 	}
 
 
-	public boolean assignUser(RbacPolicy policy, User user, Role role){
+	public boolean assignUser(RbacTuple policy, User user, Role role){
 		boolean userExists 			= utils.userExists(policy, user);
 		boolean roleExists 			= utils.roleExists(policy,role); 
 
@@ -129,7 +129,7 @@ public class RbacAdministrativeCommands {
 		return false;
 
 	}
-	public boolean deassignUser(RbacPolicy policy, User user, Role role){
+	public boolean deassignUser(RbacTuple policy, User user, Role role){
 		boolean userExists = utils.userExists(policy, user);
 		boolean roleExists = utils.roleExists(policy,role); 
 
@@ -151,7 +151,7 @@ public class RbacAdministrativeCommands {
 
 	}
 
-	public boolean grantPermission(RbacPolicy policy, Permission permission, Role role){
+	public boolean grantPermission(RbacTuple policy, Permission permission, Role role){
 
 		boolean roleExists = utils.roleExists(policy, role);
 		boolean permissionExists = utils.permissionExists(policy, permission);
@@ -166,7 +166,7 @@ public class RbacAdministrativeCommands {
 		return false;
 	}
 
-	public boolean revokePermission(RbacPolicy policy, Permission permission, Role role){
+	public boolean revokePermission(RbacTuple policy, Permission permission, Role role){
 
 		boolean roleExists = utils.roleExists(policy, role);
 		boolean permissionExists = utils.permissionExists(policy, permission);
@@ -183,7 +183,7 @@ public class RbacAdministrativeCommands {
 
 	}
 
-	public boolean addSu(RbacPolicy rbac, Su constr) {
+	public boolean addSu(RbacTuple rbac, Su constr) {
 		if(!rbac.getSu().contains(constr)){
 			rbac.getSu().add(constr);
 			return true;
@@ -191,7 +191,7 @@ public class RbacAdministrativeCommands {
 		return false;
 	}
 
-	public boolean addSr(RbacPolicy rbac, Sr constr) {
+	public boolean addSr(RbacTuple rbac, Sr constr) {
 		if(!rbac.getSr().contains(constr)){
 			rbac.getSr().add(constr);
 			return true;
@@ -199,7 +199,7 @@ public class RbacAdministrativeCommands {
 		return false;
 	}
 
-	public boolean addDu(RbacPolicy rbac, Du constr) {
+	public boolean addDu(RbacTuple rbac, Du constr) {
 		if(!rbac.getDu().contains(constr)){
 			rbac.getDu().add(constr);
 			return true;
@@ -207,7 +207,7 @@ public class RbacAdministrativeCommands {
 		return false;
 	}
 
-	public boolean addDr(RbacPolicy rbac, Dr constr) {
+	public boolean addDr(RbacTuple rbac, Dr constr) {
 		if(!rbac.getDr().contains(constr)){
 			rbac.getDr().add(constr);
 			return true;

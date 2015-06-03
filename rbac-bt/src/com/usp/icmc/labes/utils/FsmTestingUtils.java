@@ -2,20 +2,14 @@ package com.usp.icmc.labes.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-
-import junit.framework.TestCase;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -23,16 +17,6 @@ import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmPath;
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
-import com.usp.icmc.labes.rbac.acut.RbacAcut;
-import com.usp.icmc.labes.rbac.acut.RbacRequest;
-import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
-import com.usp.icmc.labes.rbac.acut.RbacState;
-import com.usp.icmc.labes.rbac.model.RbacPolicy;
-import com.usp.icmc.labes.rbac.model.Role;
-import com.usp.icmc.labes.rbac.model.User;
 
 public class FsmTestingUtils {
 

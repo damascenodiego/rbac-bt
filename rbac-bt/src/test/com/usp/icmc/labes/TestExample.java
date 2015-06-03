@@ -78,27 +78,49 @@ public class TestExample {
 
 	public static void main(String[] args) {
 
-		List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
-		//				policies.add(create_SeniorTraineeDoctor()); //XXX OK
-//				policies.add(create_ProcureToStock());
-		//				policies.add(create_Masood2010Example1()); //XXX OK
-//				policies.add(create_ExperiencePointsv2()); //XXX OK
-		//				policies.add(create_Masood2009P2());
-		//		policies.add(create_Masood2009P1());
-		//		policies.add(create_Masood2009P2());
-		//// policies.add(create_Masood2009Example1()); //XXX similar to Masood2010Example1
-		//		policies.add(create_user11roles2());
-		//		policies.add(create_Mondal2009Example1());
-		//		policies.add(create_SecureBank());
-		List<Thread> threads = new ArrayList<Thread>();
-		for (RbacPolicy pol : policies) {
-			threads.add(new RbacUtilsThread(pol));
-		}
+		try {
+			List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
+			policies.add(create_SeniorTraineeDoctor()); //XXX OK
+			////		policies.add(create_ProcureToStock());
+//			policies.add(create_ProcureToStockV2());
+			policies.add(create_Masood2010Example1()); //XXX OK
+//			policies.add(create_ExperiencePointsv2()); //XXX OK
+			////		policies.add(create_Masood2009Example1()); //XXX similar to Masood2010Example1
+//					policies.add(create_Masood2009P1());
+//					policies.add(create_Masood2009P2());
+			//		policies.add(create_user11roles2());
+			//		policies.add(create_Mondal2009Example1());
+			//		policies.add(create_SecureBank());
+			List<Thread> threads = new ArrayList<Thread>();
+			for (RbacPolicy rbacPol : policies) {
+				//		threads.add(new RbacUtilsThread(pol));
+				//	}
+				//
+				//	for (Thread thread : threads) {
+				//		thread.start();
+				File f = new File("policies/"+rbacPol.getName()+".rbac");
+				//				System.out.println("WriteRbacPolicyAsXML started: "+ f.getAbsoluteFile());
+				RbacUtils.getInstance().WriteRbacPolicyAsXML(rbacPol, f);
+				System.out.println(">>>>> WriteRbacPolicyAsXML finished"+ f.getAbsoluteFile());
 
-		for (Thread thread : threads) {
-			thread.start();
-		}
+				//				System.out.println("rbac2fsm started: "+ f.getAbsoluteFile());
+				FsmModel fsm = FsmUtils.getInstance().rbac2Fsm(rbacPol);
+				System.out.println(">>>>> rbac2fsm finished"+ f.getAbsoluteFile());
 
+				File fsmFile = new File("policies/"+rbacPol.getName()+".fsm");
+				//				System.out.println("WriteFsm  started: "+ fsmFile.getAbsoluteFile());
+				FsmUtils.getInstance().WriteFsm(fsm, fsmFile);
+				System.out.println(">>>>> WriteFsm finished"+ f.getAbsoluteFile());
+
+				File fsmFileFormat = new File("policies/"+rbacPol.getName()+".dot");
+				System.out.println("WriteFsmAsDot started: "+ fsmFileFormat.getAbsoluteFile());
+				FsmUtils.getInstance().WriteFsmAsDot(fsm, fsmFileFormat);
+			}
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
 	}
 
 	private static RbacPolicy create_SeniorTraineeDoctor(){
@@ -249,6 +271,130 @@ public class TestExample {
 
 		return rbac;
 	}
+
+	private static RbacPolicy create_ProcureToStockV2(){
+		RbacPolicy rbac = new RbacPolicy("ProcureToStockV2");
+
+		//create users
+		User alice = new User("Alice");
+		User bob = new User("Bob");
+		User carol = new User("Carol");
+		User employee = new User("Employee Name");
+		//add to policy
+		rbac.getUser().add(alice);
+		rbac.getUser().add(carol);
+		rbac.getUser().add(bob);
+		rbac.getUser().add(employee);
+
+		//create role
+		Role r1 = new Role("Role1");
+		Role r2 = new Role("Role2");
+		Role r3 = new Role("Role3");
+		Role r4 = new Role("Role4");
+		Role r5 = new Role("Role5");
+		//add to policy
+		rbac.getRole().add(r1);
+		rbac.getRole().add(r2);
+		rbac.getRole().add(r3);
+		rbac.getRole().add(r4);
+		rbac.getRole().add(r5);
+
+		//create permission
+		Permission p1 = new Permission("CreatePR");
+
+		Permission p2 = new Permission("ConfirmPR");
+		Permission p3 = new Permission("CancelPR");
+
+		Permission p4 = new Permission("!ReqPrice");		
+		Permission p5 = new Permission("!ReqExpert");
+		Permission p6 = new Permission("?BestPrice");
+		Permission p7 = new Permission("?BestExpert");
+		Permission p8 = new Permission("?NoSupplier");
+		Permission p9 = new Permission("SendPO");
+
+		Permission p10 = new Permission("RecInvoice");
+		Permission p11 = new Permission("RecCreditNote");
+		Permission p12 = new Permission("NoCreditNoteRec");
+
+		Permission p13 = new Permission("PaymentProcess");
+		Permission p14 = new Permission("RecPaymentConf");
+		Permission p15 = new Permission("BlockGoods");
+
+		//add to policy
+		rbac.getPermission().add(p1);
+		rbac.getPermission().add(p2);
+		rbac.getPermission().add(p3);
+		rbac.getPermission().add(p4);
+		rbac.getPermission().add(p5);
+		rbac.getPermission().add(p6);
+		rbac.getPermission().add(p7);
+		rbac.getPermission().add(p8);
+		rbac.getPermission().add(p9);
+		rbac.getPermission().add(p10);
+		rbac.getPermission().add(p11);
+		rbac.getPermission().add(p12);
+		rbac.getPermission().add(p13);
+		rbac.getPermission().add(p14);
+		rbac.getPermission().add(p15);
+
+		rbacAdmin.assignUser(rbac, alice, r1);
+		rbacAdmin.assignUser(rbac, alice, r2);
+		rbacAdmin.assignUser(rbac, alice, r3);
+		rbacAdmin.assignUser(rbac, alice, r4);
+		rbacAdmin.assignUser(rbac, alice, r5);
+
+		rbacAdmin.assignUser(rbac, bob, r1);
+		rbacAdmin.assignUser(rbac, bob, r2);
+		rbacAdmin.assignUser(rbac, bob, r3);
+		rbacAdmin.assignUser(rbac, bob, r5);
+
+		rbacAdmin.assignUser(rbac, carol, r4);
+		rbacAdmin.assignUser(rbac, carol, r5);
+
+		rbacAdmin.assignUser(rbac, employee, r1);
+		rbacAdmin.assignUser(rbac, employee, r4);
+
+		rbacAdmin.grantPermission(rbac, p1, r1);
+
+		rbacAdmin.grantPermission(rbac, p2, r2);
+		rbacAdmin.grantPermission(rbac, p3, r2);
+
+		rbacAdmin.grantPermission(rbac, p4, r3);
+		rbacAdmin.grantPermission(rbac, p5, r3);
+		rbacAdmin.grantPermission(rbac, p6, r3);
+		rbacAdmin.grantPermission(rbac, p7, r3);
+		rbacAdmin.grantPermission(rbac, p8, r3);
+		rbacAdmin.grantPermission(rbac, p9, r3);
+
+		rbacAdmin.grantPermission(rbac, p10, r4);
+		rbacAdmin.grantPermission(rbac, p11, r4);
+		rbacAdmin.grantPermission(rbac, p12, r4);
+
+		rbacAdmin.grantPermission(rbac, p13, r5);
+		rbacAdmin.grantPermission(rbac, p14, r5);
+		rbacAdmin.grantPermission(rbac, p15, r5);
+
+		Role[] constR1R2 = {r1,r2};
+		Role[] constR1R3 = {r1,r3};
+		Role[] constR1R5 = {r1,r5};
+		Role[] constR2R3 = {r2,r3};
+		Role[] constR3R5 = {r3,r5};
+		Role[] constR4R2 = {r4,r2};
+		Role[] constR4R3 = {r4,r3};
+		Role[] constR4R5 = {r4,r5};
+
+		rbac.getDsodConstraint().add(new DSoDConstraint(constR1R2, 1));
+		rbac.getDsodConstraint().add(new DSoDConstraint(constR1R3, 1));
+		rbac.getDsodConstraint().add(new DSoDConstraint(constR1R5, 1));
+		rbac.getDsodConstraint().add(new DSoDConstraint(constR2R3, 1));
+		rbac.getDsodConstraint().add(new DSoDConstraint(constR3R5, 1));
+		rbac.getSsodConstraint().add(new SSoDConstraint(constR4R2, 1));
+		rbac.getSsodConstraint().add(new SSoDConstraint(constR4R3, 1));
+		rbac.getSsodConstraint().add(new SSoDConstraint(constR4R5, 1));
+
+		return rbac;
+	}
+
 	private static RbacPolicy create_Masood2010Example1(){
 		RbacPolicy rbac = new RbacPolicy("Masood2010Example1");
 
@@ -356,6 +502,48 @@ public class TestExample {
 
 		return rbac;
 	}
+	private static RbacPolicy create_Masood2009Example1(){
+		RbacPolicy rbac = new RbacPolicy("Masood2009Example1");
+
+		//create users
+		User u1 = new User("John");
+		User u2 = new User("Mary");
+
+		//add users to policy
+		rbacAdmin .addUser(rbac,u1);
+		rbacAdmin .addUser(rbac,u2);
+
+
+		rbacAdmin .addSu(rbac,new Su(u1, 1));
+		rbacAdmin .addDu(rbac,new Du(u1, 1));
+
+		rbacAdmin .addSu(rbac,new Su(u2, 1));
+		rbacAdmin .addDu(rbac,new Du(u2, 1));
+
+		//create role
+		Role r1 = new Role("Customer");
+
+		//add role to policy
+		rbacAdmin.addRole(rbac,r1);
+
+		//add role constraints to policy
+		rbacAdmin .addSr(rbac,new Sr(r1, 2));
+		rbacAdmin .addDr(rbac,new Dr(r1, 1));
+
+		rbacAdmin.assignUser(rbac, u1, r1);
+		rbacAdmin.assignUser(rbac, u2, r1);
+
+		Permission p1 = new Permission("Deposit");
+		Permission p2 = new Permission("Withdraw");
+		rbacAdmin .addPermission(rbac, p1);
+		rbacAdmin .addPermission(rbac, p2);
+
+		rbacAdmin .grantPermission(rbac, p1, r1);
+		rbacAdmin .grantPermission(rbac, p2, r1);
+
+		return rbac;
+	}
+
 	private static RbacPolicy create_Masood2009P1(){
 		RbacPolicy rbac = new RbacPolicy("Masood2009P1");
 
@@ -416,47 +604,6 @@ public class TestExample {
 		rbacAdmin.assignUser(rbac, u4, r3);
 
 		rbacAdmin.assignUser(rbac, u4, r4);
-
-		return rbac;
-	}
-	private static RbacPolicy create_Masood2009Example1(){
-		RbacPolicy rbac = new RbacPolicy("Masood2009Example1");
-
-		//create users
-		User u1 = new User("John");
-		User u2 = new User("Mary");
-
-		//add users to policy
-		rbacAdmin .addUser(rbac,u1);
-		rbacAdmin .addUser(rbac,u2);
-
-
-		rbacAdmin .addSu(rbac,new Su(u1, 1));
-		rbacAdmin .addDu(rbac,new Du(u1, 1));
-
-		rbacAdmin .addSu(rbac,new Su(u2, 1));
-		rbacAdmin .addDu(rbac,new Du(u2, 1));
-
-		//create role
-		Role r1 = new Role("Customer");
-
-		//add role to policy
-		rbacAdmin.addRole(rbac,r1);
-
-		//add role constraints to policy
-		rbacAdmin .addSr(rbac,new Sr(r1, 2));
-		rbacAdmin .addDr(rbac,new Dr(r1, 1));
-
-		rbacAdmin.assignUser(rbac, u1, r1);
-		rbacAdmin.assignUser(rbac, u2, r1);
-
-		Permission p1 = new Permission("Deposit");
-		Permission p2 = new Permission("Withdraw");
-		rbacAdmin .addPermission(rbac, p1);
-		rbacAdmin .addPermission(rbac, p2);
-
-		rbacAdmin .grantPermission(rbac, p1, r1);
-		rbacAdmin .grantPermission(rbac, p2, r1);
 
 		return rbac;
 	}

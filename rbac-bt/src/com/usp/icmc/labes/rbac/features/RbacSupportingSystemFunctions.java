@@ -9,7 +9,7 @@ import java.util.Set;
 import com.usp.icmc.labes.rbac.model.DSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
-import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
@@ -30,7 +30,7 @@ public class RbacSupportingSystemFunctions {
 
 	private RbacSupportingSystemFunctions() {}
 
-	public boolean addActiveRole(RbacPolicy policy, User user, Role role){
+	public boolean addActiveRole(RbacTuple policy, User user, Role role){
 		boolean userExists 			= utils.userExists(policy, user);
 		boolean roleExists 			= utils.roleExists(policy,role); 
 
@@ -55,7 +55,7 @@ public class RbacSupportingSystemFunctions {
 //		return false;
 //	}
 	
-//	public boolean addActiveRole(RbacPolicy policy, User user, Role role){
+//	public boolean addActiveRole(RbacTuple policy, User user, Role role){
 //		boolean userExists 			= utils.userExists(policy, user);
 //		boolean roleExists 			= utils.roleExists(policy,role); 
 //
@@ -95,7 +95,7 @@ public class RbacSupportingSystemFunctions {
 		return false;
 	}
 
-	public boolean dropActiveRole(RbacPolicy policy, User user, Role role){
+	public boolean dropActiveRole(RbacTuple policy, User user, Role role){
 		boolean userExists 			= utils.userExists(policy, user);
 		boolean roleExists 			= utils.roleExists(policy,role); 
 		
@@ -117,7 +117,7 @@ public class RbacSupportingSystemFunctions {
 		return false;
 	}
 
-	public Set<Permission> checkAccess(RbacPolicy pol, User usr, Permission permission){
+	public Set<Permission> checkAccess(RbacTuple pol, User usr, Permission permission){
 		Set<Role> rolesOfUsr = utils.getRolesAssignedToUser(pol, usr);
 		Set<Permission> prmSet = new HashSet<Permission>();
 		for (Role role : rolesOfUsr) {

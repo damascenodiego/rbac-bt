@@ -2,9 +2,7 @@ package com.usp.icmc.labes.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,21 +14,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
@@ -150,7 +144,7 @@ public class FsmUtils {
 		pw.close();
 	}
 
-	public FsmModel rbac2Fsm(RbacPolicy rbac) {
+	public FsmModel rbac2Fsm(RbacPolicy rbac) throws Exception {
 //		rbac.getUserRoleAssignment().clear();
 		List<RbacRequest> input = new ArrayList<RbacRequest>();
 		for (Role rol: rbac.getRole()) {
@@ -175,7 +169,7 @@ public class FsmUtils {
 		FsmModel rbac2fsm = new FsmModel(rbac.getName());
 
 		Queue<RbacState> toVisit = new LinkedList<RbacState>();
-		toVisit.add(acut.getCurrentState());
+		toVisit.add((RbacState) acut.getCurrentState().clone());
 
 		List<RbacState> visited = new ArrayList<RbacState>();
 
@@ -187,7 +181,7 @@ public class FsmUtils {
 				rbac2fsm.addState(new FsmState(origin.getName()));
 				for (RbacRequest in : input) {
 					out = acut.request(in);
-					destination = acut.getCurrentState();
+					destination = ((RbacState) acut.getCurrentState().clone());
 					rbac2fsm.addState(new FsmState(destination.getName()));
 					rbac2fsm.addTransition(new FsmTransition(rbac2fsm.getState(origin.getName()), in.toString(), (out? "grant" : "deny"), rbac2fsm.getState(destination.getName())));
 					if(!visited.contains(destination)) 

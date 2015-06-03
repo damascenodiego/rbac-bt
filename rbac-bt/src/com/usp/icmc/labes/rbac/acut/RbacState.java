@@ -118,5 +118,17 @@ public class RbacState {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		RbacState state = new RbacState(policy);
+		state.urAsCopy.clear();
+		state.urAcCopy.clear();
+		state.prAsCopy.clear();
+		state.urAsCopy.addAll(urAsCopy);
+		state.urAcCopy.addAll(urAcCopy);
+		state.prAsCopy.addAll(prAsCopy);
+		return state;
+	}
 
 }
