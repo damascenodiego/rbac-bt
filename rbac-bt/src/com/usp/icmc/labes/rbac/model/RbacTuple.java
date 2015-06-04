@@ -15,4 +15,6 @@ public interface RbacTuple {
 	List<Dr> getDr();
 	List<SSoDConstraint> getSsodConstraint();
 	List<DSoDConstraint> getDsodConstraint();
+	List<ActivationHierarchy> getActivationHierarchy();
+	List<InheritanceHierarchy> getInheritanceHierarchy();
 }

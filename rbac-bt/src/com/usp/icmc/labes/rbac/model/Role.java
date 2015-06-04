@@ -4,7 +4,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 
 
-public class Role {
+public class Role implements RbacElement {
 	
 	/* role name */
 	@XStreamAsAttribute

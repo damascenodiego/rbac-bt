@@ -6,9 +6,11 @@ import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacAdvancedReviewFunctions;
 import com.usp.icmc.labes.rbac.features.RbacReviewFunctions;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
+import com.usp.icmc.labes.rbac.model.ActivationHierarchy;
 import com.usp.icmc.labes.rbac.model.DSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Dr;
 import com.usp.icmc.labes.rbac.model.Du;
+import com.usp.icmc.labes.rbac.model.InheritanceHierarchy;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
@@ -172,5 +174,15 @@ public class RbacAcut implements RbacTuple{
 	
 	public RbacResponse getResponse() {
 		return response;
+	}
+
+	@Override
+	public List<ActivationHierarchy> getActivationHierarchy() {
+		return policy.getActivationHierarchy();
+	}
+
+	@Override
+	public List<InheritanceHierarchy> getInheritanceHierarchy() {
+		return policy.getInheritanceHierarchy();
 	}
 }
