@@ -1,12 +1,9 @@
 package com.usp.icmc.labes.rbac.model;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 public class Sr implements RbacElement, RbacMutableElement, RbacCardinality {
 
-	@XStreamAsAttribute
 	private Role role;
-	@XStreamAsAttribute
 	private int staticConstr;
 	
 

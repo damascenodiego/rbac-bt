@@ -1,13 +1,11 @@
 package com.usp.icmc.labes.rbac.model;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 
 
 public class Role implements RbacElement {
 	
 	/* role name */
-	@XStreamAsAttribute
 	private String name;
 	/* static cardinality */
 

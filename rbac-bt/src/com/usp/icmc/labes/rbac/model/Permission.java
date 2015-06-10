@@ -1,13 +1,11 @@
 package com.usp.icmc.labes.rbac.model;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 
 
 public class Permission implements RoleAssignable, RbacElement {
 	
 	/* permission name */
-	@XStreamAsAttribute
 	private String name;
 
 	public Permission() {

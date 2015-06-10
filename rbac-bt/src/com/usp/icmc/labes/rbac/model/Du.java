@@ -1,12 +1,9 @@
 package com.usp.icmc.labes.rbac.model;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 public class Du implements RbacElement, RbacMutableElement, RbacCardinality {
 
-	@XStreamAsAttribute
 	private User user;
-	@XStreamAsAttribute
 	private int dynamicConstr;
 	
 	public Du(User u,int dyn){

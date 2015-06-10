@@ -1,13 +1,11 @@
 package com.usp.icmc.labes.rbac.model;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 
 
 public class User implements RoleAssignable, RbacElement{
 
 	/* user name */
-	@XStreamAsAttribute
 	private String name;
 	/* static cardinality */
 

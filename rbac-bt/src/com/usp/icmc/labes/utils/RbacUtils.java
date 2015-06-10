@@ -1,29 +1,38 @@
 package com.usp.icmc.labes.utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.usp.icmc.labes.rbac.model.ActivationHierarchy;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.model.DSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Dr;
 import com.usp.icmc.labes.rbac.model.Du;
-import com.usp.icmc.labes.rbac.model.Hierarchy;
-import com.usp.icmc.labes.rbac.model.InheritanceHierarchy;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
-import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.SSoDConstraint;
-import com.usp.icmc.labes.rbac.model.SoDConstraint;
 import com.usp.icmc.labes.rbac.model.Sr;
 import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
@@ -32,45 +41,12 @@ import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 
 public class RbacUtils {
 
-	private XStream xstream;
+
+	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 
 	static RbacUtils instance;
 
 	private RbacUtils() {
-		xstream = new XStream(new DomDriver());
-		xstream.setMode(XStream.ID_REFERENCES);
-		xstream.alias("RBAC", RbacPolicy.class);
-		xstream.alias("RBAC", RbacMutant.class);
-		xstream.alias("user", User.class);
-		xstream.alias("role", Role.class);
-		xstream.alias("prms", Permission.class);
-		xstream.alias("AS", UserRoleAssignment.class);
-		xstream.alias("AC", UserRoleActivation.class);
-		xstream.alias("PA", PermissionRoleAssignment.class);
-		xstream.alias("SoD", SoDConstraint.class);
-		xstream.alias("SSoD", SSoDConstraint.class);
-		xstream.alias("DSoD", DSoDConstraint.class);
-		xstream.alias("Hier", Hierarchy.class);
-		xstream.alias("Ah", ActivationHierarchy.class);
-		xstream.alias("Ih", InheritanceHierarchy.class);
-		xstream.alias("Su", Su.class);
-		xstream.alias("Sr", Sr.class);
-		xstream.alias("Du", Du.class);
-		xstream.alias("Dr", Dr.class);
-		xstream.processAnnotations(RbacPolicy.class);
-		xstream.processAnnotations(RbacMutant.class);
-		xstream.processAnnotations(User.class);
-		xstream.processAnnotations(Role.class);
-		xstream.processAnnotations(Permission.class);
-		xstream.processAnnotations(UserRoleAssignment.class);
-		xstream.processAnnotations(UserRoleActivation.class);
-		xstream.processAnnotations(PermissionRoleAssignment.class);
-		xstream.processAnnotations(SoDConstraint.class);
-		xstream.processAnnotations(SSoDConstraint.class);
-		xstream.processAnnotations(Su.class);
-		xstream.processAnnotations(Sr.class);
-		xstream.processAnnotations(Du.class);
-		xstream.processAnnotations(Dr.class);
 		} 
 
 	public static RbacUtils getInstance() {
@@ -80,15 +56,276 @@ public class RbacUtils {
 		return instance;
 	}
 
-	public RbacPolicy LoadRbacPolicyFromXML(File xmlFile){
-		RbacPolicy result = (RbacPolicy) xstream.fromXML(xmlFile);
+	public RbacPolicy LoadRbacPolicyFromXML(File xmlFile) throws ParserConfigurationException, SAXException, IOException{
+		RbacPolicy result = new RbacPolicy(); //(RbacPolicy) xstream.fromXML(xmlFile);
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(xmlFile);
+		doc.getDocumentElement().normalize();
+		Element fsmElement = doc.getDocumentElement();
+		result.setName(fsmElement.getAttribute("name"));
+		
+		Node node = fsmElement.getElementsByTagName("users").item(0);
+		NodeList el = ((Element)node).getElementsByTagName("user");
+		NodeList subEl =null;
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			result.getUser().add(new User(in.getAttribute("name")));
+		}
+		
+		node = fsmElement.getElementsByTagName("roles").item(0);
+		el = ((Element)node).getElementsByTagName("role");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			result.getRole().add(new Role(in.getAttribute("name")));
+		}
+		
+		node = fsmElement.getElementsByTagName("permissions").item(0);
+		el = ((Element)node).getElementsByTagName("permission");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			result.getRole().add(new Role(in.getAttribute("name")));
+		}
+		
+		node = fsmElement.getElementsByTagName("SuConstraints").item(0);
+		el = ((Element)node).getElementsByTagName("Su");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			result.getSu().add(new Su(getUserByName(result, in.getAttribute("name")), Integer.valueOf(in.getAttribute("cardinality"))));
+		}
+
+		node = fsmElement.getElementsByTagName("DuConstraints").item(0);
+		el = ((Element)node).getElementsByTagName("Du");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			result.getDu().add(new Du(getUserByName(result, in.getAttribute("name")), Integer.valueOf(in.getAttribute("cardinality"))));
+		}
+		
+		node = fsmElement.getElementsByTagName("SrConstraints").item(0);
+		el = ((Element)node).getElementsByTagName("Sr");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			result.getSr().add(new Sr(getRoleByName(result, in.getAttribute("name")), Integer.valueOf(in.getAttribute("cardinality"))));
+		}
+
+		node = fsmElement.getElementsByTagName("DrConstraints").item(0);
+		el = ((Element)node).getElementsByTagName("Dr");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			result.getDr().add(new Dr(getRoleByName(result, in.getAttribute("name")), Integer.valueOf(in.getAttribute("cardinality"))));
+		}
+
+		node = fsmElement.getElementsByTagName("URAssignments").item(0);
+		el = ((Element)node).getElementsByTagName("AS");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			User u = getUserByName(result, in.getAttribute("user"));
+			Role r = getRoleByName(result, in.getAttribute("role"));
+			result.getUserRoleAssignment().add(new UserRoleAssignment(u, r));
+		}
+		
+		node = fsmElement.getElementsByTagName("URActivations").item(0);
+		el = ((Element)node).getElementsByTagName("AS");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			User u = getUserByName(result, in.getAttribute("user"));
+			Role r = getRoleByName(result, in.getAttribute("role"));
+			result.getUserRoleActivation().add(new UserRoleActivation(u, r));
+		}
+
+		node = fsmElement.getElementsByTagName("PRAssignments").item(0);
+		el = ((Element)node).getElementsByTagName("PA");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			Permission p = getPermissionByName(result, in.getAttribute("permission"));
+			Role r = getRoleByName(result, in.getAttribute("role"));
+			result.getPermissionRoleAssignment().add(new PermissionRoleAssignment(p, r));
+		}
+
+		node = fsmElement.getElementsByTagName("SSoDConstraints").item(0);
+		el = ((Element)node).getElementsByTagName("SSoD");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			int card = Integer.valueOf(in.getAttribute("cardinality"));
+			subEl = in.getElementsByTagName("role");
+			List<Role> set = new ArrayList<Role>();
+			for (int j = 0; i < subEl.getLength(); i++) {
+				Element subIn = (Element) subEl.item(i);
+				String roleName = subIn.getAttribute("name");
+				set.add(getRoleByName(result, roleName));
+			}
+			result.getSSoDConstraint().add(new SSoDConstraint(set, card));
+		}
+
+		node = fsmElement.getElementsByTagName("DSoDConstraints").item(0);
+		el = ((Element)node).getElementsByTagName("DSoD");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			int card = Integer.valueOf(in.getAttribute("cardinality"));
+			subEl = in.getElementsByTagName("role");
+			List<Role> set = new ArrayList<Role>();
+			for (int j = 0; i < subEl.getLength(); i++) {
+				Element subIn = (Element) subEl.item(i);
+				String roleName = subIn.getAttribute("name");
+				set.add(getRoleByName(result, roleName));
+			}
+			result.getDSoDConstraint().add(new DSoDConstraint(set, card));
+		}
+
+
 		return result;
 
 	}
 
-	public void WriteRbacPolicyAsXML(RbacTuple rbacPol, File xmlFile) throws FileNotFoundException{
-		OutputStream fos = new FileOutputStream(xmlFile);
-		xstream.toXML(rbacPol, fos);
+	public void WriteRbacPolicyAsXML(RbacTuple rbacPol, File xmlFile) throws TransformerException, ParserConfigurationException{
+//		OutputStream fos = new FileOutputStream(xmlFile);
+//		xstream.toXML(rbacPol, fos);
+		
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		Document doc = docBuilder.newDocument();
+
+		Element rootElement = doc.createElement("RBAC");
+		String name = null;
+		if(rbacPol instanceof RbacPolicy){
+			name = ((RbacPolicy) rbacPol).getName();
+		}else if( rbacPol instanceof RbacAcut){
+			name = ((RbacAcut) rbacPol).getName();
+		}
+		rootElement.setAttribute("name",name);
+		
+		Element users = doc.createElement("users");
+		for (User el: rbacPol.getUser()) {
+			Element child = doc.createElement("user");
+			child.setAttribute("name", el.getName());
+			users.appendChild(child);
+		}
+		rootElement.appendChild(users);
+		
+		Element roles = doc.createElement("roles");
+		for (Role el: rbacPol.getRole()) {
+			Element child = doc.createElement("role");
+			child.setAttribute("name", el.getName());
+			roles.appendChild(child);
+		}
+		rootElement.appendChild(roles);
+		
+		
+		Element permissions = doc.createElement("permissions");
+		for (Permission el: rbacPol.getPermission()) {
+			Element child = doc.createElement("permission");
+			child.setAttribute("name", el.getName());
+			permissions.appendChild(child);
+		}
+		rootElement.appendChild(permissions);
+		
+		Element card = doc.createElement("SuConstraints");
+		for (Su el: rbacPol.getSu()) {
+			Element child = doc.createElement("Su");
+			child.setAttribute("user", el.getUser().getName());
+			child.setAttribute("cardinality", Integer.toString(el.getCardinality()));
+			card.appendChild(child);
+		}
+		rootElement.appendChild(card);
+		
+		card = doc.createElement("DuConstraints");
+		for (Du el: rbacPol.getDu()) {
+			Element child = doc.createElement("Du");
+			child.setAttribute("user", el.getUser().getName());
+			child.setAttribute("cardinality", Integer.toString(el.getCardinality()));
+			card.appendChild(child);
+		}
+		rootElement.appendChild(card);
+
+		card = doc.createElement("SrConstraints");
+		for (Sr el: rbacPol.getSr()) {
+			Element child = doc.createElement("Sr");
+			child.setAttribute("role", el.getRole().getName());
+			child.setAttribute("cardinality", Integer.toString(el.getCardinality()));
+			card.appendChild(child);
+		}
+		rootElement.appendChild(card);
+
+		card = doc.createElement("DrConstraints");
+		for (Dr el: rbacPol.getDr()) {
+			Element child = doc.createElement("Dr");
+			child.setAttribute("role", el.getRole().getName());
+			child.setAttribute("cardinality", Integer.toString(el.getCardinality()));
+			card.appendChild(child);
+		}
+		rootElement.appendChild(card);
+		
+		card = doc.createElement("URAssignments");
+		for (UserRoleAssignment el: rbacPol.getUserRoleAssignment()) {
+			Element child = doc.createElement("AS");
+			child.setAttribute("user", el.getUser().getName());
+			child.setAttribute("role", el.getRole().getName());
+			card.appendChild(child);
+		}
+		rootElement.appendChild(card);
+		
+		card = doc.createElement("URActivations");
+		for (UserRoleActivation el: rbacPol.getUserRoleActivation()) {
+			Element child = doc.createElement("AC");
+			child.setAttribute("user", el.getUser().getName());
+			child.setAttribute("role", el.getRole().getName());
+			card.appendChild(child);
+		}
+		rootElement.appendChild(card);
+		
+		card = doc.createElement("PRAssignments");
+		for (PermissionRoleAssignment el: rbacPol.getPermissionRoleAssignment()) {
+			Element child = doc.createElement("PA");
+			child.setAttribute("permission", el.getPermission().getName());
+			child.setAttribute("role", el.getRole().getName());
+			card.appendChild(child);
+		}
+		rootElement.appendChild(card);
+		
+		Element sods = doc.createElement("SSoDConstraints");
+		Element rEl = null;
+		for (SSoDConstraint el: rbacPol.getSSoDConstraint()) {
+			Element sod = doc.createElement("SSoD");
+			sod.setAttribute("cardinality", Integer.toString(el.getCardinality()));
+			for (Role r : el.getSodSet()) {
+				rEl = doc.createElement("role");
+				rEl.setAttribute("name", r.getName());
+				sod.appendChild(rEl);
+			}
+			sods.appendChild(sod);
+		}
+		rootElement.appendChild(sods);
+		
+		sods = doc.createElement("DSoDConstraints");
+		rEl = null;
+		for (DSoDConstraint el: rbacPol.getDSoDConstraint()) {
+			Element sod = doc.createElement("DSoD");
+			sod.setAttribute("cardinality", Integer.toString(el.getCardinality()));
+			for (Role r : el.getSodSet()) {
+				rEl = doc.createElement("role");
+				rEl.setAttribute("name", r.getName());
+				sod.appendChild(rEl);
+			}
+			sods.appendChild(sod);
+		}
+		rootElement.appendChild(sods);
+		
+		doc.appendChild(rootElement);
+
+		// write the content into xml file
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "3");
+		DOMSource source = new DOMSource(doc);
+		StreamResult result = new StreamResult(xmlFile);
+ 
+		// Output to console for testing
+		// StreamResult result = new StreamResult(System.out);
+ 
+		transformer.transform(source, result);
+		
+//		OutputStream fos = new FileOutputStream(fsmFile);
+//		xstream.toXML(fsm, fos);
 	}
 
 	public boolean userExists(RbacTuple pol, User usr){
@@ -295,6 +532,33 @@ public class RbacUtils {
 				result.add(ur.getRole());
 		}
 		return result;
+	}
+	
+	public User getUserByName(RbacTuple t, String n){
+		for (User u: t.getUser()) {
+			if(u.getName().equals(n)){
+				return u;
+			}
+		}
+		return null;
+	}
+	
+	public Role getRoleByName(RbacTuple t, String n){
+		for (Role u: t.getRole()) {
+			if(u.getName().equals(n)){
+				return u;
+			}
+		}
+		return null;
+	}
+	
+	public Permission getPermissionByName(RbacTuple t, String n){
+		for (Permission u: t.getPermission()) {
+			if(u.getName().equals(n)){
+				return u;
+			}
+		}
+		return null;
 	}
 
 	//	boolean assignUser(RbacTuple pol, User usr, Role rol){

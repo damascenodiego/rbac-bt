@@ -5,11 +5,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-
 public class DSoDConstraint implements SoDConstraint {
 
-	@XStreamAsAttribute
 	int ds;
 	Set<Role> sodSet;
 

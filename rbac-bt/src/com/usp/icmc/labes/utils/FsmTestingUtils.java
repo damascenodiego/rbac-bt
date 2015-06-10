@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmPath;
 import com.usp.icmc.labes.fsm.FsmState;
@@ -22,19 +20,10 @@ public class FsmTestingUtils {
 
 	private FsmUtils fsmUtils = FsmUtils.getInstance();
 
-	private XStream xstream;
 
 	static FsmTestingUtils instance;
 
 	private FsmTestingUtils() {
-		xstream = new XStream(new DomDriver());
-		xstream.setMode(XStream.ID_REFERENCES);
-		xstream.alias("FSM", FsmModel.class);
-		xstream.alias("state", FsmState.class);
-		xstream.alias("transition", FsmTransition.class);
-		xstream.processAnnotations(FsmModel.class);
-		xstream.processAnnotations(FsmState.class);
-		xstream.processAnnotations(FsmTransition.class);
 	}
 
 	public static  FsmTestingUtils getInstance() {

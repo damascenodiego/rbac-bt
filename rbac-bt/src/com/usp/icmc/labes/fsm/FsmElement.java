@@ -2,13 +2,10 @@ package com.usp.icmc.labes.fsm;
 
 import java.util.Properties;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-
 public abstract class FsmElement {
 	
 	private Properties properties;
 	
-	@XStreamAsAttribute
 	private String name;
 	
 	public FsmElement() {

@@ -1,12 +1,9 @@
 package com.usp.icmc.labes.rbac.model;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 public class UserRoleActivation implements RbacElement {
 
-	@XStreamAsAttribute
 	private User user;
-	@XStreamAsAttribute
 	private Role role;
 
 	public UserRoleActivation(){

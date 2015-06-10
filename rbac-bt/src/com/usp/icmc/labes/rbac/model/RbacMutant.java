@@ -1,17 +1,12 @@
 package com.usp.icmc.labes.rbac.model;
 
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 public class RbacMutant extends RbacPolicy{
 
-	@XStreamOmitField
 	private RbacTuple policy;
-	@XStreamOmitField
 	private RbacMutableElement originalElement;
-	@XStreamOmitField
 	private RbacMutableElement mutantElement;
-	@XStreamOmitField
 	private MutantType type;
 
 	public RbacMutant(RbacPolicy pol, RbacMutableElement orig, RbacMutableElement delt, MutantType t) {

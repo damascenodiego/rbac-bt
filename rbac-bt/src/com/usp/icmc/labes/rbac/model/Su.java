@@ -1,12 +1,9 @@
 package com.usp.icmc.labes.rbac.model;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 public class Su implements RbacElement, RbacMutableElement, RbacCardinality {
 
-	@XStreamAsAttribute
 	private User user;
-	@XStreamAsAttribute
 	private int staticConstr;
 	
 

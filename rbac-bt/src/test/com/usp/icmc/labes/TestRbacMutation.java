@@ -2,7 +2,6 @@ package test.com.usp.icmc.labes;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,6 @@ import com.usp.icmc.labes.rbac.model.MutantType;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
-import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.SSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Sr;
@@ -45,7 +43,7 @@ public class TestRbacMutation {
 			policies.add(create_SeniorTraineeDoctor()); //XXX OK
 			//		policies.add(create_ProcureToStock());
 			//			policies.add(create_ProcureToStockV2());
-//			policies.add(create_Masood2010Example1()); //XXX OK
+			policies.add(create_Masood2010Example1()); //XXX OK
 //			policies.add(create_ExperiencePointsv2()); //XXX OK
 			////		policies.add(create_Masood2009Example1()); //XXX similar to Masood2010Example1
 			//					policies.add(create_Masood2009P1());
