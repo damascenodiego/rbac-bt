@@ -159,13 +159,13 @@ public class RbacAcut implements RbacTuple{
 	}
 
 	@Override
-	public List<SSoDConstraint> getSsodConstraint() {
-		return policy.getSsodConstraint();
+	public List<SSoDConstraint> getSSoDConstraint() {
+		return policy.getSSoDConstraint();
 	}
 
 	@Override
-	public List<DSoDConstraint> getDsodConstraint() {
-		return policy.getDsodConstraint();
+	public List<DSoDConstraint> getDSoDConstraint() {
+		return policy.getDSoDConstraint();
 	}
 
 	public void setResponse(RbacResponse response) {

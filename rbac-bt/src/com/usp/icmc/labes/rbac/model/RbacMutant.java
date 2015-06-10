@@ -1,165 +1,124 @@
 package com.usp.icmc.labes.rbac.model;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import com.usp.icmc.labes.rbac.acut.RbacRequest;
-import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestAssignPR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignPR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
-import com.usp.icmc.labes.rbac.acut.RbacResponse;
-import com.usp.icmc.labes.rbac.acut.RbacState;
-import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
-import com.usp.icmc.labes.rbac.features.RbacAdvancedReviewFunctions;
-import com.usp.icmc.labes.rbac.features.RbacReviewFunctions;
-import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
-import com.usp.icmc.labes.utils.RbacUtils;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
-public class RbacMutant implements RbacTuple{
+public class RbacMutant extends RbacPolicy{
 
+	@XStreamOmitField
 	private RbacTuple policy;
-	private List<RbacMutableElement> originalList;
-	private List<RbacMutableElement> mutantList;
+	@XStreamOmitField
 	private RbacMutableElement originalElement;
+	@XStreamOmitField
 	private RbacMutableElement mutantElement;
+	@XStreamOmitField
+	private MutantType type;
 
-	public RbacMutant(RbacPolicy pol, RbacMutableElement orig, RbacMutableElement delt) {
+	public RbacMutant(RbacPolicy pol, RbacMutableElement orig, RbacMutableElement delt, MutantType t) {
 		this(pol);
-		this.originalElement = orig;
 		this.mutantElement = delt;
+		this.originalElement = orig;
+		type = t;
+		setupMutant();
+		this.setName(pol.getName()+"_"+getType().name());
 	}
 
-	public RbacMutant(RbacMutant mut, RbacMutableElement orig, RbacMutableElement delt) {
-		this(mut);
-		this.originalElement = orig;
+	public RbacMutant(RbacMutant mut, RbacMutableElement orig, RbacMutableElement delt, MutantType t) {
+		this((RbacTuple) mut);
 		this.mutantElement = delt;
+		this.originalElement = orig;
+		type = t;
+		setupMutant();
+		this.setName(getName()+"_"+getType().name());
 	}
 
 	private RbacMutant(RbacTuple pol) {
+		super();
 		this.policy = pol;
-		this.originalList = new ArrayList<RbacMutableElement>();
-		this.mutantList = new ArrayList<RbacMutableElement>();
-		setupMutant();
+		this.setName(((RbacPolicy)pol).getName());
+
 	}
 
 	public RbacTuple getPolicy() {
 		return policy;
 	}
 
+
+
 	private void setupMutant() {
+		getUser().addAll(policy.getUser());
+		getRole().addAll(policy.getRole());
+		getPermission().addAll(policy.getPermission());
+		getUserRoleAssignment().addAll(policy.getUserRoleAssignment());
+		getUserRoleActivation().addAll(policy.getUserRoleActivation());
+		getPermissionRoleAssignment().addAll(policy.getPermissionRoleAssignment());
+		getActivationHierarchy().addAll(policy.getActivationHierarchy());
+		getInheritanceHierarchy().addAll(policy.getInheritanceHierarchy());
+		getSu().addAll(policy.getSu());
+		getDu().addAll(policy.getDu());
+		getSr().addAll(policy.getSr());
+		getDr().addAll(policy.getDr());
+		getSSoDConstraint().addAll(policy.getSSoDConstraint());
+		getDSoDConstraint().addAll(policy.getDSoDConstraint());
+
 		if(originalElement instanceof UserRoleAssignment && mutantElement instanceof UserRoleAssignment){
-			originalList.addAll(policy.getUserRoleAssignment());
-			mutantList.addAll(policy.getUserRoleAssignment());
-		
+			int index = getUserRoleAssignment().indexOf(originalElement);
+			getUserRoleAssignment().set(index,(UserRoleAssignment) mutantElement);
+			getUserRoleAssignment().remove(originalElement);
+
+		}else if(originalElement instanceof UserRoleActivation && mutantElement instanceof UserRoleActivation){
+			int index = getUserRoleActivation().indexOf(originalElement);
+			getUserRoleActivation().set(index,(UserRoleActivation) mutantElement);
+			getUserRoleActivation().remove(originalElement);
+
 		}else if(originalElement instanceof ActivationHierarchy && mutantElement instanceof ActivationHierarchy){
-			originalList.addAll(policy.getActivationHierarchy());
-			mutantList.addAll(policy.getActivationHierarchy());
+			int index = getActivationHierarchy().indexOf(originalElement);
+			getActivationHierarchy().set(index,(ActivationHierarchy) mutantElement);
+			getActivationHierarchy().remove(originalElement);
 
 		}else if(originalElement instanceof InheritanceHierarchy && mutantElement instanceof InheritanceHierarchy){
-			originalList.addAll(policy.getInheritanceHierarchy());
-			mutantList.addAll(policy.getInheritanceHierarchy());
-			
+			int index = getInheritanceHierarchy().indexOf(originalElement);
+			getInheritanceHierarchy().set(index,(InheritanceHierarchy) mutantElement);
+			getInheritanceHierarchy().remove(originalElement);
+
 		}else if(originalElement instanceof Su && mutantElement instanceof Su){
-			originalList.addAll(policy.getSu());
-			mutantList.addAll(policy.getSu());
-			
+			int index = getSu().indexOf(originalElement);
+			getSu().set(index,(Su) mutantElement);
+			getSu().remove(originalElement);
+
 		}else if(originalElement instanceof Du && mutantElement instanceof Du){
-			originalList.addAll(policy.getDu());
-			mutantList.addAll(policy.getDu());
+			int index = getDu().indexOf(originalElement);
+			getDu().set(index,(Du) mutantElement);
+			getDu().remove(originalElement);
 
 		}else if(originalElement instanceof Sr && mutantElement instanceof Sr){
-			originalList.addAll(policy.getSr());
-			mutantList.addAll(policy.getSr());
+			int index = getSr().indexOf(originalElement);
+			getSr().set(index,(Sr) mutantElement);
+			getSr().remove(originalElement);
 
 		}else if(originalElement instanceof Dr && mutantElement instanceof Dr){
-			originalList.addAll(policy.getDr());
-			mutantList.addAll(policy.getDr());
-			
+			int index = getDr().indexOf(originalElement);
+			getDr().set(index,(Dr) mutantElement);
+			getDr().remove(originalElement);
+
 		}else if(originalElement instanceof SSoDConstraint && mutantElement instanceof SSoDConstraint){
-			originalList.addAll(policy.getSsodConstraint());
-			mutantList.addAll(policy.getSsodConstraint());
-			
+			int index = getSSoDConstraint().indexOf(originalElement);
+			getSSoDConstraint().set(index,(SSoDConstraint) mutantElement);
+			getSSoDConstraint().remove(originalElement);
+
 		}else if(originalElement instanceof DSoDConstraint && mutantElement instanceof DSoDConstraint){
-			originalList.addAll(policy.getDsodConstraint());
-			mutantList.addAll(policy.getDsodConstraint());
-
+			int index = getDSoDConstraint().indexOf(originalElement);
+			getDSoDConstraint().set(index,(DSoDConstraint) mutantElement);
+			getDSoDConstraint().remove(originalElement);
 		}
-		mutantList.remove(originalElement);
-		mutantList.add(mutantElement);
 	}
 
-	@Override
-	public List<UserRoleAssignment> getUserRoleAssignment() {
-		return policy.getUserRoleAssignment();
+	public MutantType getType() {
+		return type;
 	}
 
-	@Override
-	public List<UserRoleActivation> getUserRoleActivation() {
-		return policy.getUserRoleActivation();
+	public void setType(MutantType type) {
+		this.type = type;
 	}
 
-	@Override
-	public List<PermissionRoleAssignment> getPermissionRoleAssignment() {
-		return policy.getPermissionRoleAssignment();
-	}
-
-	@Override
-	public List<User> getUser() {
-		return policy.getUser();
-	}
-
-	@Override
-	public List<Role> getRole() {
-		return policy.getRole();
-	}
-
-	@Override
-	public List<Permission> getPermission() {
-		return policy.getPermission();
-	}
-
-	@Override
-	public List<Su> getSu() {
-		return policy.getSu();
-	}
-
-	@Override
-	public List<Sr> getSr() {
-		return policy.getSr();
-	}
-
-	@Override
-	public List<Du> getDu() {
-		return policy.getDu();
-	}
-
-	@Override
-	public List<Dr> getDr() {
-		return policy.getDr();
-	}
-
-	@Override
-	public List<SSoDConstraint> getSsodConstraint() {
-		return policy.getSsodConstraint();
-	}
-
-	@Override
-	public List<DSoDConstraint> getDsodConstraint() {
-		return policy.getDsodConstraint();
-	}
-
-	@Override
-	public List<ActivationHierarchy> getActivationHierarchy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<InheritanceHierarchy> getInheritanceHierarchy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

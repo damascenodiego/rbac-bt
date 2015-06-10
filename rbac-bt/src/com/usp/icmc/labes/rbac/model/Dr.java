@@ -2,7 +2,7 @@ package com.usp.icmc.labes.rbac.model;
 
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-public class Dr implements RbacElement, RbacMutableElement {
+public class Dr implements RbacElement, RbacMutableElement, RbacCardinality {
 
 	@XStreamAsAttribute
 	private Role role;
@@ -22,25 +22,24 @@ public class Dr implements RbacElement, RbacMutableElement {
 
 
 
-	public int getDynamicConstr() {
+	public int getCardinality() {
 		return dynamicConstr;
 	}
 
 
 
-	public void setDynamicConstr(int dynamicConstr) {
+	public void setCardinality(int dynamicConstr) {
 		this.dynamicConstr = dynamicConstr;
 	}
-
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + dynamicConstr;
 		result = prime * result + ((role == null) ? 0 : role.hashCode());
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -51,6 +50,8 @@ public class Dr implements RbacElement, RbacMutableElement {
 		if (!(obj instanceof Dr))
 			return false;
 		Dr other = (Dr) obj;
+		if (dynamicConstr != other.dynamicConstr)
+			return false;
 		if (role == null) {
 			if (other.role != null)
 				return false;
@@ -58,6 +59,7 @@ public class Dr implements RbacElement, RbacMutableElement {
 			return false;
 		return true;
 	}
+
 
 	@Override
 	public String toString() {

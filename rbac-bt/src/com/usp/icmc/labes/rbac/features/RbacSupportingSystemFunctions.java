@@ -71,7 +71,7 @@ public class RbacSupportingSystemFunctions {
 //
 		Map<DSoDConstraint, Set<Role> > totalRolesActive = new HashMap<DSoDConstraint, Set<Role> > ();
 		boolean dsdValid = true;
-		for (DSoDConstraint dsd : policy.getDsodConstraint()) {
+		for (DSoDConstraint dsd : policy.getDSoDConstraint()) {
 			Set<Role> ac = new HashSet<Role>();
 			for (Role r : dsd.getSodSet()) {
 				if(rolesActive.contains(r)) ac.add(r);

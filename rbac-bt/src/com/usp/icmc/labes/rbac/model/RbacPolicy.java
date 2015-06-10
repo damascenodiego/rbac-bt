@@ -151,19 +151,19 @@ public class RbacPolicy implements RbacTuple{
 		this.permissionRoleAssignment = permissionRoleAssignment;
 	}
 
-	public List<SSoDConstraint> getSsodConstraint() {
+	public List<SSoDConstraint> getSSoDConstraint() {
 		return ssodConstraint;
 	}
 
-	public void setSsodConstraint(List<SSoDConstraint> ssodConstraint) {
+	public void setSSoDConstraint(List<SSoDConstraint> ssodConstraint) {
 		this.ssodConstraint = ssodConstraint;
 	}
 
-	public List<DSoDConstraint> getDsodConstraint() {
+	public List<DSoDConstraint> getDSoDConstraint() {
 		return dsodConstraint;
 	}
 
-	public void setDsodConstraint(List<DSoDConstraint> dsodConstraint) {
+	public void setDSoDConstraint(List<DSoDConstraint> dsodConstraint) {
 		this.dsodConstraint = dsodConstraint;
 	}
 

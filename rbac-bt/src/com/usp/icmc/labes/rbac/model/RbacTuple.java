@@ -13,8 +13,8 @@ public interface RbacTuple {
 	List<Sr> getSr();
 	List<Du> getDu();
 	List<Dr> getDr();
-	List<SSoDConstraint> getSsodConstraint();
-	List<DSoDConstraint> getDsodConstraint();
+	List<SSoDConstraint> getSSoDConstraint();
+	List<DSoDConstraint> getDSoDConstraint();
 	List<ActivationHierarchy> getActivationHierarchy();
 	List<InheritanceHierarchy> getInheritanceHierarchy();
 }

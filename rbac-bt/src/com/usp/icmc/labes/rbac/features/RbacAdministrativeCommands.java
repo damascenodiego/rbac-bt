@@ -107,7 +107,7 @@ public class RbacAdministrativeCommands {
 
 		Map<SSoDConstraint, Set<Role> > totalRolesAssigned = new HashMap<SSoDConstraint, Set<Role> > ();
 		boolean ssdValid = true;
-		for (SSoDConstraint ssd : policy.getSsodConstraint()) {
+		for (SSoDConstraint ssd : policy.getSSoDConstraint()) {
 			Set<Role> as = new HashSet<Role>();
 			for (Role r : ssd.getSodSet()) {
 				if(rolesAssigned.contains(r)) as.add(r);

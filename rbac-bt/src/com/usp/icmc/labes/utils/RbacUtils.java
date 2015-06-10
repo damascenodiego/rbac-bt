@@ -18,6 +18,7 @@ import com.usp.icmc.labes.rbac.model.Hierarchy;
 import com.usp.icmc.labes.rbac.model.InheritanceHierarchy;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
@@ -39,6 +40,7 @@ public class RbacUtils {
 		xstream = new XStream(new DomDriver());
 		xstream.setMode(XStream.ID_REFERENCES);
 		xstream.alias("RBAC", RbacPolicy.class);
+		xstream.alias("RBAC", RbacMutant.class);
 		xstream.alias("user", User.class);
 		xstream.alias("role", Role.class);
 		xstream.alias("prms", Permission.class);
@@ -56,6 +58,7 @@ public class RbacUtils {
 		xstream.alias("Du", Du.class);
 		xstream.alias("Dr", Dr.class);
 		xstream.processAnnotations(RbacPolicy.class);
+		xstream.processAnnotations(RbacMutant.class);
 		xstream.processAnnotations(User.class);
 		xstream.processAnnotations(Role.class);
 		xstream.processAnnotations(Permission.class);
@@ -246,7 +249,7 @@ public class RbacUtils {
 		int total = urList.size();
 		Su constr = getSu(policy, user);
 		if(constr==null) return true; 
-		return total<constr.getStaticConstr();
+		return total<constr.getCardinality();
 	}
 
 	public boolean afterAssignSrIsValid(RbacTuple policy, Role role) {
@@ -254,7 +257,7 @@ public class RbacUtils {
 		int total = urList.size();
 		Sr constr = getSr(policy, role);
 		if(constr==null) return true;
-		return total<constr.getStaticConstr();
+		return total<constr.getCardinality();
 	}
 
 	public boolean afterActivateDuIsValid(RbacTuple policy, User user) {
@@ -262,7 +265,7 @@ public class RbacUtils {
 		int total = urList.size();
 		Du constr = getDu(policy, user);
 		if(constr==null) return true;
-		return total<constr.getDynamicConstr();
+		return total<constr.getCardinality();
 	}
 
 	public boolean afterActivateDrIsValid(RbacTuple policy, Role role) {
@@ -270,7 +273,7 @@ public class RbacUtils {
 		int total = urList.size();
 		Dr constr = getDr(policy, role);
 		if(constr==null) return true;
-		return total<constr.getDynamicConstr();
+		return total<constr.getCardinality();
 	}
 
 

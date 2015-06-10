@@ -1,0 +1,41 @@
+package com.usp.icmc.labes.rbac.model;
+
+public enum MutantType {
+	UR_REPLACE_U, 
+	UR_REPLACE_R, 
+	UR_REPLACE_UR,
+	
+//	PR_REPLACE_P, 
+//	PR_REPLACE_R, 
+//	PR_REPLACE_PR,
+//	
+//	AH_REPLACE_Sr,
+//	AH_REPLACE_Jr,
+//	AH_REPLACE_SrJr,
+//	
+//	IH_REPLACE_Sr,
+//	IH_REPLACE_Jr,
+//	IH_REPLACE_SrJr,
+	
+	Su_INCREMENT, 
+	Su_DECREMENT,
+	
+	Du_INCREMENT, 
+	Du_DECREMENT,
+	
+	Sr_INCREMENT, 
+	Sr_DECREMENT,
+	
+	Dr_INCREMENT, 
+	Dr_DECREMENT,
+	
+	SSoD_REPLACE,
+	DSoD_REPLACE,
+	
+	Ss_INCREMENT, 
+	Ss_DECREMENT,
+	
+	Ds_INCREMENT, 
+	Ds_DECREMENT,
+}
+

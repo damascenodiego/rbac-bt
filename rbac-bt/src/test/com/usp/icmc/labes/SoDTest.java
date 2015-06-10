@@ -89,7 +89,7 @@ public class SoDTest {
 		assertFalse(rbacAdmin.addRole(rbac,r1));
 
 		Role[] set = {r1,r2,r3};
-		rbac.getSsodConstraint().add(new SSoDConstraint(set, 2));
+		rbac.getSSoDConstraint().add(new SSoDConstraint(set, 2));
 
 		return rbac;
 	}
@@ -220,7 +220,7 @@ public class SoDTest {
 		//			rbac.getSsodConstraint().add(new SSoDConstraint(set, 2));
 
 		Role[] dss = {r1,r2,r3};
-		rbac.getDsodConstraint().add(new DSoDConstraint(dss, 2));
+		rbac.getDSoDConstraint().add(new DSoDConstraint(dss, 2));
 
 		return rbac;
 	}
@@ -348,10 +348,10 @@ public class SoDTest {
 		assertFalse(rbacAdmin.addRole(rbac,r1));
 
 		Role[] set = {r1,r2,r3};
-		rbac.getSsodConstraint().add(new SSoDConstraint(set, 3));
+		rbac.getSSoDConstraint().add(new SSoDConstraint(set, 3));
 
 		Role[] dss = {r1,r2,r3};
-		rbac.getDsodConstraint().add(new DSoDConstraint(dss, 3));
+		rbac.getDSoDConstraint().add(new DSoDConstraint(dss, 3));
 		return rbac;
 	}
 
