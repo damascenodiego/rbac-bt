@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<RBAC name="SecureBank_UR_REPLACE_R_27">
+   <users>
+      <user name="Dave"/>
+      <user name="Sarah"/>
+      <user name="John"/>
+      <user name="Mark"/>
+   </users>
+   <roles>
+      <role name="Teller"/>
+      <role name="LoanOfficer"/>
+      <role name="DayTime System Operator (DSO)"/>
+      <role name="NightTime System Operator (NSO)"/>
+      <role name="System Operator Manager (SOM)"/>
+   </roles>
+   <permissions/>
+   <SuConstraints/>
+   <DuConstraints/>
+   <SrConstraints/>
+   <DrConstraints/>
+   <URAssignments>
+      <AS role="Teller" user="Dave"/>
+      <AS role="LoanOfficer" user="Sarah"/>
+      <AS role="NightTime System Operator (NSO)" user="Sarah"/>
+      <AS role="NightTime System Operator (NSO)" user="John"/>
+      <AS role="System Operator Manager (SOM)" user="Mark"/>
+   </URAssignments>
+   <URActivations/>
+   <PRAssignments/>
+   <SSoDConstraints/>
+   <DSoDConstraints>
+      <DSoD cardinality="1">
+         <role name="LoanOfficer"/>
+         <role name="Teller"/>
+      </DSoD>
+   </DSoDConstraints>
+</RBAC>

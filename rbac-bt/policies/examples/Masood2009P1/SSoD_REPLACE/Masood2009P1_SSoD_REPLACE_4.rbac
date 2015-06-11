@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<RBAC name="Masood2009P1_SSoD_REPLACE_4">
+   <users>
+      <user name="U1"/>
+      <user name="U2"/>
+      <user name="U3"/>
+      <user name="U4"/>
+      <user name="U5"/>
+   </users>
+   <roles>
+      <role name="R1"/>
+      <role name="R2"/>
+      <role name="R3"/>
+      <role name="R4"/>
+   </roles>
+   <permissions/>
+   <SuConstraints/>
+   <DuConstraints>
+      <Du cardinality="2" user="U1"/>
+      <Du cardinality="2" user="U2"/>
+      <Du cardinality="2" user="U3"/>
+      <Du cardinality="2" user="U4"/>
+      <Du cardinality="1" user="U5"/>
+   </DuConstraints>
+   <SrConstraints/>
+   <DrConstraints>
+      <Dr cardinality="3" role="R1"/>
+      <Dr cardinality="1" role="R2"/>
+      <Dr cardinality="3" role="R3"/>
+      <Dr cardinality="2" role="R4"/>
+   </DrConstraints>
+   <URAssignments>
+      <AS role="R1" user="U1"/>
+      <AS role="R1" user="U2"/>
+      <AS role="R1" user="U4"/>
+      <AS role="R2" user="U5"/>
+      <AS role="R3" user="U1"/>
+      <AS role="R3" user="U2"/>
+      <AS role="R3" user="U4"/>
+      <AS role="R4" user="U4"/>
+   </URAssignments>
+   <URActivations/>
+   <PRAssignments/>
+   <SSoDConstraints>
+      <SSoD cardinality="1">
+         <role name="R4"/>
+         <role name="R2"/>
+      </SSoD>
+      <SSoD cardinality="1">
+         <role name="R3"/>
+         <role name="R2"/>
+      </SSoD>
+   </SSoDConstraints>
+   <DSoDConstraints/>
+</RBAC>

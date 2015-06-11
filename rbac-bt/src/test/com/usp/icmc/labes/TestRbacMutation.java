@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
@@ -18,7 +20,6 @@ import com.usp.icmc.labes.rbac.model.MutantType;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
-import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.SSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Sr;
@@ -43,18 +44,17 @@ public class TestRbacMutation {
 			List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
 			policies.add(create_SeniorTraineeDoctor()); //XXX OK
 			//					policies.add(create_ProcureToStock());
-			policies.add(create_ProcureToStockV2());
+//			policies.add(create_ProcureToStockV2());
 			policies.add(create_Masood2010Example1()); //XXX OK
-			policies.add(create_ExperiencePointsv2()); //XXX OK
+//			policies.add(create_ExperiencePointsv2()); //XXX OK
 			////		policies.add(create_Masood2009Example1()); //XXX similar to Masood2010Example1
-			policies.add(create_Masood2009P1());
-			policies.add(create_Masood2009P2());
-			policies.add(create_user11roles2());
-			policies.add(create_Mondal2009Example1());
-			policies.add(create_SecureBank());
+//			policies.add(create_Masood2009P1());
+//			policies.add(create_Masood2009P2());
+//			policies.add(create_user11roles2());
+//			policies.add(create_Mondal2009Example1());
+//			policies.add(create_SecureBank());
 			for (RbacPolicy rbacPol : policies) {
 				File f = new File("policies/"+rbacPol.getName()+".rbac");
-				saveAllFormats(rbacPol,f.getParentFile());
 				MutantType types[] = {
 						MutantType.UR_REPLACE_U, 
 						MutantType.UR_REPLACE_R, 
@@ -73,11 +73,14 @@ public class TestRbacMutation {
 						MutantType.Ss_DECREMENT,
 						MutantType.Ds_INCREMENT, 
 						MutantType.Ds_DECREMENT,};
+				Set<RbacPolicy> mutants = new HashSet<RbacPolicy>();
+				mutants.add(rbacPol);
 				for (MutantType mutantType : types) {
-					List<RbacMutant> mutants = rbacMut.generateMutants(rbacPol, mutantType);
-					for (RbacMutant rbacMutant : mutants) {
-						saveAllFormats(rbacMutant,f.getParentFile());
-					}
+					mutants.addAll(rbacMut.generateMutants(rbacPol, mutantType));
+				}
+				
+				for (RbacPolicy rbacMutant : mutants) {
+					saveAllFormats(rbacMutant,f.getParentFile());
 				}
 			}
 		} catch (Exception e) {
@@ -99,27 +102,27 @@ public class TestRbacMutation {
 
 		RbacUtils.getInstance().WriteRbacPolicyAsXML(rbacMutant, fMutant);
 		System.out.println(">>>>> WriteRbacPolicyAsXML finished"+ fMutant.getAbsoluteFile());
-//
-//		FsmModel fsm = FsmUtils.getInstance().rbac2Fsm(rbacMutant);
-//		System.out.println(">>>>> rbac2fsm finished"+ fMutant.getName());
-//
-//		File fsmFile = new File(outDir,"mutants/"+rbacMutant.getName()+".fsm");
-//		System.out.println(">>>>> WriteFsm  started: "+ fsmFile.getAbsoluteFile());
-//		FsmUtils.getInstance().WriteFsm(fsm, fsmFile);
-//
-//		File fsmFileFormat = new File(outDir,"mutants/"+rbacMutant.getName()+".dot");
-//		System.out.println(">>>>> WriteFsmAsDot started: "+ fsmFileFormat.getAbsoluteFile());
-//		FsmUtils.getInstance().WriteFsmAsDot(fsm, fsmFileFormat);
-//
-//		String runDot = "dot -Tpng ./"+outDir.getName()+"/mutants/"+rbacMutant.getName()+".dot -o ./"+outDir.getName()+"/mutants/"+rbacMutant.getName()+".png";
-//		Process p = Runtime.getRuntime().exec(runDot);
-//		BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-//		String s;
-//		while ((s = br.readLine()) != null) System.out.println("line: " + s);
-//		p.waitFor();
-//		System.out.println(runDot);
-//		System.out.println ("exit: " + p.exitValue());
-//		p.destroy();
+
+		FsmModel fsm = FsmUtils.getInstance().rbac2Fsm(rbacMutant);
+		System.out.println(">>>>> rbac2fsm finished"+ fMutant.getName());
+
+		File fsmFile = new File(outDir,rbacMutant.getName()+".fsm");
+		System.out.println(">>>>> WriteFsm  started: "+ fsmFile.getAbsoluteFile());
+		FsmUtils.getInstance().WriteFsm(fsm, fsmFile);
+
+		File fsmFileFormat = new File(outDir,rbacMutant.getName()+".dot");
+		System.out.println(">>>>> WriteFsmAsDot started: "+ fsmFileFormat.getAbsoluteFile());
+		FsmUtils.getInstance().WriteFsmAsDot(fsm, fsmFileFormat);
+
+		String runDot = "dot -Tpng "+fMutant.getParentFile().getAbsolutePath()+"/"+rbacMutant.getName()+".dot -o "+fMutant.getParentFile().getAbsolutePath()+"/"+rbacMutant.getName()+".png";
+		Process p = Runtime.getRuntime().exec(runDot);
+		BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String s;
+		while ((s = br.readLine()) != null) System.out.println("line: " + s);
+		p.waitFor();
+		System.out.println(runDot);
+		System.out.println ("exit: " + p.exitValue());
+		p.destroy();
 	}
 
 	private static RbacPolicy create_SeniorTraineeDoctor(){
