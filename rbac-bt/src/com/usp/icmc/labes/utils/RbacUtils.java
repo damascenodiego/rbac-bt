@@ -84,35 +84,35 @@ public class RbacUtils {
 		el = ((Element)node).getElementsByTagName("permission");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
-			result.getRole().add(new Role(in.getAttribute("name")));
+			result.getPermission().add(new Permission(in.getAttribute("name")));
 		}
 		
 		node = fsmElement.getElementsByTagName("SuConstraints").item(0);
 		el = ((Element)node).getElementsByTagName("Su");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
-			result.getSu().add(new Su(getUserByName(result, in.getAttribute("name")), Integer.valueOf(in.getAttribute("cardinality"))));
+			result.getSu().add(new Su(getUserByName(result, in.getAttribute("user")), Integer.valueOf(in.getAttribute("cardinality"))));
 		}
 
 		node = fsmElement.getElementsByTagName("DuConstraints").item(0);
 		el = ((Element)node).getElementsByTagName("Du");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
-			result.getDu().add(new Du(getUserByName(result, in.getAttribute("name")), Integer.valueOf(in.getAttribute("cardinality"))));
+			result.getDu().add(new Du(getUserByName(result, in.getAttribute("user")), Integer.valueOf(in.getAttribute("cardinality"))));
 		}
 		
 		node = fsmElement.getElementsByTagName("SrConstraints").item(0);
 		el = ((Element)node).getElementsByTagName("Sr");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
-			result.getSr().add(new Sr(getRoleByName(result, in.getAttribute("name")), Integer.valueOf(in.getAttribute("cardinality"))));
+			result.getSr().add(new Sr(getRoleByName(result, in.getAttribute("role")), Integer.valueOf(in.getAttribute("cardinality"))));
 		}
 
 		node = fsmElement.getElementsByTagName("DrConstraints").item(0);
 		el = ((Element)node).getElementsByTagName("Dr");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
-			result.getDr().add(new Dr(getRoleByName(result, in.getAttribute("name")), Integer.valueOf(in.getAttribute("cardinality"))));
+			result.getDr().add(new Dr(getRoleByName(result, in.getAttribute("role")), Integer.valueOf(in.getAttribute("cardinality"))));
 		}
 
 		node = fsmElement.getElementsByTagName("URAssignments").item(0);
@@ -125,7 +125,7 @@ public class RbacUtils {
 		}
 		
 		node = fsmElement.getElementsByTagName("URActivations").item(0);
-		el = ((Element)node).getElementsByTagName("AS");
+		el = ((Element)node).getElementsByTagName("AC");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
 			User u = getUserByName(result, in.getAttribute("user"));
