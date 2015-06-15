@@ -59,36 +59,32 @@ public class FsmTestingUtils {
 		Element rootElement = doc.createElement("FsmTestSuite");
 		
 		rootElement.setAttribute("name",suite.getName());
-		
-		Element tsAttr = null ;
-		int count = 0;
+		int testSuiteLength = 0;
+		int noResets = 0;
+		int tcaseCount = 0;
 		for (FsmTestCase in: suite.getTestCases()) {
 			Element tc = doc.createElement("FsmTestCase");
-			tc.setAttribute("name", Integer.toString(count));
-			count++;
+			tc.setAttribute("_id", Integer.toString(tcaseCount));
+			noResets++;
+			int testCaseLength = 0;
 			for (FsmTransition trIn: in.getPath()) {
 				Element ts = doc.createElement("FsmTestStep");
-				
-				tsAttr = doc.createElement("from");
-				tsAttr.setAttribute("input",trIn.getFrom().getName());
-				ts.appendChild(tsAttr);
-				
-				tsAttr = doc.createElement("in");
-				tsAttr.setAttribute("input",trIn.getInput());
-				ts.appendChild(tsAttr);
-				
-				tsAttr = doc.createElement("out");
-				tsAttr.setAttribute("input",trIn.getOutput());
-				ts.appendChild(tsAttr);
-				
-				tsAttr = doc.createElement("to");
-				tsAttr.setAttribute("input",trIn.getTo().getName());
-				ts.appendChild(tsAttr);
-				
+				ts.setAttribute("_id", Integer.toString(tcaseCount)+"."+Integer.toString(testCaseLength));
+				ts.setAttribute("from",trIn.getFrom().getName());
+				ts.setAttribute("in",trIn.getInput());
+				ts.setAttribute("out",trIn.getOutput());
+				ts.setAttribute("to",trIn.getTo().getName());
 				tc.appendChild(ts);
+				testCaseLength++;
 			}
+			testSuiteLength+=testCaseLength;
+			tc.setAttribute("_testCaseLength", Integer.toString(testCaseLength));
 			rootElement.appendChild(tc);
+			tcaseCount++;
 		}
+		rootElement.setAttribute("_length", Integer.toString(testSuiteLength));
+		rootElement.setAttribute("_noResets", Integer.toString(noResets));
+		
 		doc.appendChild(rootElement);
 		
 		
