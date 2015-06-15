@@ -47,6 +47,8 @@ public class TestFsmTestingUtils {
 			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_qSet.test");
 			testingUtils.WriteFsmTestSuite(qSet, testSet);
 			
+			assertEquals(qSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
+			
 			FsmTestSuite pSet = testingUtils.transitionCoverSet(fsm);
 //			System.out.println("Transition Cover Set (T)");
 //			for (FsmTestCase s: pSet.getTestCases()) {
@@ -54,6 +56,9 @@ public class TestFsmTestingUtils {
 //			}
 			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_pSet.test");
 			testingUtils.WriteFsmTestSuite(pSet, testSet);
+			
+			assertEquals(pSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

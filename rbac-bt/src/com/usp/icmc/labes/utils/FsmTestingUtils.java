@@ -2,12 +2,15 @@ package com.usp.icmc.labes.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -24,6 +27,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmPath;
@@ -32,6 +38,7 @@ import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.fsm.testing.FsmTestCase;
 import com.usp.icmc.labes.fsm.testing.FsmTestStep;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
+import com.usp.icmc.labes.rbac.model.User;
 
 public class FsmTestingUtils {
 
@@ -57,7 +64,7 @@ public class FsmTestingUtils {
 		Document doc = docBuilder.newDocument();
 
 		Element rootElement = doc.createElement("FsmTestSuite");
-		
+
 		rootElement.setAttribute("name",suite.getName());
 		int testSuiteLength = 0;
 		int noResets = 0;
@@ -84,28 +91,63 @@ public class FsmTestingUtils {
 		}
 		rootElement.setAttribute("_length", Integer.toString(testSuiteLength));
 		rootElement.setAttribute("_noResets", Integer.toString(noResets));
-		
+
 		doc.appendChild(rootElement);
-		
-		
+
+
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(fSuite);
- 
+
 		// Output to console for testing
 		// StreamResult result = new StreamResult(System.out);
- 
+
 		transformer.transform(source, result);
+	}
+
+	public FsmTestSuite LoadFsmTestSuiteFromFile(File fSuite) throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
+
+		FsmTestSuite suite = new FsmTestSuite(); //(FsmModel) xstream.fromXML(fsmFile);
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(fSuite);
+		doc.getDocumentElement().normalize();
+		Element fsmElement = doc.getDocumentElement();
+		suite.setName(fsmElement.getAttribute("name"));
+
+		Map<String,FsmState> states = new HashMap<String,FsmState>();
+		NodeList el = null;
+		NodeList subEl = null;
+
+		for (int i = 0; i < fsmElement.getElementsByTagName("FsmTestCase").getLength(); i++) {
+			el = (NodeList) fsmElement.getElementsByTagName("FsmTestCase").item(i);
+			subEl = ((Element)el).getElementsByTagName("FsmTestStep");
+			FsmTestCase testCase = new FsmTestCase(); 
+			for (int j = 0; j < subEl.getLength(); j++) {
+				String from = 	((Element)((NodeList)subEl).item(j)).getAttribute("from");
+				String in 	=	((Element)((NodeList)subEl).item(j)).getAttribute("in");
+				String out 	= 	((Element)((NodeList)subEl).item(j)).getAttribute("out");
+				String to 	= 	((Element)((NodeList)subEl).item(j)).getAttribute("to");
+
+				FsmState f = states.getOrDefault(from, new FsmState(from));
+				FsmState t = states.getOrDefault(to, new FsmState(to));
+				testCase.addTransition(new FsmTransition(f, in, out, t));
+			}
+			suite.getTestCases().add(testCase);
+		}
+
+		return suite;
 	}
 
 	public FsmTestSuite stateCoverSet(FsmModel fsm){
 		FsmTestSuite tSuite = new FsmTestSuite("StateCoverSet");
 		FsmTestCase[] qSets = new FsmTestCase[fsm.getStates().size()];
 		for (int i = 0; i < fsm.getStates().size(); i++) {
-			qSets[i] = new FsmTestCase(fsm.getStates().get(i).getName());
+			qSets[i] = new FsmTestCase();
+			qSets[i].addTransition(new FsmTransition(fsm.getStates().get(i), "", "", fsm.getStates().get(i)));
 		}
 		FsmState current = fsm.getInitialState();
 		Queue<FsmState> toVisit = new LinkedList<FsmState>();
@@ -120,7 +162,7 @@ public class FsmTestingUtils {
 					int indexFrom = fsm.getStates().indexOf(tr.getFrom());
 					qSets[indexTo].getPath().addAll(qSets[indexFrom].getPath());
 					qSets[indexTo].addTransition(tr);
-					if(qSets[indexTo].getName().equals(tr.getTo().getName())){
+					if(qSets[indexTo].getInitialState().getName().equals(tr.getTo().getName())){
 						visited.add(tr.getTo());
 					}
 					toVisit.add(tr.getTo());
@@ -136,16 +178,10 @@ public class FsmTestingUtils {
 		FsmTestSuite pSet = new FsmTestSuite("TransitionCoverSet");
 
 		for (FsmTestCase path : qSet.getTestCases()) {
-			FsmState finalState = null;
-			if(path.getPath().isEmpty()){
-				finalState = fsm.getInitialState();
-			}
-			else{
-				finalState = path.getFinalState();
-			}
+			FsmState finalState = path.getFinalState();
 
 			for (FsmTransition tr : finalState.getOut()) {
-				FsmTestCase pSetEl = new FsmTestCase(finalState.getName()+"+"+tr.getInput());
+				FsmTestCase pSetEl = new FsmTestCase();
 				pSetEl.getPath().addAll(path.getPath());
 				pSetEl.addTransition(tr);
 				pSet.getTestCases().add(pSetEl);

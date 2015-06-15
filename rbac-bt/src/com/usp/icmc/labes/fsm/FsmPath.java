@@ -24,13 +24,11 @@ public class FsmPath extends FsmElement{
 	}
 
 	public FsmState getInitialState(){
-		if(this.paths.size()>0) return this.paths.get(0).getFrom();
-		return null;
+		return this.paths.get(0).getFrom();
 	}
 
 	public FsmState getFinalState(){
-		if(this.paths.size()>0) return this.paths.get(this.paths.size()-1).getTo();
-		return null;
+		return this.paths.get(this.paths.size()-1).getTo();
 	}
 
 	public void addTransition(FsmTransition t){
@@ -64,10 +62,7 @@ public class FsmPath extends FsmElement{
 
 	@Override
 	public String toString() {
-		String out = getName();
-		if(this.paths.size()<1) 
-			return out +": EMPTY";
-		out += ": "+getInitialState().getName();
+		String out = getInitialState().getName();
 		FsmTransition tr;
 		for (int i = 0; i < paths.size(); i++) {
 			tr = paths.get(i);
