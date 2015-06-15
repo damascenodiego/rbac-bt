@@ -66,6 +66,8 @@ public class FsmTestingUtils {
 		Element rootElement = doc.createElement("FsmTestSuite");
 
 		rootElement.setAttribute("name",suite.getName());
+		rootElement.setAttribute("generatedBy",suite.getGeneratedBy());
+		
 		int testSuiteLength = 0;
 		int noResets = 0;
 		int tcaseCount = 0;
@@ -117,6 +119,7 @@ public class FsmTestingUtils {
 		doc.getDocumentElement().normalize();
 		Element fsmElement = doc.getDocumentElement();
 		suite.setName(fsmElement.getAttribute("name"));
+		suite.setGeneratedBy(fsmElement.getAttribute("generatedBy"));
 
 		Map<String,FsmState> states = new HashMap<String,FsmState>();
 		NodeList el = null;
@@ -143,7 +146,8 @@ public class FsmTestingUtils {
 	}
 
 	public FsmTestSuite stateCoverSet(FsmModel fsm){
-		FsmTestSuite tSuite = new FsmTestSuite("StateCoverSet");
+		FsmTestSuite tSuite = new FsmTestSuite(fsm.getName());
+		tSuite.setGeneratedBy("StateCoverSet");
 		FsmTestCase[] qSets = new FsmTestCase[fsm.getStates().size()];
 		for (int i = 0; i < fsm.getStates().size(); i++) {
 			qSets[i] = new FsmTestCase();
@@ -175,7 +179,8 @@ public class FsmTestingUtils {
 
 	public FsmTestSuite transitionCoverSet(FsmModel fsm) {
 		FsmTestSuite qSet = stateCoverSet(fsm);
-		FsmTestSuite pSet = new FsmTestSuite("TransitionCoverSet");
+		FsmTestSuite pSet = new FsmTestSuite(fsm.getName());
+		pSet.setGeneratedBy("TransitionCoverSet");
 
 		for (FsmTestCase path : qSet.getTestCases()) {
 			FsmState finalState = path.getFinalState();

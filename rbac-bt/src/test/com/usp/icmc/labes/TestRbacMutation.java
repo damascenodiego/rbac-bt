@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.usp.icmc.labes.fsm.FsmModel;
+import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.ActivationHierarchy;
@@ -25,6 +26,7 @@ import com.usp.icmc.labes.rbac.model.SSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Sr;
 import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.utils.FsmTestingUtils;
 import com.usp.icmc.labes.utils.FsmUtils;
 import com.usp.icmc.labes.utils.RbacMutationUtils;
 import com.usp.icmc.labes.utils.RbacUtils;
@@ -37,6 +39,7 @@ public class TestRbacMutation {
 	private static RbacSupportingSystemFunctions rbacSys = RbacSupportingSystemFunctions.getInstance();
 	private static RbacUtils rbacUtils = RbacUtils.getInstance();
 	private static RbacMutationUtils rbacMut = RbacMutationUtils.getInstance();
+	private static FsmTestingUtils testingUtils = FsmTestingUtils.getInstance();
 
 	public static void main(String[] args) {
 
@@ -110,6 +113,17 @@ public class TestRbacMutation {
 		System.out.println(">>>>> WriteFsm  started: "+ fsmFile.getAbsoluteFile());
 		FsmUtils.getInstance().WriteFsm(fsm, fsmFile);
 
+		
+		FsmTestSuite set = testingUtils.stateCoverSet(fsm);
+		System.out.println(">>>>> Q set generation: "+ fsmFile.getAbsoluteFile());
+		File setFile = new File(fsmFile.getParentFile(),fsm.getName()+"_qSet.test");
+		testingUtils.WriteFsmTestSuite(set, setFile);
+		
+		set = testingUtils.transitionCoverSet(fsm);
+		System.out.println(">>>>> P set generation: "+ fsmFile.getAbsoluteFile());
+		setFile = new File(fsmFile.getParentFile(),fsm.getName()+"_pSet.test");
+		testingUtils.WriteFsmTestSuite(set, setFile);
+		
 		File fsmFileFormat = new File(outDir,rbacMutant.getName()+".dot");
 		System.out.println(">>>>> WriteFsmAsDot started: "+ fsmFileFormat.getAbsoluteFile());
 		FsmUtils.getInstance().WriteFsmAsDot(fsm, fsmFileFormat);

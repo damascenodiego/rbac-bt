@@ -8,15 +8,18 @@ import com.usp.icmc.labes.fsm.FsmElement;
 public class FsmTestSuite extends FsmElement{
 	
 	List<FsmTestCase> testCases;
+	String generatedBy;
 	
 	public FsmTestSuite() {
 		super();
 		testCases = new ArrayList<FsmTestCase>();
+		generatedBy = "NONE";
 	}
 	
 	public FsmTestSuite(String n) {
 		super(n);
 		testCases = new ArrayList<FsmTestCase>();
+		generatedBy = "NONE";
 	}
 	
 	
@@ -54,4 +57,11 @@ public class FsmTestSuite extends FsmElement{
 		return true;
 	}
 	
+	public String getGeneratedBy() {
+		return generatedBy;
+	}
+	
+	public void setGeneratedBy(String generatedBy) {
+		this.generatedBy = generatedBy;
+	}
 }
