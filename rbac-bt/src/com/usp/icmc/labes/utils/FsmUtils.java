@@ -14,6 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -28,6 +29,7 @@ import org.xml.sax.SAXException;
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
+import com.usp.icmc.labes.fsm.testing.FsmTestStep;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.acut.RbacRequest;
 import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
@@ -235,7 +237,7 @@ public class FsmUtils {
 					out = acut.request(in);
 					destination = acut.getCurrentState();
 					rbac2fsm.addState(new FsmState(destination.getName()));
-					rbac2fsm.addTransition(new FsmTransition(rbac2fsm.getState(origin.getName()), in.toString(), (out? "grant" : "deny"), rbac2fsm.getState(destination.getName())));
+					rbac2fsm.addTransition(new FsmTestStep(rbac2fsm.getState(origin.getName()), in.toString(), (out? "grant" : "deny"), rbac2fsm.getState(destination.getName())));
 					if(!visited.contains(destination)) 
 						toVisit.add(destination);
 					acut.reset(origin);
@@ -245,7 +247,7 @@ public class FsmUtils {
 		return rbac2fsm;
 	}
 
-	public void WriteFsm(FsmModel fsm, File fsmFile) throws ParserConfigurationException, TransformerException {
+	public void WriteFsm(FsmModel fsm, File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document doc = docBuilder.newDocument();
 
@@ -309,7 +311,7 @@ public class FsmUtils {
 
 	}
 	
-	public FsmModel LoadFsmFromXML(File fsmFile) throws ParserConfigurationException, SAXException, IOException {
+	public FsmModel LoadFsmFromXML(File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
 		FsmModel fsm = new FsmModel(); //(FsmModel) xstream.fromXML(fsmFile);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

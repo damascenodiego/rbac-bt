@@ -9,7 +9,12 @@ public class FsmTransition extends FsmElement{
 	
 	private FsmState to;
 	
+	public FsmTransition(){
+		super();
+	}
+	
 	public FsmTransition(FsmState f, String in, String out, FsmState t) {
+		super(f+" -- "+in+"/"+out+" -> "+t);
 		from = f;
 		to = t;
 		input = in;
@@ -32,6 +37,22 @@ public class FsmTransition extends FsmElement{
 	
 	public String getOutput() {
 		return output;
+	}
+	
+	public void setFrom(FsmState from) {
+		this.from = from;
+	}
+
+	public void setInput(String input) {
+		this.input = input;
+	}
+
+	public void setOutput(String output) {
+		this.output = output;
+	}
+
+	public void setTo(FsmState to) {
+		this.to = to;
 	}
 
 	@Override
@@ -82,8 +103,4 @@ public class FsmTransition extends FsmElement{
 		return from+" -- "+input+"/"+output+" -> "+to;
 	}
 
-	@Override
-	public String getName() {
-		return toString();
-	}
 }

@@ -395,7 +395,7 @@ public class TestExample {
 		return rbac;
 	}
 
-	private static RbacPolicy create_Masood2010Example1(){
+	protected static final RbacPolicy create_Masood2010Example1(){
 		RbacPolicy rbac = new RbacPolicy("Masood2010Example1");
 
 		//create users
