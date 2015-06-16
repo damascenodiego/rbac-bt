@@ -1,0 +1,12 @@
+digraph rbac2Fsm {
+  00000000 -> 00001000 [ label ="AS(Alice,SeniorDoctor)/grant"];
+  00000000 -> 00000010 [ label ="AS(Alice,TraineeDoctor)/grant"];
+  00000010 -> 00000011 [ label ="AC(Alice,TraineeDoctor)/grant"];
+  00000010 -> 00000000 [ label ="DS(Alice,TraineeDoctor)/grant"];
+  00000011 -> 00000010 [ label ="DC(Alice,TraineeDoctor)/grant"];
+  00000011 -> 00000000 [ label ="DS(Alice,TraineeDoctor)/grant"];
+  00001000 -> 00001100 [ label ="AC(Alice,SeniorDoctor)/grant"];
+  00001000 -> 00000000 [ label ="DS(Alice,SeniorDoctor)/grant"];
+  00001100 -> 00001000 [ label ="DC(Alice,SeniorDoctor)/grant"];
+  00001100 -> 00000000 [ label ="DS(Alice,SeniorDoctor)/grant"];
+}

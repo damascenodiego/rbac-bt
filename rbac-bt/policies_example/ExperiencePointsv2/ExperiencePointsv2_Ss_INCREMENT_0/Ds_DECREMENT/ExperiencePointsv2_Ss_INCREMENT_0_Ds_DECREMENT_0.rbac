@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<RBAC name="ExperiencePointsv2_Ss_INCREMENT_0_Ds_DECREMENT_0">
+   <users>
+      <user name="u1"/>
+      <user name="u2"/>
+   </users>
+   <roles>
+      <role name="Admin"/>
+      <role name="Bronze"/>
+      <role name="Silver"/>
+      <role name="Gold"/>
+   </roles>
+   <permissions>
+      <permission name="ReplyPost"/>
+      <permission name="NewPost"/>
+      <permission name="BeReplied"/>
+      <permission name="Download"/>
+   </permissions>
+   <SuConstraints/>
+   <DuConstraints/>
+   <SrConstraints>
+      <Sr cardinality="1" role="Admin"/>
+   </SrConstraints>
+   <DrConstraints/>
+   <URAssignments/>
+   <URActivations/>
+   <PRAssignments>
+      <PA permission="ReplyPost" role="Admin"/>
+      <PA permission="NewPost" role="Admin"/>
+      <PA permission="BeReplied" role="Admin"/>
+      <PA permission="Download" role="Admin"/>
+      <PA permission="ReplyPost" role="Bronze"/>
+      <PA permission="NewPost" role="Bronze"/>
+      <PA permission="BeReplied" role="Bronze"/>
+      <PA permission="ReplyPost" role="Silver"/>
+      <PA permission="NewPost" role="Silver"/>
+      <PA permission="BeReplied" role="Silver"/>
+      <PA permission="Download" role="Silver"/>
+      <PA permission="ReplyPost" role="Gold"/>
+      <PA permission="NewPost" role="Gold"/>
+      <PA permission="BeReplied" role="Gold"/>
+      <PA permission="Download" role="Gold"/>
+   </PRAssignments>
+   <SSoDConstraints>
+      <SSoD cardinality="3">
+         <role name="Silver"/>
+         <role name="Bronze"/>
+         <role name="Admin"/>
+         <role name="Gold"/>
+      </SSoD>
+      <SSoD cardinality="1">
+         <role name="Silver"/>
+         <role name="Bronze"/>
+         <role name="Gold"/>
+      </SSoD>
+   </SSoDConstraints>
+   <DSoDConstraints>
+      <DSoD cardinality="1">
+         <role name="Silver"/>
+         <role name="Bronze"/>
+         <role name="Admin"/>
+         <role name="Gold"/>
+      </DSoD>
+   </DSoDConstraints>
+</RBAC>

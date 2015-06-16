@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<RBAC name="Masood2010Example1_Du_INCREMENT_1_Su_DECREMENT_0">
+   <users>
+      <user name="u1"/>
+      <user name="u2"/>
+   </users>
+   <roles>
+      <role name="r1"/>
+   </roles>
+   <permissions>
+      <permission name="p1"/>
+      <permission name="p2"/>
+   </permissions>
+   <SuConstraints>
+      <Su cardinality="0" user="u1"/>
+      <Su cardinality="1" user="u2"/>
+   </SuConstraints>
+   <DuConstraints>
+      <Du cardinality="1" user="u1"/>
+      <Du cardinality="2" user="u2"/>
+   </DuConstraints>
+   <SrConstraints>
+      <Sr cardinality="2" role="r1"/>
+   </SrConstraints>
+   <DrConstraints>
+      <Dr cardinality="1" role="r1"/>
+   </DrConstraints>
+   <URAssignments>
+      <AS role="r1" user="u1"/>
+      <AS role="r1" user="u2"/>
+   </URAssignments>
+   <URActivations/>
+   <PRAssignments>
+      <PA permission="p1" role="r1"/>
+      <PA permission="p2" role="r1"/>
+   </PRAssignments>
+   <SSoDConstraints/>
+   <DSoDConstraints/>
+</RBAC>

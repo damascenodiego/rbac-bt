@@ -1,0 +1,4 @@
+digraph rbac2Fsm {
+  00001010 -> 00101010 [ label ="AS(u2,r1)/grant"];
+  00101010 -> 00001010 [ label ="DS(u2,r1)/grant"];
+}

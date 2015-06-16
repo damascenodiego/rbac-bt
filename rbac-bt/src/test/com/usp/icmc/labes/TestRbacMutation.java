@@ -99,9 +99,9 @@ public class TestRbacMutation {
 				}
 			}
 			List<RbacPolicy> mutants1st2nd = new ArrayList<RbacPolicy>();
-//			mutants1st2nd.addAll(policies);
-//			mutants1st2nd.addAll(mutants);
-			//						mutants1st2nd.addAll(mutants2nd);
+			mutants1st2nd.addAll(policies);
+			mutants1st2nd.addAll(mutants);
+			mutants1st2nd.addAll(mutants2nd);
 			for (RbacPolicy rbacMutant : mutants1st2nd) {
 				File f = new File("policies/"+rbacMutant.getName()+".rbac");
 				saveAllFormats(rbacMutant,f.getParentFile());
@@ -139,15 +139,15 @@ public class TestRbacMutation {
 		FsmUtils.getInstance().WriteFsmAsKiss(fsm, kissFile);
 
 
-		FsmTestSuite set = testingUtils.stateCoverSet(fsm);
-		System.out.println(">>>>> Q set generation: "+ fsmFile.getAbsoluteFile());
-		File setFile = new File(fsmFile.getParentFile(),fsm.getName()+"_qSet.test");
-		testingUtils.WriteFsmTestSuite(set, setFile);
-
-		set = testingUtils.transitionCoverSet(fsm);
-		System.out.println(">>>>> P set generation: "+ fsmFile.getAbsoluteFile());
-		setFile = new File(fsmFile.getParentFile(),fsm.getName()+"_pSet.test");
-		testingUtils.WriteFsmTestSuite(set, setFile);
+//		FsmTestSuite set = testingUtils.stateCoverSet(fsm);
+//		System.out.println(">>>>> Q set generation: "+ fsmFile.getAbsoluteFile());
+//		File setFile = new File(fsmFile.getParentFile(),fsm.getName()+"_qSet.test");
+//		testingUtils.WriteFsmTestSuite(set, setFile);
+//
+//		set = testingUtils.transitionCoverSet(fsm);
+//		System.out.println(">>>>> P set generation: "+ fsmFile.getAbsoluteFile());
+//		setFile = new File(fsmFile.getParentFile(),fsm.getName()+"_pSet.test");
+//		testingUtils.WriteFsmTestSuite(set, setFile);
 
 		File fsmFileFormat = new File(outDir,rbacMutant.getName()+".dot");
 		System.out.println(">>>>> WriteFsmAsDot started: "+ fsmFileFormat.getAbsoluteFile());
