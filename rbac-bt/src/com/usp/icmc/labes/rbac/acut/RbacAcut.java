@@ -30,7 +30,7 @@ public class RbacAcut implements RbacTuple{
 
 	private RbacState initialState;
 	private RbacState currentState;
-	
+
 	private RbacResponse response;
 
 	private RbacUtils utils = RbacUtils.getInstance();
@@ -42,15 +42,19 @@ public class RbacAcut implements RbacTuple{
 
 	public RbacAcut(RbacPolicy p) { 
 		policy = p;
-//		saveState(p);
+		//		saveState(p);
 		initialState = new RbacState(p);
 		currentState = new RbacState(p);
 		response = new RbacResponse();
 	}
 
-//	private void saveState(RbacPolicy p) {
-//		currentState = new RbacState(p);
-//	}
+	//	private void saveState(RbacPolicy p) {
+	//		currentState = new RbacState(p);
+	//	}
+
+	public RbacAcut(RbacAcut acut2) {
+		this(acut2.getPolicy());
+	}
 
 	public void reset(RbacState state) {
 		getUserRoleAssignment()		.clear();
@@ -59,14 +63,14 @@ public class RbacAcut implements RbacTuple{
 
 		for (UserRoleAssignment el : state.urAsCopy)
 			getUserRoleAssignment()
-					.add(new UserRoleAssignment(el.getUser(), el.getRole()));
+			.add(new UserRoleAssignment(el.getUser(), el.getRole()));
 		for (UserRoleActivation el : state.urAcCopy)
 			getUserRoleActivation()
-					.add(new UserRoleActivation(el.getUser(), el.getRole()));
+			.add(new UserRoleActivation(el.getUser(), el.getRole()));
 		for (PermissionRoleAssignment el : state.prAsCopy) 
 			getPermissionRoleAssignment()
-					.add(new PermissionRoleAssignment(el.getPermission(), el.getRole()));
-//		saveState(this);
+			.add(new PermissionRoleAssignment(el.getPermission(), el.getRole()));
+		//		saveState(this);
 	}
 
 	public void reset() {
@@ -97,7 +101,7 @@ public class RbacAcut implements RbacTuple{
 			output = admin.revokePermission(this, rq.getPermission(), rq.getRole());
 		}
 
-//		saveState(policy);
+		//		saveState(policy);
 		//transition +="--"+rq.toString()+"/"+(output ? "granted": "denied")+"-->"+getCurrentState().toString();
 		//		transition +=" -> "+getCurrentState().toString()+"  [ label=\""+rq.toString()+"/"+(output ? "granted": "denied")+"\"];";
 		return output;
@@ -171,7 +175,7 @@ public class RbacAcut implements RbacTuple{
 	public void setResponse(RbacResponse response) {
 		this.response = response;
 	}
-	
+
 	public RbacResponse getResponse() {
 		return response;
 	}
@@ -184,5 +188,96 @@ public class RbacAcut implements RbacTuple{
 	@Override
 	public List<InheritanceHierarchy> getInheritanceHierarchy() {
 		return policy.getInheritanceHierarchy();
+	}
+
+	public RbacPolicy getPolicy() {
+		return policy;
+	}
+	
+	public void setPolicy(RbacPolicy policy) {
+		this.policy = policy;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof RbacTuple))
+			return false;
+		RbacTuple other = (RbacTuple) obj;
+		if (getActivationHierarchy() == null) {
+			if (other.getActivationHierarchy() != null)
+				return false;
+		} else if (!getActivationHierarchy().equals(other.getActivationHierarchy()))
+			return false;
+		if (getDr()== null) {
+			if (other.getDr()!= null)
+				return false;
+		} else if (!getDr().equals(other.getDr()))
+			return false;
+		if (getDSoDConstraint() == null) {
+			if (other.getDSoDConstraint() != null)
+				return false;
+		} else if (!getDSoDConstraint().equals(other.getDSoDConstraint()))
+			return false;
+		if (getDu() == null) {
+			if (other.getDu() != null)
+				return false;
+		} else if (!getDu().equals(other.getDu()))
+			return false;
+		if (getInheritanceHierarchy() == null) {
+			if (other.getInheritanceHierarchy() != null)
+				return false;
+		} else if (!getInheritanceHierarchy().equals(other.getInheritanceHierarchy()))
+			return false;
+		if (getPermission() == null) {
+			if (other.getPermission() != null)
+				return false;
+		} else if (!getPermission().equals(other.getPermission()))
+			return false;
+		if (getPermissionRoleAssignment() == null) {
+			if (other.getPermissionRoleAssignment() != null)
+				return false;
+		} else if (!getPermissionRoleAssignment()
+				.equals(other.getPermissionRoleAssignment()))
+			return false;
+		if (getRole() == null) {
+			if (other.getRole() != null)
+				return false;
+		} else if (!getRole().equals(other.getRole()))
+			return false;
+		if (getSr() == null) {
+			if (other.getSr() != null)
+				return false;
+		} else if (!getSr().equals(other.getSr()))
+			return false;
+		if (getSSoDConstraint() == null) {
+			if (other.getSSoDConstraint() != null)
+				return false;
+		} else if (!getSSoDConstraint().equals(other.getSSoDConstraint()))
+			return false;
+		if (getSu() == null) {
+			if (other.getSu() != null)
+				return false;
+		} else if (!getSu().equals(other.getSu()))
+			return false;
+		if (getUser() == null) {
+			if (other.getUser() != null)
+				return false;
+		} else if (!getUser().equals(other.getUser()))
+			return false;
+		if (getUserRoleActivation() == null) {
+			if (other.getUserRoleActivation() != null)
+				return false;
+		} else if (!getUserRoleActivation().equals(other.getUserRoleActivation()))
+			return false;
+		if (getUserRoleAssignment() == null) {
+			if (other.getUserRoleAssignment() != null)
+				return false;
+		} else if (!getUserRoleAssignment().equals(other.getUserRoleAssignment()))
+			return false;
+		return true;
 	}
 }

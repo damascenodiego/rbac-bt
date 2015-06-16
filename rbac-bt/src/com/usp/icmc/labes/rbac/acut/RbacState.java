@@ -74,6 +74,10 @@ public class RbacState {
 		return "00";
 	}
 
+	public RbacPolicy getPolicy() {
+		return policy;
+	}
+	
 	@Override
 	public String toString() {
 		return getName();

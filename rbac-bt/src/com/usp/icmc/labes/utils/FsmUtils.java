@@ -216,35 +216,12 @@ public class FsmUtils {
 
 		RbacAcut acut = new RbacAcut(rbac);
 
-		RbacState 	origin 			= null;
-		boolean 	out 			= false;
-		RbacState	 destination 	= null;
+		int threadsNum = Runtime.getRuntime().availableProcessors();
+		Rbac2FsmConcurrent rbac2FsmConc = new Rbac2FsmConcurrent(acut,threadsNum);
 
-		FsmModel rbac2fsm = new FsmModel(rbac.getName());
-
-		Queue<RbacState> toVisit = new LinkedList<RbacState>();
-		toVisit.add(acut.getCurrentState());
-
-		List<RbacState> visited = new ArrayList<RbacState>();
-
-		while (!toVisit.isEmpty()) {
-			origin = toVisit.remove();
-			acut.reset(origin);
-			if(!visited.contains(origin)){
-				visited.add(origin);
-				rbac2fsm.addState(new FsmState(origin.getName()));
-				for (RbacRequest in : input) {
-					out = acut.request(in);
-					destination = acut.getCurrentState();
-					rbac2fsm.addState(new FsmState(destination.getName()));
-					rbac2fsm.addTransition(new FsmTestStep(rbac2fsm.getState(origin.getName()), in.toString(), (out? "grant" : "deny"), rbac2fsm.getState(destination.getName())));
-					if(!visited.contains(destination)) 
-						toVisit.add(destination);
-					acut.reset(origin);
-				}
-			}
-		}
-		return rbac2fsm;
+		rbac2FsmConc.start();
+		
+		return rbac2FsmConc.getFsmModel();
 	}
 
 	public void WriteFsm(FsmModel fsm, File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException {

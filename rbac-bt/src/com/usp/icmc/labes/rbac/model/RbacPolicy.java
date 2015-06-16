@@ -211,79 +211,79 @@ public class RbacPolicy implements RbacTuple{
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof RbacPolicy))
+		if (!(obj instanceof RbacTuple))
 			return false;
-		RbacPolicy other = (RbacPolicy) obj;
-		if (activationHierarchy == null) {
-			if (other.activationHierarchy != null)
+		RbacTuple other = (RbacTuple) obj;
+		if (getActivationHierarchy() == null) {
+			if (other.getActivationHierarchy() != null)
 				return false;
-		} else if (!activationHierarchy.equals(other.activationHierarchy))
+		} else if (!getActivationHierarchy().equals(other.getActivationHierarchy()))
 			return false;
-		if (dr == null) {
-			if (other.dr != null)
+		if (getDr()== null) {
+			if (other.getDr()!= null)
 				return false;
-		} else if (!dr.equals(other.dr))
+		} else if (!getDr().equals(other.getDr()))
 			return false;
-		if (dsodConstraint == null) {
-			if (other.dsodConstraint != null)
+		if (getDSoDConstraint() == null) {
+			if (other.getDSoDConstraint() != null)
 				return false;
-		} else if (!dsodConstraint.equals(other.dsodConstraint))
+		} else if (!getDSoDConstraint().equals(other.getDSoDConstraint()))
 			return false;
-		if (du == null) {
-			if (other.du != null)
+		if (getDu() == null) {
+			if (other.getDu() != null)
 				return false;
-		} else if (!du.equals(other.du))
+		} else if (!getDu().equals(other.getDu()))
 			return false;
-		if (inheritanceHierarchy == null) {
-			if (other.inheritanceHierarchy != null)
+		if (getInheritanceHierarchy() == null) {
+			if (other.getInheritanceHierarchy() != null)
 				return false;
-		} else if (!inheritanceHierarchy.equals(other.inheritanceHierarchy))
+		} else if (!getInheritanceHierarchy().equals(other.getInheritanceHierarchy()))
 			return false;
-		if (permission == null) {
-			if (other.permission != null)
+		if (getPermission() == null) {
+			if (other.getPermission() != null)
 				return false;
-		} else if (!permission.equals(other.permission))
+		} else if (!getPermission().equals(other.getPermission()))
 			return false;
-		if (permissionRoleAssignment == null) {
-			if (other.permissionRoleAssignment != null)
+		if (getPermissionRoleAssignment() == null) {
+			if (other.getPermissionRoleAssignment() != null)
 				return false;
-		} else if (!permissionRoleAssignment
-				.equals(other.permissionRoleAssignment))
+		} else if (!getPermissionRoleAssignment()
+				.equals(other.getPermissionRoleAssignment()))
 			return false;
-		if (role == null) {
-			if (other.role != null)
+		if (getRole() == null) {
+			if (other.getRole() != null)
 				return false;
-		} else if (!role.equals(other.role))
+		} else if (!getRole().equals(other.getRole()))
 			return false;
-		if (sr == null) {
-			if (other.sr != null)
+		if (getSr() == null) {
+			if (other.getSr() != null)
 				return false;
-		} else if (!sr.equals(other.sr))
+		} else if (!getSr().equals(other.getSr()))
 			return false;
-		if (ssodConstraint == null) {
-			if (other.ssodConstraint != null)
+		if (getSSoDConstraint() == null) {
+			if (other.getSSoDConstraint() != null)
 				return false;
-		} else if (!ssodConstraint.equals(other.ssodConstraint))
+		} else if (!getSSoDConstraint().equals(other.getSSoDConstraint()))
 			return false;
-		if (su == null) {
-			if (other.su != null)
+		if (getSu() == null) {
+			if (other.getSu() != null)
 				return false;
-		} else if (!su.equals(other.su))
+		} else if (!getSu().equals(other.getSu()))
 			return false;
-		if (user == null) {
-			if (other.user != null)
+		if (getUser() == null) {
+			if (other.getUser() != null)
 				return false;
-		} else if (!user.equals(other.user))
+		} else if (!getUser().equals(other.getUser()))
 			return false;
-		if (userRoleActivation == null) {
-			if (other.userRoleActivation != null)
+		if (getUserRoleActivation() == null) {
+			if (other.getUserRoleActivation() != null)
 				return false;
-		} else if (!userRoleActivation.equals(other.userRoleActivation))
+		} else if (!getUserRoleActivation().equals(other.getUserRoleActivation()))
 			return false;
-		if (userRoleAssignment == null) {
-			if (other.userRoleAssignment != null)
+		if (getUserRoleAssignment() == null) {
+			if (other.getUserRoleAssignment() != null)
 				return false;
-		} else if (!userRoleAssignment.equals(other.userRoleAssignment))
+		} else if (!getUserRoleAssignment().equals(other.getUserRoleAssignment()))
 			return false;
 		return true;
 	}

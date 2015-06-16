@@ -91,7 +91,7 @@ public class TestRbacMutation {
 		}	
 	}
 
-	private static void saveAllFormats(RbacPolicy rbacMutant, File outDir) throws Exception {
+	protected static final void saveAllFormats(RbacPolicy rbacMutant, File outDir) throws Exception {
 		File fMutant = null;
 		if(rbacMutant instanceof RbacMutant){
 			RbacPolicy pol = (RbacPolicy)((RbacMutant)rbacMutant).getPolicy();
@@ -106,7 +106,7 @@ public class TestRbacMutation {
 		RbacUtils.getInstance().WriteRbacPolicyAsXML(rbacMutant, fMutant);
 		System.out.println(">>>>> WriteRbacPolicyAsXML finished"+ fMutant.getAbsoluteFile());
 
-		FsmModel fsm = FsmUtils.getInstance().rbac2Fsm(rbacMutant);
+		FsmModel fsm = FsmUtils.getInstance().rbac2FsmConcurrent(rbacMutant);
 		System.out.println(">>>>> rbac2fsm finished"+ fMutant.getName());
 
 		File fsmFile = new File(outDir,rbacMutant.getName()+".fsm");
@@ -128,15 +128,15 @@ public class TestRbacMutation {
 		System.out.println(">>>>> WriteFsmAsDot started: "+ fsmFileFormat.getAbsoluteFile());
 		FsmUtils.getInstance().WriteFsmAsDot(fsm, fsmFileFormat);
 
-		String runDot = "dot -Tpng "+fMutant.getParentFile().getAbsolutePath()+"/"+rbacMutant.getName()+".dot -o "+fMutant.getParentFile().getAbsolutePath()+"/"+rbacMutant.getName()+".png";
-		Process p = Runtime.getRuntime().exec(runDot);
-		BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String s;
-		while ((s = br.readLine()) != null) System.out.println("line: " + s);
-		p.waitFor();
-		System.out.println(runDot);
-		System.out.println ("exit: " + p.exitValue());
-		p.destroy();
+//		String runDot = "dot -Tpng "+fMutant.getParentFile().getAbsolutePath()+"/"+rbacMutant.getName()+".dot -o "+fMutant.getParentFile().getAbsolutePath()+"/"+rbacMutant.getName()+".png";
+//		Process p = Runtime.getRuntime().exec(runDot);
+//		BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+//		String s;
+//		while ((s = br.readLine()) != null) System.out.println("line: " + s);
+//		p.waitFor();
+//		System.out.println(runDot);
+//		System.out.println ("exit: " + p.exitValue());
+//		p.destroy();
 	}
 
 	private static RbacPolicy create_SeniorTraineeDoctor(){
