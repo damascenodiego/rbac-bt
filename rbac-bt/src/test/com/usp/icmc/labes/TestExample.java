@@ -777,7 +777,9 @@ public class TestExample {
 		rbac.getRole().add(bronze);
 		rbac.getRole().add(silver);
 		rbac.getRole().add(gold);
-	
+
+		rbac.getSr().add(new Sr(admin, 1));
+		
 		//create permission
 		Permission p1 = new Permission("ReplyPost");
 		Permission p2 = new Permission("NewPost");
@@ -895,7 +897,7 @@ public class TestExample {
 	
 	
 		rbacAdmin .addDu(rbac,new Du(u1, 2));
-		rbacAdmin .addDu(rbac,new Du(u2, 2));
+		rbacAdmin .addSu(rbac,new Su(u2, 1));
 	
 		//create role
 		Role r1 = new Role("R1");

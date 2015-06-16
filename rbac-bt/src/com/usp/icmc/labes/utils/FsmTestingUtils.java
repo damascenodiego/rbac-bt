@@ -151,7 +151,7 @@ public class FsmTestingUtils {
 		FsmTestCase[] qSets = new FsmTestCase[fsm.getStates().size()];
 		for (int i = 0; i < fsm.getStates().size(); i++) {
 			qSets[i] = new FsmTestCase();
-			qSets[i].addTransition(new FsmTransition(fsm.getStates().get(i), "", "", fsm.getStates().get(i)));
+			qSets[i].addTransition(new FsmTransition(fsm.getInitialState(), "", "", fsm.getInitialState()));
 		}
 		FsmState current = fsm.getInitialState();
 		Queue<FsmState> toVisit = new LinkedList<FsmState>();
@@ -164,7 +164,7 @@ public class FsmTestingUtils {
 				if(!visited.contains(tr.getTo())){
 					int indexTo = fsm.getStates().indexOf(tr.getTo());
 					int indexFrom = fsm.getStates().indexOf(tr.getFrom());
-					qSets[indexTo].getPath().addAll(qSets[indexFrom].getPath());
+					if(qSets[indexFrom].getPath().size() > 1) qSets[indexTo].getPath().addAll(qSets[indexFrom].getPath().subList(1, qSets[indexFrom].getPath().size()-1));
 					qSets[indexTo].addTransition(tr);
 					if(qSets[indexTo].getInitialState().getName().equals(tr.getTo().getName())){
 						visited.add(tr.getTo());
@@ -176,7 +176,7 @@ public class FsmTestingUtils {
 		tSuite.setTestCases(Arrays.asList(qSets));
 		return tSuite;
 	}
-
+	
 	public FsmTestSuite transitionCoverSet(FsmModel fsm) {
 		FsmTestSuite qSet = stateCoverSet(fsm);
 		FsmTestSuite pSet = new FsmTestSuite(fsm.getName());

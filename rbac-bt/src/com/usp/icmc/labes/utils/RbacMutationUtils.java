@@ -383,7 +383,7 @@ public class RbacMutationUtils {
 		List<DSoDConstraint> origLst = pol.getDSoDConstraint();
 		for (DSoDConstraint cc : origLst) {
 			DSoDConstraint mutEl = new DSoDConstraint(cc.getSodSet(), cc.getCardinality()+1);
-			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ss_INCREMENT);
+			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ds_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
 			result.add(mutPol);
@@ -397,7 +397,7 @@ public class RbacMutationUtils {
 		List<DSoDConstraint> origLst = pol.getDSoDConstraint();
 		for (DSoDConstraint cc : origLst) {
 			DSoDConstraint mutEl = new DSoDConstraint(cc.getSodSet(), (cc.getCardinality()<=1)?1:cc.getCardinality()-1);
-			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ss_DECREMENT);
+			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ds_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
 			result.add(mutPol);

@@ -149,7 +149,8 @@ public class TestFsmTestingUtils {
 		fsmGenerated.getTransitions()	.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
 		fsmGenerated.getInputs()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
 		fsmGenerated.getOutputs()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-
+		fsmGenerated.getStates().remove(fsmGenerated.getInitialState());
+		fsmGenerated.getStates().add(0, fsmGenerated.getInitialState());
 	}
 
 	public static void main(String[] args) {
@@ -158,8 +159,8 @@ public class TestFsmTestingUtils {
 		policies.add(TestExample.create_SeniorTraineeDoctor()); //XXX OK
 		//		policies.add(TestExample.create_ProcureToStock());
 		//		policies.add(TestExample.create_ProcureToStockV2());
-		policies.add(TestExample.create_Masood2010Example1()); //XXX OK
-		policies.add(TestExample.create_ExperiencePointsv2()); //XXX OK
+//		policies.add(TestExample.create_Masood2010Example1()); //XXX OK
+//		policies.add(TestExample.create_ExperiencePointsv2()); //XXX OK
 //				policies.add(TestExample.create_Masood2009Example1()); //XXX similar to Masood2010Example1
 		//		policies.add(TestExample.create_Masood2009P1());
 		//		policies.add(TestExample.create_Masood2009P2());

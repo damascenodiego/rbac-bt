@@ -5,9 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -224,6 +226,7 @@ public class FsmUtils {
 	}
 
 	public void WriteFsm(FsmModel fsm, File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
+		sorting(fsm);
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document doc = docBuilder.newDocument();
 
@@ -331,22 +334,49 @@ public class FsmUtils {
 		
 		return fsm;
 	}
+	
+	public void fsmDiff(FsmModel f1, FsmModel f2, File fDiff) throws FileNotFoundException{
+		String edgeColor = "";
+		PrintWriter pw = new PrintWriter(fDiff);
+		pw.println("digraph rbac2Fsm {");
+		pw.println("  {");
+		pw.println("  node [style=filled]");
+		for (FsmState s : f1.getStates()) {
+			if(!f2.getStates().contains(s)){
+				pw.println("  "+s.getName()+" [color=red]");
+			}	
+		}
+		pw.println("  }");
+		Set<FsmTransition> allTransitions = new HashSet<FsmTransition>();
+		allTransitions.addAll(f1.getTransitions());
+		allTransitions.addAll(f2.getTransitions());
+		for (FsmTransition tr : allTransitions) {
+			if(tr.getOutput().equals("grant")){
+				if(f1.getTransitions().contains(tr) && f2.getTransitions().contains(tr)){
+					edgeColor = "";
+				}else if(f1.getTransitions().contains(tr)){
+					edgeColor = ", color=red";
+				}else if(f2.getTransitions().contains(tr)){
+					edgeColor = ", color=green";
+				}	
+				pw.println("  "+
+						tr.getFrom().getName()
+						+" -> "
+						+tr.getTo().getName()
+						+" [ label =\""+tr.getInput()+"/"+tr.getOutput()+"\""+edgeColor+"];");
+			}
+		}
+		pw.println("}");
+		pw.close();
 
-}
-
-class ConcurrentVisitRbacState extends Thread{
-
-	RbacState state;
-	
-	
-	
-	
-	public ConcurrentVisitRbacState(RbacState s) {
-		this.state = s;
 	}
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		super.run();
+
+	public void sorting(FsmModel fsmGenerated) {
+		fsmGenerated.getStates()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		fsmGenerated.getTransitions()	.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		fsmGenerated.getInputs()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		fsmGenerated.getOutputs()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+
 	}
+	
 }
