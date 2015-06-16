@@ -118,14 +118,13 @@ public class FsmUtils {
 
 		List<FsmTransition> transit = fsm.getTransitions();
 		for (FsmTransition tr : transit) {
-			if(tr.getOutput().equals("deny")) continue;
+//			if(tr.getOutput().equals("deny")) continue;
 			pw.println(tr.getFrom().getName()
 					+" -- "
 					+tr.getInput()+"/"+tr.getOutput()
 					+" -> "
 					+tr.getTo().getName());
 		}
-		pw.println("}");
 		pw.close();
 	}
 
@@ -135,7 +134,7 @@ public class FsmUtils {
 		List<FsmTransition> transit = fsm.getTransitions();
 		pw.println("\"origin\",\"input\",\"output\",\"destination\"");
 		for (FsmTransition tr : transit) {
-			if(tr.getOutput().equals("deny")) continue;
+//			if(tr.getOutput().equals("deny")) continue;
 			pw.println(
 					"\""+tr.getFrom().getName()+"\","
 							+"\""+tr.getInput()+"\","

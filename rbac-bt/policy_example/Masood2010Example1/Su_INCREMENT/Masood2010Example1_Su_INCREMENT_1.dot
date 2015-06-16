@@ -12,15 +12,15 @@ digraph rbac2Fsm {
   10101010 -> 11101010 [ label ="AC(u1,r1)/grant"];
   11001010 -> 10001010 [ label ="DC(u1,r1)/grant"];
   11001010 -> 11101010 [ label ="AS(u2,r1)/grant"];
-  10101010 -> 10001010 [ label ="DS(u2,r1)/grant"];
   00111010 -> 10111010 [ label ="AS(u1,r1)/grant"];
+  10101010 -> 10001010 [ label ="DS(u2,r1)/grant"];
   10101010 -> 10111010 [ label ="AC(u2,r1)/grant"];
   00111010 -> 00001010 [ label ="DS(u2,r1)/grant"];
   00111010 -> 00101010 [ label ="DC(u2,r1)/grant"];
   11101010 -> 00101010 [ label ="DS(u1,r1)/grant"];
+  10111010 -> 00111010 [ label ="DS(u1,r1)/grant"];
   11101010 -> 10101010 [ label ="DC(u1,r1)/grant"];
   11101010 -> 11001010 [ label ="DS(u2,r1)/grant"];
-  10111010 -> 00111010 [ label ="DS(u1,r1)/grant"];
   10111010 -> 10001010 [ label ="DS(u2,r1)/grant"];
   10111010 -> 10101010 [ label ="DC(u2,r1)/grant"];
 }

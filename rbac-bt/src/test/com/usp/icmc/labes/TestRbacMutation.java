@@ -112,6 +112,10 @@ public class TestRbacMutation {
 		File fsmFile = new File(outDir,rbacMutant.getName()+".fsm");
 		System.out.println(">>>>> WriteFsm  started: "+ fsmFile.getAbsoluteFile());
 		FsmUtils.getInstance().WriteFsm(fsm, fsmFile);
+		
+		File kissFile = new File(outDir,rbacMutant.getName()+".kiss");
+		System.out.println(">>>>> WriteFsm  started: "+ kissFile.getAbsoluteFile());
+		FsmUtils.getInstance().WriteFsmAsKiss(fsm, kissFile);
 
 		
 		FsmTestSuite set = testingUtils.stateCoverSet(fsm);
