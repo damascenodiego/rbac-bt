@@ -1,5 +1,6 @@
 package test.com.usp.icmc.labes;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -12,6 +13,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.usp.icmc.labes.fsm.FsmModel;
+import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
@@ -23,14 +25,20 @@ import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.Sr;
 import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.utils.FsmTestingUtils;
 import com.usp.icmc.labes.utils.FsmUtils;
+import com.usp.icmc.labes.utils.PolicyUnderTestUtils;
 import com.usp.icmc.labes.utils.RbacUtils;
 
 public class MainTest {
 
-	private RbacAdministrativeCommands rbacAdmin = RbacAdministrativeCommands.getInstance();
-	private RbacSupportingSystemFunctions rbacSys = RbacSupportingSystemFunctions.getInstance();
-	private RbacUtils rbacUtils = RbacUtils.getInstance();
+	private RbacAdministrativeCommands rbacAdmin	= RbacAdministrativeCommands.getInstance();
+	private RbacSupportingSystemFunctions rbacSys 	= RbacSupportingSystemFunctions.getInstance();
+	private RbacUtils rbacUtils 					= RbacUtils.getInstance();
+	private FsmTestingUtils testingUtils 			= FsmTestingUtils.getInstance();
+	private FsmUtils fsmUtils 						= FsmUtils.getInstance();
+	private PolicyUnderTestUtils putUtils 			= PolicyUnderTestUtils.getInstance();
+
 
 	RbacPolicy rbac;
 	RbacAcut acut;
@@ -173,6 +181,68 @@ public class MainTest {
 
 		System.out.println(acut);
 
+	}
+
+
+	@Test
+	public void stateCoverAndTransitionCover() {
+	
+		try {
+			RbacPolicy massod = putUtils.create_Masood2010Example1();
+			FsmModel fsmGenerated = fsmUtils.rbac2Fsm(massod);
+			
+			File fsmFile = new File("test/Masood2010Example1.fsm");
+			File testSet = null;
+			fsmFile.getParentFile().mkdirs();
+			
+			fsmUtils.WriteFsm(fsmGenerated, fsmFile);
+			
+			FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
+			
+			assertEquals(fsmGenerated,fsm);
+			
+			FsmTestSuite qSet = testingUtils.stateCoverSet(fsm);
+	
+			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_qSet.test");
+			testingUtils.WriteFsmTestSuite(qSet, testSet);
+			
+			assertEquals(qSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
+			assertEquals(qSet.getTestCases().size(),fsm.getStates().size());
+			
+			FsmTestSuite pSet = testingUtils.transitionCoverSet(fsm);
+	
+			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_pSet.test");
+			testingUtils.WriteFsmTestSuite(pSet, testSet);
+			
+			assertEquals(pSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
+			assertEquals(pSet.getTestCases().size(),fsm.getStates().size()*fsm.getInputs().size());			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	@Test
+	public void testRbac2Fsm() {
+	
+		List<RbacPolicy> pols = putUtils.getSmallPoliciesUnderTest();
+		
+		for (RbacPolicy rbacPolicy : pols) {
+			try {
+				FsmModel fsmGenerated = fsmUtils.rbac2Fsm(rbacPolicy);
+				FsmModel fsmConcurrentGenerated = fsmUtils.rbac2FsmConcurrent(rbacPolicy);
+				
+				fsmUtils.sorting(fsmGenerated);
+				fsmUtils.sorting(fsmConcurrentGenerated);
+	
+				assertEquals(fsmGenerated,fsmConcurrentGenerated);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

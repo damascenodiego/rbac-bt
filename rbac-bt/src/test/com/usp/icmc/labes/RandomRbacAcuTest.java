@@ -19,7 +19,7 @@ import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.utils.PolicyUnderTestUtils;
 
-public class TestRbacAcut {
+public class RandomRbacAcuTest {
 
 	@Test
 	public void test() {
