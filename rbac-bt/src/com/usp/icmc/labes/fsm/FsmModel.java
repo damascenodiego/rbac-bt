@@ -108,8 +108,6 @@ public class FsmModel extends FsmElement{
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
-			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		FsmModel other = (FsmModel) obj;

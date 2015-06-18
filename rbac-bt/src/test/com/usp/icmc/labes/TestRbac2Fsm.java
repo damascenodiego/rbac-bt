@@ -28,7 +28,7 @@ public class TestRbac2Fsm {
 	private PolicyUnderTestUtils putUtils = PolicyUnderTestUtils.getInstance();
 
 	@Test
-	public void stateCover() {
+	public void stateCoverAndTransitionCover() {
 
 		try {
 			RbacPolicy massod = putUtils.create_Masood2010Example1();
@@ -50,6 +50,7 @@ public class TestRbac2Fsm {
 			testingUtils.WriteFsmTestSuite(qSet, testSet);
 			
 			assertEquals(qSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
+			assertEquals(qSet.getTestCases().size(),fsm.getStates().size());
 			
 			FsmTestSuite pSet = testingUtils.transitionCoverSet(fsm);
 
@@ -57,6 +58,8 @@ public class TestRbac2Fsm {
 			testingUtils.WriteFsmTestSuite(pSet, testSet);
 			
 			assertEquals(pSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
+			assertEquals(pSet.getTestCases().size(),fsm.getStates().size()*fsm.getInputs().size());			
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
