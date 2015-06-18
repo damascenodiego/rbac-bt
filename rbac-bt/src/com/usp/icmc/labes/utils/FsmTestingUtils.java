@@ -175,6 +175,7 @@ public class FsmTestingUtils {
 			}
 		}
 		tSuite.setTestCases(Arrays.asList(qSets));
+		tSuite.getTestCases().sort((o1, o2) -> Integer.compare(o1.getPath().size(), o2.getPath().size()) );
 		return tSuite;
 	}
 	
@@ -187,9 +188,11 @@ public class FsmTestingUtils {
 			FsmState finalState = path.getFinalState();
 
 			for (FsmTransition tr : finalState.getOut()) {
+				if(tr.getInput().length()==0 && tr.getOutput().length()==0) continue;
 				FsmTestCase pSetEl = new FsmTestCase();
 				pSetEl.getPath().addAll(path.getPath());
 				pSetEl.addTransition(tr);
+				if(pSet.getTestCases().contains(pSetEl)) continue;
 				pSet.getTestCases().add(pSetEl);
 			}
 		}
