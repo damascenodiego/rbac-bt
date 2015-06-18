@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -88,6 +89,7 @@ public class Rbac2FsmConcurrent_BFS {
 
 	public void start() {
 		fsmModel = new FsmModel(acut.getPolicy().getName());
+		String initialStateName = acut.getName();
 		SearchTask[] tasks = new SearchTask[THREADS_NUM];
 		try {
 			curQ.add(acut.getCurrentState());
@@ -118,17 +120,10 @@ public class Rbac2FsmConcurrent_BFS {
 		fsmModel.getTransitions()	.addAll(transitions);
 		fsmModel.getInputs()		.addAll(inputs);
 		fsmModel.getOutputs()		.addAll(outputs);
-		fsmModel.setInitialState(getState(states,acut.getName()));
+		fsmModel.setInitialState(FsmUtils.getInstance().getState(states,initialStateName ));
 	}
 
-	FsmState getState(Set<FsmState> states2, String s){
-		for (FsmState fsmState : states2) {
-			if(fsmState.getName().equals(s)){
-				return fsmState;
-			}
-		}
-		return null;
-	}
+
 	
 	public FsmModel getFsmModel(){
 		return fsmModel;
@@ -153,20 +148,22 @@ public class Rbac2FsmConcurrent_BFS {
 				while (true) {
 					TimeUnit.MILLISECONDS.sleep(10);
 					RbacState u = curQ.poll();
-					if (u != null) {
-						used.putIfAbsent(u.getName(),true);
+					if (u != null && used.putIfAbsent(u.getName(), true)) {
 						RbacAcut localAcut = new RbacAcut(u.getPolicy());
 						
 						Map<FsmTransition,RbacState> generatedTrs = new HashMap<FsmTransition,RbacState>();
 						
 						for (RbacRequest in : rqs) {
 							localAcut.reset(u);
-							RbacState origin = (RbacState) localAcut.getCurrentState().clone();
+							RbacState origin = u;
 							boolean out = localAcut.request(in);
 							RbacState destination = ((RbacState) localAcut.getCurrentState().clone());
+							
 							FsmState from = new FsmState(origin.getName());
 							FsmState to = new FsmState(destination.getName());
+							
 							FsmTransition transition = new FsmTransition(from, in.toString(), (out? "grant" : "deny"), to);
+							
 							generatedTrs.put(transition,destination);
 						}
 						for (FsmTransition tr : generatedTrs.keySet()) {
@@ -177,11 +174,9 @@ public class Rbac2FsmConcurrent_BFS {
 							if(!transitions.contains(tr)) transitions.add(tr);
 							if(!states.contains(tr.getTo())) states.add(tr.getTo());
 
-							used.putIfAbsent(tr.getFrom().getName(), true);
-							
 							if(used.putIfAbsent(tr.getTo().getName(), true) == null) {
 								nextQ.add(generatedTrs.get(tr));
-								if(nextQ.size()%100==0) System.out.println(nextQ.size());
+								//if(nextQ.size()%100==0) System.out.println(nextQ.size());
 							}
 							
 						}

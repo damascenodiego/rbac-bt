@@ -106,18 +106,11 @@ public class Rbac2FsmConcurrent {
 		fsmModel.getOutputs().addAll(outputs);
 		fsmModel.getStates().addAll(states);
 		fsmModel.getTransitions().addAll(transitions);
-		fsmModel.setInitialState(getState(states,acut.getName()));
+		fsmModel.setInitialState(FsmUtils.getInstance().getState(states,acut.getName()));
+		
+		
 	}
 
-	FsmState getState(LinkedBlockingQueue<FsmState> states2, String s){
-		for (FsmState fsmState : states2) {
-			if(fsmState.getName().equals(s)){
-				return fsmState;
-			}
-		}
-		return null;
-	}
-	
 	public FsmModel getFsmModel(){
 		return fsmModel;
 	}

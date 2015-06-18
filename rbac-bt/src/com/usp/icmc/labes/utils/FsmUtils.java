@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -171,6 +172,7 @@ public class FsmUtils {
 
 		FsmModel rbac2fsm = new FsmModel(rbac.getName());
 
+		String initialStateName = acut.getCurrentState().getName();
 		Queue<RbacState> toVisit = new LinkedList<RbacState>();
 		toVisit.add((RbacState) acut.getCurrentState().clone());
 
@@ -196,11 +198,20 @@ public class FsmUtils {
 				}
 			}
 		}
+		rbac2fsm.setInitialState(getState(rbac2fsm.getStates(),initialStateName));
 		return rbac2fsm;
+	}
+	
+	public FsmState getState(Collection<FsmState> states2, String s){
+		for (FsmState fsmState : states2) {
+			if(fsmState.getName().equals(s)){
+				return fsmState;
+			}
+		}
+		return null;
 	}
 
 	public FsmModel rbac2FsmConcurrent(RbacPolicy rbac) {
-		rbac.getUserRoleAssignment().clear();
 		List<RbacRequest> input = new ArrayList<RbacRequest>();
 		for (Role rol: rbac.getRole()) {
 			for (User usr: rbac.getUser()) {
@@ -218,7 +229,7 @@ public class FsmUtils {
 		RbacAcut acut = new RbacAcut(rbac);
 
 		int threadsNum = Runtime.getRuntime().availableProcessors();
-		Rbac2FsmConcurrent rbac2FsmConc = new Rbac2FsmConcurrent(acut,threadsNum);
+		Rbac2FsmConcurrent_BFS rbac2FsmConc = new Rbac2FsmConcurrent_BFS(acut,threadsNum);
 
 		rbac2FsmConc.start();
 		
