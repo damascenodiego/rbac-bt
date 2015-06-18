@@ -1,105 +1,26 @@
 package test.com.usp.icmc.labes;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.usp.icmc.labes.fsm.FsmModel;
-import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
-import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
-import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
-import com.usp.icmc.labes.rbac.model.ActivationHierarchy;
-import com.usp.icmc.labes.rbac.model.DSoDConstraint;
-import com.usp.icmc.labes.rbac.model.Dr;
-import com.usp.icmc.labes.rbac.model.Du;
-import com.usp.icmc.labes.rbac.model.InheritanceHierarchy;
-import com.usp.icmc.labes.rbac.model.MutantType;
-import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
-import com.usp.icmc.labes.rbac.model.Role;
-import com.usp.icmc.labes.rbac.model.SSoDConstraint;
-import com.usp.icmc.labes.rbac.model.Sr;
-import com.usp.icmc.labes.rbac.model.Su;
-import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.utils.FsmTestingUtils;
 import com.usp.icmc.labes.utils.FsmUtils;
-import com.usp.icmc.labes.utils.RbacMutationUtils;
+import com.usp.icmc.labes.utils.PolicyUnderTestUtils;
 import com.usp.icmc.labes.utils.RbacUtils;
 
 
 public class TestRbacMutation {
 
-
-	private static RbacAdministrativeCommands rbacAdmin = RbacAdministrativeCommands.getInstance();
-	private static RbacSupportingSystemFunctions rbacSys = RbacSupportingSystemFunctions.getInstance();
-	private static RbacUtils rbacUtils = RbacUtils.getInstance();
-	private static RbacMutationUtils rbacMut = RbacMutationUtils.getInstance();
 	private static FsmTestingUtils testingUtils = FsmTestingUtils.getInstance();
 
 	public static void main(String[] args) {
-		MutantType types[] = {
-				MutantType.UR_REPLACE_U, 
-				MutantType.UR_REPLACE_R, 
-				MutantType.UR_REPLACE_UR,
-				MutantType.Su_INCREMENT, 
-				MutantType.Su_DECREMENT,
-				MutantType.Du_INCREMENT, 
-				MutantType.Du_DECREMENT,
-				MutantType.Sr_INCREMENT, 
-				MutantType.Sr_DECREMENT,
-				MutantType.Dr_INCREMENT, 
-				MutantType.Dr_DECREMENT,
-				MutantType.SSoD_REPLACE,
-				MutantType.DSoD_REPLACE,
-				MutantType.Ss_INCREMENT, 
-				MutantType.Ss_DECREMENT,
-				MutantType.Ds_INCREMENT, 
-				MutantType.Ds_DECREMENT,
-		};
-		List<RbacPolicy> mutants = new ArrayList<RbacPolicy>();
-		List<RbacPolicy> mutants2nd = new ArrayList<RbacPolicy>();
 
 		try {
-			List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
-			//			policies.add(TestExample.create_SeniorTraineeDoctor()); //XXX OK!!
-			//			policies.add(TestExample.create_Masood2010Example1()); //XXX OK!!
-			//			policies.add(TestExample.create_ExperiencePointsv2()); //XXX OK!!
-			//			policies.add(TestExample.create_Masood2009P2());
-			//			policies.add(TestExample.create_Masood2009P2v2()); //XXX OK!!
-			//			policies.add(TestExample.create_Masood2009Example1()); //XXX similar to Masood2010Example1
-
-			//		policies.add(TestExample.create_ProcureToStock());
-			//		policies.add(TestExample.create_ProcureToStockV2());
 			
-			//		policies.add(TestExample.create_Masood2009P1());
-					policies.add(TestExample.create_Masood2009P1v2());
-
-			//		policies.add(TestExample.create_user11roles2());
-			
-			//		policies.add(TestExample.create_user5roles3());
-			
-			//		policies.add(TestExample.create_Mondal2009Example1());
-			
-			//		policies.add(TestExample.create_SecureBank());
-
-			for (RbacPolicy rbacPol : policies) {
-				for (MutantType mutantType : types) mutants.addAll(rbacMut.generateMutants(rbacPol, mutantType));
-			}
-
-			for (RbacPolicy rbacPol : mutants) {
-				for (MutantType mutantType : types) mutants2nd.addAll(rbacMut.generateMutants(rbacPol, mutantType));
-			}
-			List<RbacPolicy> mutants1st2nd = new ArrayList<RbacPolicy>();
-			mutants1st2nd.addAll(policies);
-			//			mutants1st2nd.addAll(mutants);
-			//			mutants1st2nd.addAll(mutants2nd);	
-			System.out.println("no. 1st order mutants: "+mutants.size());
-			System.out.println("no. 2nd order mutants: "+mutants2nd.size());
+			List<RbacPolicy> mutants1st2nd = PolicyUnderTestUtils.getInstance().getAllPoliciesUnderTest();
 			for (RbacPolicy rbacMutant : mutants1st2nd) {
 				File f = new File("policies/"+rbacMutant.getName()+".rbac");
 				saveAllFormats(rbacMutant,f.getParentFile());

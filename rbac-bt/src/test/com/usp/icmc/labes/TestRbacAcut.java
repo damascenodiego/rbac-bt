@@ -17,13 +17,14 @@ import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.utils.PolicyUnderTestUtils;
 
 public class TestRbacAcut {
 
 	@Test
 	public void test() {
 		
-		RbacPolicy pol = TestExample.create_Masood2010Example1();
+		RbacPolicy pol = PolicyUnderTestUtils.getInstance().create_Masood2010Example1();
 		RbacAcut acut1 = new RbacAcut(pol);
 		RbacAcut acut2 = new RbacAcut(pol);
 		RbacAcut acut3 = new RbacAcut(pol);

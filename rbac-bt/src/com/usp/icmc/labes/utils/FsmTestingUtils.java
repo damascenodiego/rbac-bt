@@ -1,15 +1,11 @@
 package com.usp.icmc.labes.utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -27,22 +23,27 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.usp.icmc.labes.fsm.FsmModel;
-import com.usp.icmc.labes.fsm.FsmPath;
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.fsm.testing.FsmTestCase;
-import com.usp.icmc.labes.fsm.testing.FsmTestStep;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
-import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
+import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 
 public class FsmTestingUtils {
 
 	private FsmUtils fsmUtils = FsmUtils.getInstance();
+	private static RbacAdministrativeCommands rbacAdmin = RbacAdministrativeCommands.getInstance();
+	private static RbacSupportingSystemFunctions rbacSys = RbacSupportingSystemFunctions.getInstance();
+	private static RbacUtils rbacUtils = RbacUtils.getInstance();
+	private static RbacMutationUtils rbacMut = RbacMutationUtils.getInstance();
+
+	
+	
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 
 	static FsmTestingUtils instance;

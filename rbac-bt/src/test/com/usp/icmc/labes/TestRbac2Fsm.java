@@ -19,17 +19,19 @@ import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.utils.FsmTestingUtils;
 import com.usp.icmc.labes.utils.FsmUtils;
+import com.usp.icmc.labes.utils.PolicyUnderTestUtils;
 
 public class TestRbac2Fsm {
 
 	private FsmTestingUtils testingUtils = FsmTestingUtils.getInstance();
 	private FsmUtils fsmUtils = FsmUtils.getInstance();
+	private PolicyUnderTestUtils putUtils = PolicyUnderTestUtils.getInstance();
 
 	@Test
 	public void stateCover() {
 
 		try {
-			RbacPolicy massod = TestExample.create_Masood2010Example1();
+			RbacPolicy massod = putUtils.create_Masood2010Example1();
 			FsmModel fsmGenerated = fsmUtils.rbac2Fsm(massod);
 			
 			File fsmFile = new File("test/Masood2010Example1.fsm");
@@ -43,21 +45,14 @@ public class TestRbac2Fsm {
 			assertEquals(fsmGenerated,fsm);
 			
 			FsmTestSuite qSet = testingUtils.stateCoverSet(fsm);
-//			System.out.println(fsmFile.getName());
-//			System.out.println("State Cover Set (Q)");
-//			for (FsmTestCase s: qSet.getTestCases()) {
-//				System.out.println(s.toString());
-//			}
+
 			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_qSet.test");
 			testingUtils.WriteFsmTestSuite(qSet, testSet);
 			
 			assertEquals(qSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
 			
 			FsmTestSuite pSet = testingUtils.transitionCoverSet(fsm);
-//			System.out.println("Transition Cover Set (T)");
-//			for (FsmTestCase s: pSet.getTestCases()) {
-//				System.out.println(s.toString());
-//			}
+
 			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_pSet.test");
 			testingUtils.WriteFsmTestSuite(pSet, testSet);
 			
@@ -71,48 +66,21 @@ public class TestRbac2Fsm {
 	@Test
 	public void testRbac2Fsm() {
 
-		try {
-			RbacPolicy massod = TestExample.create_Masood2010Example1();
-			FsmModel fsmGenerated = fsmUtils.rbac2Fsm(massod);
-			FsmModel fsmConcurrentGenerated = fsmUtils.rbac2FsmConcurrent(massod);
-			
-			
-			FsmModel[] models = {fsmGenerated, fsmConcurrentGenerated};
-			for (FsmModel m : models) {
-				Collections.sort(m.getStates(), new Comparator<FsmState>() {
-					@Override
-					public int compare(FsmState o1, FsmState o2) {
-						return o1.toString().compareTo(o2.toString());
-					}
-				});
+		List<RbacPolicy> pols = putUtils.getSmallPoliciesUnderTest();
+		
+		for (RbacPolicy rbacPolicy : pols) {
+			try {
+				FsmModel fsmGenerated = fsmUtils.rbac2Fsm(rbacPolicy);
+				FsmModel fsmConcurrentGenerated = fsmUtils.rbac2FsmConcurrent(rbacPolicy);
 				
-				Collections.sort(m.getTransitions(), new Comparator<FsmTransition>() {
-					@Override
-					public int compare(FsmTransition o1, FsmTransition o2) {
-						return o1.toString().compareTo(o2.toString());
-					}
-				});
-				
-				Collections.sort(m.getInputs(), new Comparator<String>() {
-					@Override
-					public int compare(String o1, String o2) {
-						return o1.compareTo(o2);
-					}
-				});
-				
-				Collections.sort(m.getOutputs(), new Comparator<String>() {
-					@Override
-					public int compare(String o1, String o2) {
-						return o1.compareTo(o2);
-					}
-				});
-			}
+				fsmUtils.sorting(fsmGenerated);
+				fsmUtils.sorting(fsmConcurrentGenerated);
 
-			assertEquals(fsmGenerated,fsmConcurrentGenerated);
-			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+				assertEquals(fsmGenerated,fsmConcurrentGenerated);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
