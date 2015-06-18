@@ -736,20 +736,23 @@ public class TestExample {
 		rbacAdmin.grantPermission(rbac, p14, r5);
 		rbacAdmin.grantPermission(rbac, p15, r5);
 	
+		rbac.getSr().add(new Sr(r5, 1));
+		
 		Role[] constR1R2 = {r1,r2};
 		Role[] constR1R3 = {r1,r3};
 		Role[] constR1R5 = {r1,r5};
 		Role[] constR2R3 = {r2,r3};
 		Role[] constR3R5 = {r3,r5};
-		Role[] constR4R2 = {r4,r2};
-		Role[] constR4R3 = {r4,r3};
-		Role[] constR4R5 = {r4,r5};
-	
 		rbac.getDSoDConstraint().add(new DSoDConstraint(constR1R2, 1));
 		rbac.getDSoDConstraint().add(new DSoDConstraint(constR1R3, 1));
 		rbac.getDSoDConstraint().add(new DSoDConstraint(constR1R5, 1));
 		rbac.getDSoDConstraint().add(new DSoDConstraint(constR2R3, 1));
 		rbac.getDSoDConstraint().add(new DSoDConstraint(constR3R5, 1));
+		
+		
+		Role[] constR4R2 = {r4,r2};
+		Role[] constR4R3 = {r4,r3};
+		Role[] constR4R5 = {r4,r5};
 		rbac.getSSoDConstraint().add(new SSoDConstraint(constR4R2, 1));
 		rbac.getSSoDConstraint().add(new SSoDConstraint(constR4R3, 1));
 		rbac.getSSoDConstraint().add(new SSoDConstraint(constR4R5, 1));
@@ -864,6 +867,9 @@ public class TestExample {
 	
 		Role[] ssodSet = {r1,r2};
 		rbac.getSSoDConstraint().add(new SSoDConstraint(ssodSet, 1));
+		Role[] ssodSet2 = {r1,r3,r4};
+		rbac.getSSoDConstraint().add(new SSoDConstraint(ssodSet2, 1));
+
 		Role[] dsodSet = {r2,r3};
 		rbac.getSSoDConstraint().add(new SSoDConstraint(dsodSet, 1));
 	
