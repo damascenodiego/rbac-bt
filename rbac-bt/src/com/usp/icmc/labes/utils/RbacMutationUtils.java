@@ -75,8 +75,8 @@ public class RbacMutationUtils {
 		RbacMutant mutPol = null;
 		for (User u : users) {
 			for (UserRoleAssignment ur : assignments) {
-				if(!ur.getUser().equals(u)){
-					UserRoleAssignment mut = new UserRoleAssignment(u, ur.getRole());
+				UserRoleAssignment mut = new UserRoleAssignment(u, ur.getRole());
+				if(!ur.getUser().equals(u) && !assignments.contains(mut)){
 					mutPol = new RbacMutant((RbacPolicy) pol, ur, mut, MutantType.UR_REPLACE_U);
 					mutPol.setName(mutPol.getName()+"_"+mutNo);
 					mutNo++;
@@ -96,8 +96,8 @@ public class RbacMutationUtils {
 		RbacMutant mutPol = null;
 		for (Role r : roles) {
 			for (UserRoleAssignment ur : assignments) {
-				if(!ur.getRole().equals(r)){
-					UserRoleAssignment mut = new UserRoleAssignment(ur.getUser(), r);
+				UserRoleAssignment mut = new UserRoleAssignment(ur.getUser(), r);
+				if(!ur.getRole().equals(r) && !assignments.contains(mut)){
 					mutPol = new RbacMutant((RbacPolicy) pol, ur, mut, MutantType.UR_REPLACE_R);
 					mutPol.setName(mutPol.getName()+"_"+mutNo);
 					mutNo++;
@@ -120,8 +120,8 @@ public class RbacMutationUtils {
 		for (User u : users) {
 			for (Role r : roles) {
 				for (UserRoleAssignment ur : assignments) {
-					if(!ur.getUser().equals(u) && !ur.getRole().equals(r)){
-						UserRoleAssignment mut = new UserRoleAssignment(u, r);
+					UserRoleAssignment mut = new UserRoleAssignment(u, r);
+					if(!ur.getUser().equals(u) && !ur.getRole().equals(r) && !assignments.contains(mut)){
 						mutPol = new RbacMutant((RbacPolicy) pol, ur, mut, MutantType.UR_REPLACE_R);
 						mutPol.setName(mutPol.getName()+"_"+mutNo);
 						mutNo++;
@@ -186,6 +186,7 @@ public class RbacMutationUtils {
 		List<Su> origLst = pol.getSu();
 		for (Su cc : origLst) {
 			Su mutEl = new Su(cc.getUser(), cc.getCardinality()+1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Su_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -201,6 +202,7 @@ public class RbacMutationUtils {
 		List<Su> origLst = pol.getSu();
 		for (Su cc : origLst) {
 			Su mutEl = new Su(cc.getUser(), (cc.getCardinality()<=0)?0:cc.getCardinality()-1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Su_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -215,6 +217,7 @@ public class RbacMutationUtils {
 		List<Du> origLst = pol.getDu();
 		for (Du cc : origLst) {
 			Du mutEl = new Du(cc.getUser(), cc.getCardinality()+1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Du_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -229,6 +232,7 @@ public class RbacMutationUtils {
 		List<Du> origLst = pol.getDu();
 		for (Du cc : origLst) {
 			Du mutEl = new Du(cc.getUser(), (cc.getCardinality()<=0)?0:cc.getCardinality()-1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Du_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -243,6 +247,7 @@ public class RbacMutationUtils {
 		List<Sr> origLst = pol.getSr();
 		for (Sr cc : origLst) {
 			Sr mutEl = new Sr(cc.getRole(), cc.getCardinality()+1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Sr_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -257,6 +262,7 @@ public class RbacMutationUtils {
 		List<Sr> origLst = pol.getSr();
 		for (Sr cc : origLst) {
 			Sr mutEl = new Sr(cc.getRole(), (cc.getCardinality()<=0)?0:cc.getCardinality()-1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Sr_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -272,6 +278,7 @@ public class RbacMutationUtils {
 		List<Dr> origLst = pol.getDr();
 		for (Dr cc : origLst) {
 			Dr mutEl = new Dr(cc.getRole(), cc.getCardinality()+1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Dr_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -286,6 +293,7 @@ public class RbacMutationUtils {
 		List<Dr> origLst = pol.getDr();
 		for (Dr cc : origLst) {
 			Dr mutEl = new Dr(cc.getRole(), (cc.getCardinality()<=0)?0:cc.getCardinality()-1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Dr_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -310,6 +318,7 @@ public class RbacMutationUtils {
 						set.remove(rOrig);
 						set.add(rMut);
 						SSoDConstraint mutEl = new SSoDConstraint(set, cc.getCardinality());
+						if(origLst.contains(mutEl)) continue;
 						RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.SSoD_REPLACE);
 						mutPol.setName(mutPol.getName()+"_"+mutNo);
 						mutNo++;
@@ -337,6 +346,7 @@ public class RbacMutationUtils {
 						set.remove(rOrig);
 						set.add(rMut);
 						DSoDConstraint mutEl = new DSoDConstraint(set, cc.getCardinality());
+						if(origLst.contains(mutEl)) continue;
 						RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.DSoD_REPLACE);
 						mutPol.setName(mutPol.getName()+"_"+mutNo);
 						mutNo++;
@@ -355,6 +365,7 @@ public class RbacMutationUtils {
 		List<SSoDConstraint> origLst = pol.getSSoDConstraint();
 		for (SSoDConstraint cc : origLst) {
 			SSoDConstraint mutEl = new SSoDConstraint(cc.getSodSet(), cc.getCardinality()+1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ss_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -369,6 +380,7 @@ public class RbacMutationUtils {
 		List<SSoDConstraint> origLst = pol.getSSoDConstraint();
 		for (SSoDConstraint cc : origLst) {
 			SSoDConstraint mutEl = new SSoDConstraint(cc.getSodSet(), (cc.getCardinality()<=1)?1:cc.getCardinality()-1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ss_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -383,6 +395,7 @@ public class RbacMutationUtils {
 		List<DSoDConstraint> origLst = pol.getDSoDConstraint();
 		for (DSoDConstraint cc : origLst) {
 			DSoDConstraint mutEl = new DSoDConstraint(cc.getSodSet(), cc.getCardinality()+1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ds_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
@@ -397,6 +410,7 @@ public class RbacMutationUtils {
 		List<DSoDConstraint> origLst = pol.getDSoDConstraint();
 		for (DSoDConstraint cc : origLst) {
 			DSoDConstraint mutEl = new DSoDConstraint(cc.getSodSet(), (cc.getCardinality()<=1)?1:cc.getCardinality()-1);
+			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ds_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
 			mutNo++;
