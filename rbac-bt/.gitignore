@@ -1,2 +1,8 @@
 /bin/
 *.*~
+*.rbac
+*.fsm
+*.gml
+*.kiss
+*.dot
+*.csv
