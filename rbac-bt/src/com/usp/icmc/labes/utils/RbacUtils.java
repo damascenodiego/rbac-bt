@@ -3,8 +3,10 @@ package com.usp.icmc.labes.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -29,6 +31,7 @@ import com.usp.icmc.labes.rbac.model.Dr;
 import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
@@ -587,10 +590,74 @@ public class RbacUtils {
 		return null;
 	}
 
+	public boolean isValidPolicy(RbacMutant mutPol) {
+
+		int[] staticUser 	= new int[mutPol.getUser().size()];
+		int[] staticRole 	= new int[mutPol.getRole().size()];
+
+		int[] dynamicUser 	= new int[mutPol.getUser().size()];
+		int[] dynamicRole 	= new int[mutPol.getRole().size()];
+
+		Map<User,Set<Role>> urAssignment = new HashMap<User,Set<Role>>();
+		Map<User,Set<Role>> urActivation = new HashMap<User,Set<Role>>();
+
+		for (UserRoleAssignment el : mutPol.getUserRoleAssignment()) {
+			int userIndex = mutPol.getUser().indexOf(el.getUser());
+			int roleIndex = mutPol.getRole().indexOf(el.getRole());
+			staticUser[userIndex]++;
+			staticRole[roleIndex]++;
+			urAssignment.putIfAbsent(el.getUser(), new HashSet<>());
+			urAssignment.get(el.getUser()).add(el.getRole());
+		}
+		for (UserRoleActivation el : mutPol.getUserRoleActivation()) {
+			int userIndex = mutPol.getUser().indexOf(el.getUser());
+			int roleIndex = mutPol.getRole().indexOf(el.getRole());
+			dynamicUser[userIndex]++;
+			dynamicRole[roleIndex]++;
+			urActivation.putIfAbsent(el.getUser(), new HashSet<>());
+			urActivation.get(el.getUser()).add(el.getRole());
+		}
+		for (Sr i : mutPol.getSr()) {
+			int roleIndex = mutPol.getRole().indexOf(i.getRole());
+			if (staticRole[roleIndex]>i.getCardinality()) return false; 
+
+		}
+		for (Dr i : mutPol.getDr()) {
+			int roleIndex = mutPol.getRole().indexOf(i.getRole());
+			if (dynamicRole[roleIndex]>i.getCardinality()) return false;
+		}
+		for (Su i : mutPol.getSu()) {
+			int userIndex = mutPol.getUser().indexOf(i.getUser());
+			if (staticUser[userIndex]>i.getCardinality()) return false;
+		}
+		for (Du i : mutPol.getDu()) {
+			int userIndex = mutPol.getUser().indexOf(i.getUser());
+			if (dynamicUser[userIndex]>i.getCardinality()) return false;
+		}
+		for (SSoDConstraint i : mutPol.getSSoDConstraint()) {
+			for (User u : urAssignment.keySet()) {
+				Set<Role> set = new HashSet<Role>();
+				set.addAll(i.getSodSet());
+				set.retainAll(urAssignment.get(u));
+				if(set.size()>i.getCardinality()) return false;
+			}
+		}
+		for (DSoDConstraint i : mutPol.getDSoDConstraint()) {
+			for (User u : urActivation.keySet()) {
+				Set<Role> set = new HashSet<Role>();
+				set.addAll(i.getSodSet());
+				set.retainAll(urActivation.get(u));
+				if(set.size()>i.getCardinality()) return false;
+			}
+
+		}
+		return true;
+	}
+
 	//	boolean assignUser(RbacTuple pol, User usr, Role rol){
-		//		boolean userExists = userExists(pol, usr);
-		//		boolean roleExists = roleExists(pol, rol); 
-		//		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
+	//		boolean userExists = userExists(pol, usr);
+	//		boolean roleExists = roleExists(pol, rol); 
+	//		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
 	//		//		boolean commandIsValid = nextStateUserCardinality
 	//
 	//		if(		userExists &&

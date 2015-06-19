@@ -79,8 +79,10 @@ public class RbacMutationUtils {
 				if(!ur.getUser().equals(u) && !assignments.contains(mut)){
 					mutPol = new RbacMutant((RbacPolicy) pol, ur, mut, MutantType.UR_REPLACE_U);
 					mutPol.setName(mutPol.getName()+"_"+mutNo);
-					mutNo++;
-					result.add(mutPol);
+					if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+						mutNo++;
+						result.add(mutPol);
+					}
 				}
 			}
 
@@ -100,9 +102,10 @@ public class RbacMutationUtils {
 				if(!ur.getRole().equals(r) && !assignments.contains(mut)){
 					mutPol = new RbacMutant((RbacPolicy) pol, ur, mut, MutantType.UR_REPLACE_R);
 					mutPol.setName(mutPol.getName()+"_"+mutNo);
-					mutNo++;
-					result.add(mutPol);
-
+					if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+						mutNo++;
+						result.add(mutPol);
+					}
 				}
 			}
 
@@ -124,9 +127,10 @@ public class RbacMutationUtils {
 					if(!ur.getUser().equals(u) && !ur.getRole().equals(r) && !assignments.contains(mut)){
 						mutPol = new RbacMutant((RbacPolicy) pol, ur, mut, MutantType.UR_REPLACE_R);
 						mutPol.setName(mutPol.getName()+"_"+mutNo);
-						mutNo++;
-						result.add(mutPol);
-
+						if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+							mutNo++;
+							result.add(mutPol);
+						}
 					}
 				}
 			}
@@ -189,9 +193,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Su_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
-
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	} 
@@ -205,8 +210,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Su_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	} 
@@ -220,8 +227,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Du_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	} 
@@ -235,8 +244,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Du_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	} 
@@ -250,8 +261,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Sr_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	} 
@@ -265,8 +278,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Sr_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	} 
@@ -281,8 +296,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Dr_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	} 
@@ -296,8 +313,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Dr_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	} 
@@ -321,8 +340,10 @@ public class RbacMutationUtils {
 						if(origLst.contains(mutEl)) continue;
 						RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.SSoD_REPLACE);
 						mutPol.setName(mutPol.getName()+"_"+mutNo);
-						mutNo++;
-						result.add(mutPol);
+						if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+							mutNo++;
+							result.add(mutPol);
+						}
 					}
 				}
 			}
@@ -349,8 +370,10 @@ public class RbacMutationUtils {
 						if(origLst.contains(mutEl)) continue;
 						RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.DSoD_REPLACE);
 						mutPol.setName(mutPol.getName()+"_"+mutNo);
-						mutNo++;
-						result.add(mutPol);
+						if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+							mutNo++;
+							result.add(mutPol);
+						}
 					}
 				}
 			}
@@ -368,8 +391,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ss_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	}
@@ -383,8 +408,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ss_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	}
@@ -398,8 +425,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ds_INCREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	}
@@ -413,8 +442,10 @@ public class RbacMutationUtils {
 			if(origLst.contains(mutEl)) continue;
 			RbacMutant mutPol = new RbacMutant((RbacPolicy) pol, cc, mutEl, MutantType.Ds_DECREMENT);
 			mutPol.setName(mutPol.getName()+"_"+mutNo);
-			mutNo++;
-			result.add(mutPol);
+			if(RbacUtils.getInstance().isValidPolicy(mutPol)){
+				mutNo++;
+				result.add(mutPol);
+			}
 		}
 		return result;
 	}
