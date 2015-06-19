@@ -148,6 +148,65 @@ public class FsmUtils {
 		pw.close();
 	}
 
+	public void WriteFsmAsJff(FsmModel fsm, File jff)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
+		sorting(fsm);
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		Document doc = docBuilder.newDocument();
+
+		Element rootElement = doc.createElement("structure");
+		Element inputs = doc.createElement("type");
+		inputs.appendChild(inputs.getOwnerDocument().createTextNode("mealy"));
+		rootElement.appendChild(inputs);
+		
+		inputs = doc.createElement("automaton");
+		
+		
+		for (FsmState s: fsm.getStates()) {
+			Element child = doc.createElement("state");
+			child.setAttribute("id", Integer.toString(fsm.getStates().indexOf(s)));
+			child.setAttribute("name", s.getName());
+			if(s.equals(fsm.getInitialState())){
+				child.appendChild(doc.createElement("initial"));
+			}
+			inputs.appendChild(child);
+		}
+		for (FsmTransition t: fsm.getTransitions()) {
+			Element transition = doc.createElement("transition");
+			Element from = doc.createElement("from");
+			from.appendChild(from.getOwnerDocument().createTextNode(Integer.toString(fsm.getStates().indexOf(t.getFrom()))));
+			Element to = doc.createElement("to");
+			to.appendChild(to.getOwnerDocument().createTextNode(Integer.toString(fsm.getStates().indexOf(t.getTo()))));
+			Element read = doc.createElement("read");
+			read.appendChild(read.getOwnerDocument().createTextNode(t.getInput()));
+			Element transout = doc.createElement("transout");
+			transout.appendChild(transout.getOwnerDocument().createTextNode(t.getOutput()));
+			transition.appendChild(from);
+			transition.appendChild(to);
+			transition.appendChild(read);
+			transition.appendChild(transout);
+			inputs.appendChild(transition);
+		}
+		rootElement.appendChild(inputs);
+
+		doc.appendChild(rootElement);
+		
+		// write the content into xml file
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+		DOMSource source = new DOMSource(doc);
+		StreamResult result = new StreamResult(jff);
+ 
+		// Output to console for testing
+		// StreamResult result = new StreamResult(System.out);
+ 
+		transformer.transform(source, result);
+		
+//		OutputStream fos = new FileOutputStream(fsmFile);
+//		xstream.toXML(fsm, fos);
+		}
+
 	public FsmModel rbac2Fsm(RbacPolicy rbac) throws Exception {
 //		rbac.getUserRoleAssignment().clear();
 		List<RbacRequest> input = new ArrayList<RbacRequest>();
