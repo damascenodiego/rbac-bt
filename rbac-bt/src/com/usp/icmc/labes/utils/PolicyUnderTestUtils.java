@@ -21,6 +21,7 @@ import com.usp.icmc.labes.rbac.model.SSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Sr;
 import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 
 public class PolicyUnderTestUtils {
 
@@ -83,6 +84,9 @@ public class PolicyUnderTestUtils {
 		rbac.getDr().add(dr1);
 		rbac.getSr().add(sr2);
 		rbac.getDr().add(dr2);
+
+		rbac.getUserRoleAssignment().add(new UserRoleAssignment(u1,r1));
+		rbac.getUserRoleAssignment().add(new UserRoleAssignment(u2,r2));
 
 		Role [] sodSet = {r1,r2};
 		SSoDConstraint sod = new SSoDConstraint(sodSet, 1);
@@ -537,12 +541,16 @@ public class PolicyUnderTestUtils {
 		User alice = new User("Alice");
 		User bob = new User("Bob");
 		User carol = new User("Carol");
-		User employee = new User("Employee Name");
+		//		User employee = new User("Employee Name");
 		//add to policy
 		rbac.getUser().add(alice);
 		rbac.getUser().add(carol);
 		rbac.getUser().add(bob);
-		rbac.getUser().add(employee);
+		//		rbac.getUser().add(employee);
+
+		//		rbac.getSu().add(new Su(employee, 1));
+		rbac.getSu().add(new Su(bob, 1));
+		rbac.getSu().add(new Su(carol, 1));
 
 		//create role
 		Role r1 = new Role("Role1");
@@ -556,6 +564,8 @@ public class PolicyUnderTestUtils {
 		rbac.getRole().add(r3);
 		rbac.getRole().add(r4);
 		rbac.getRole().add(r5);
+
+		rbac.getSr().add(new Sr(r5, 1));
 
 		//create permission
 		Permission p1 = new Permission("CreatePR");
@@ -595,22 +605,22 @@ public class PolicyUnderTestUtils {
 		rbac.getPermission().add(p14);
 		rbac.getPermission().add(p15);
 
-		rbacAdmin.assignUser(rbac, alice, r1);
-		rbacAdmin.assignUser(rbac, alice, r2);
-		rbacAdmin.assignUser(rbac, alice, r3);
-		rbacAdmin.assignUser(rbac, alice, r4);
-		rbacAdmin.assignUser(rbac, alice, r5);
+		//		rbacAdmin.assignUser(rbac, alice, r1);
+		//		rbacAdmin.assignUser(rbac, alice, r2);
+		//		rbacAdmin.assignUser(rbac, alice, r3);
+		//		rbacAdmin.assignUser(rbac, alice, r4);
+		//		rbacAdmin.assignUser(rbac, alice, r5);
 
-		rbacAdmin.assignUser(rbac, bob, r1);
-		rbacAdmin.assignUser(rbac, bob, r2);
-		rbacAdmin.assignUser(rbac, bob, r3);
-		rbacAdmin.assignUser(rbac, bob, r5);
+		//		rbacAdmin.assignUser(rbac, bob, r1);
+		//		rbacAdmin.assignUser(rbac, bob, r2);
+		//		rbacAdmin.assignUser(rbac, bob, r3);
+		//		rbacAdmin.assignUser(rbac, bob, r5);
+		//
+		//		rbacAdmin.assignUser(rbac, carol, r4);
+		//		rbacAdmin.assignUser(rbac, carol, r5);
 
-		rbacAdmin.assignUser(rbac, carol, r4);
-		rbacAdmin.assignUser(rbac, carol, r5);
-
-		rbacAdmin.assignUser(rbac, employee, r1);
-		rbacAdmin.assignUser(rbac, employee, r4);
+		//		rbacAdmin.assignUser(rbac, employee, r1);
+		//		rbacAdmin.assignUser(rbac, employee, r4);
 
 		rbacAdmin.grantPermission(rbac, p1, r1);
 
@@ -632,26 +642,9 @@ public class PolicyUnderTestUtils {
 		rbacAdmin.grantPermission(rbac, p14, r5);
 		rbacAdmin.grantPermission(rbac, p15, r5);
 
-		rbac.getSr().add(new Sr(r5, 1));
 
-		Role[] constR1R2 = {r1,r2};
-		Role[] constR1R3 = {r1,r3};
-		Role[] constR1R5 = {r1,r5};
-		Role[] constR2R3 = {r2,r3};
-		Role[] constR3R5 = {r3,r5};
-		rbac.getDSoDConstraint().add(new DSoDConstraint(constR1R2, 1));
-		rbac.getDSoDConstraint().add(new DSoDConstraint(constR1R3, 1));
-		rbac.getDSoDConstraint().add(new DSoDConstraint(constR1R5, 1));
-		rbac.getDSoDConstraint().add(new DSoDConstraint(constR2R3, 1));
-		rbac.getDSoDConstraint().add(new DSoDConstraint(constR3R5, 1));
-
-
-		Role[] constR4R2 = {r4,r2};
-		Role[] constR4R3 = {r4,r3};
-		Role[] constR4R5 = {r4,r5};
-		rbac.getSSoDConstraint().add(new SSoDConstraint(constR4R2, 1));
-		rbac.getSSoDConstraint().add(new SSoDConstraint(constR4R3, 1));
-		rbac.getSSoDConstraint().add(new SSoDConstraint(constR4R5, 1));
+		Role[] constR2R3R4 = {r2,r3,r4};
+		rbac.getSSoDConstraint().add(new SSoDConstraint(constR2R3R4, 1));
 
 		return rbac;
 	}
@@ -881,6 +874,37 @@ public class PolicyUnderTestUtils {
 		return rbac;
 	}
 
+	public RbacPolicy create_user11roles2v2(){
+		int totUsers = 11;
+		int totRoles = 2;
+		RbacPolicy rbac = new RbacPolicy("user"+totUsers+"roles"+totRoles);
+
+		//create users
+		for (int i = 1; i <= totUsers; i++) {
+			User u = new User("U"+i);
+			rbacAdmin .addUser(rbac,u);
+			rbac.getSu().add(new Su(u, 1));
+		}
+
+		//create role
+		Set<Role> sodSet = new HashSet<Role>();
+		for (int i = 1; i <= totRoles; i++) {
+			Role r = new Role("R"+i);
+			rbacAdmin .addRole(rbac,r);
+			rbac.getSr().add(new Sr(r, 1));
+			sodSet.add(r);
+		}
+
+
+		for (int i = 0; i <= 4; i++) {
+			rbacAdmin .addPermission(rbac,new Permission("P"+i));			
+		}
+
+		rbac.getSSoDConstraint().add(new SSoDConstraint(sodSet, 2));
+
+		return rbac;
+	}
+
 	public List<RbacPolicy> getAllPoliciesUnderTest() {
 		MutantType types[] = {
 				MutantType.UR_REPLACE_U, 
@@ -903,8 +927,8 @@ public class PolicyUnderTestUtils {
 		};
 		List<RbacPolicy> mutants = new ArrayList<RbacPolicy>();
 		List<RbacPolicy> mutants2nd = new ArrayList<RbacPolicy>();
-
 		List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
+
 		//			policies.add(create_SeniorTraineeDoctor()); //XXX OK!!
 		//			policies.add(create_Masood2010Example1()); //XXX OK!!
 		//			policies.add(create_ExperiencePointsv2()); //XXX OK!!
@@ -936,6 +960,64 @@ public class PolicyUnderTestUtils {
 		//			mutants1st2nd.addAll(mutants2nd);	
 		System.out.println("no. 1st order mutants: "+mutants.size());
 		System.out.println("no. 2nd order mutants: "+mutants2nd.size());
+
+		return mutants1st2nd;
+	}
+
+	public List<RbacPolicy> getFeasiblePoliciesUnderTest() {
+		MutantType types[] = {
+				MutantType.UR_REPLACE_U, 
+				MutantType.UR_REPLACE_R, 
+				MutantType.UR_REPLACE_UR,
+				MutantType.Su_INCREMENT, 
+				MutantType.Su_DECREMENT,
+				MutantType.Du_INCREMENT, 
+				MutantType.Du_DECREMENT,
+				MutantType.Sr_INCREMENT, 
+				MutantType.Sr_DECREMENT,
+				MutantType.Dr_INCREMENT, 
+				MutantType.Dr_DECREMENT,
+				MutantType.SSoD_REPLACE,
+				MutantType.DSoD_REPLACE,
+				MutantType.Ss_INCREMENT, 
+				MutantType.Ss_DECREMENT,
+				MutantType.Ds_INCREMENT, 
+				MutantType.Ds_DECREMENT,
+		};
+		List<RbacPolicy> mutants = new ArrayList<RbacPolicy>();
+		List<RbacPolicy> mutants2nd = new ArrayList<RbacPolicy>();
+
+		List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
+		policies.add(create_SeniorTraineeDoctor()); 		//XXX OK!! 1st and 2nd order mutants
+		policies.add(create_Masood2010Example1()); 			//XXX OK!! 1st and 2nd order mutants
+		policies.add(create_ExperiencePointsv2()); 			//XXX OK!! 1st and 2nd order mutants
+		//////policies.add(create_Masood2009P2());
+		policies.add(create_Masood2009P2v2()); 				//XXX OK!! 1st order mutants  //TODO executar durante madrugada
+		//////policies.add(create_Masood2009Example1()); //XXX similar to Masood2010Example1
+		//////policies.add(create_user5roles3());
+		//////policies.add(create_userXrolesY());
+		//////policies.add(create_user11roles2());
+		policies.add(create_user11roles2v2()); 				//XXX OK!! 1st and 2nd order mutants
+		//////policies.add(create_Masood2009P1());
+		policies.add(create_Masood2009P1v2()); 				//XXX OK!! 1st and 2nd order mutants
+		//////policies.add(create_ProcureToStock());
+		policies.add(create_ProcureToStockV2());			//XXX OK!! 1st order mutants
+
+
+		////////policies.add(create_Mondal2009Example1()); 			// TODO implement hierarchies
+		////////policies.add(create_SecureBank());					// TODO implement hierarchies
+
+		for (RbacPolicy rbacPol : policies)  for (MutantType mutantType : types) mutants.addAll(rbacMut.generateMutants(rbacPol, mutantType));
+
+//		for (RbacPolicy rbacPol : mutants) for (MutantType mutantType : types) mutants2nd.addAll(rbacMut.generateMutants(rbacPol, mutantType));
+
+		List<RbacPolicy> mutants1st2nd = new ArrayList<RbacPolicy>();
+		mutants1st2nd.addAll(policies);
+		mutants1st2nd.addAll(mutants);
+		mutants1st2nd.addAll(mutants2nd);
+		System.out.println("no. policies generated: "+policies.size());
+		System.out.println("no. 1 st order mutants: "+mutants.size());
+		System.out.println("no. 2 nd order mutants: "+mutants2nd.size());
 
 		return mutants1st2nd;
 	}

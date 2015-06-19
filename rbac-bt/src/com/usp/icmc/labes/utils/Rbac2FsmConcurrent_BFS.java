@@ -106,10 +106,10 @@ public class Rbac2FsmConcurrent_BFS {
 		} finally {
 			pool.shutdown();
 		}
-		Set states = new HashSet();
-		Set transitions = new HashSet();
-		Set inputs = new HashSet();
-		Set outputs = new HashSet();
+		Set<FsmState> states = new HashSet<FsmState>();
+		Set<FsmTransition> transitions = new HashSet<FsmTransition>();
+		Set<String> inputs = new HashSet<String>();
+		Set<String>outputs = new HashSet<String>();
 		for (SearchTask t : tasks) {
 			states.addAll(t.getStates());
 			transitions.addAll(t.getTransitions());

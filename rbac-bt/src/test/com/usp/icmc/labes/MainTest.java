@@ -8,6 +8,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestFailure;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -20,7 +22,9 @@ import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.Dr;
 import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
+import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.Sr;
 import com.usp.icmc.labes.rbac.model.Su;
@@ -61,7 +65,7 @@ public class MainTest {
 		List<Sr> sr = new ArrayList<Sr>();
 		List<Du> du = new ArrayList<Du>();
 		List<Dr> dr = new ArrayList<Dr>();
-		
+
 		//create user cardinality constraints
 		su.add(new Su(u1, 1));
 		du.add(new Du(u1, 1));
@@ -82,7 +86,7 @@ public class MainTest {
 		assertTrue(rbacAdmin .addUser(rbac,u1));
 		//second add false
 		assertFalse(rbacAdmin.addUser(rbac,u1));
-		
+
 		//add user constraints to policy
 		for (Su el : su) assertTrue(rbacAdmin .addSu(rbac,el));
 		for (Du el : du) assertTrue(rbacAdmin .addDu(rbac,el));
@@ -90,7 +94,7 @@ public class MainTest {
 		//add role constraints to policy
 		for (Sr el : sr) assertTrue(rbacAdmin .addSr(rbac,el));
 		for (Dr el : dr) assertTrue(rbacAdmin .addDr(rbac,el));
-		
+
 		//first add OK
 		assertTrue(rbacAdmin.addUser(rbac,u2));
 		// second add false
@@ -186,38 +190,38 @@ public class MainTest {
 
 	@Test
 	public void stateCoverAndTransitionCover() {
-	
+
 		try {
 			RbacPolicy massod = putUtils.create_Masood2010Example1();
 			FsmModel fsmGenerated = fsmUtils.rbac2Fsm(massod);
-			
+
 			File fsmFile = new File("test/Masood2010Example1.fsm");
 			File testSet = null;
 			fsmFile.getParentFile().mkdirs();
-			
+
 			fsmUtils.WriteFsm(fsmGenerated, fsmFile);
-			
+
 			FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
-			
+
 			assertEquals(fsmGenerated,fsm);
-			
+
 			FsmTestSuite qSet = testingUtils.stateCoverSet(fsm);
-	
+
 			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_qSet.test");
 			testingUtils.WriteFsmTestSuite(qSet, testSet);
-			
+
 			assertEquals(qSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
 			assertEquals(qSet.getTestCases().size(),fsm.getStates().size());
-			
+
 			FsmTestSuite pSet = testingUtils.transitionCoverSet(fsm);
-	
+
 			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_pSet.test");
 			testingUtils.WriteFsmTestSuite(pSet, testSet);
-			
+
 			assertEquals(pSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
 			assertEquals(pSet.getTestCases().size(),fsm.getStates().size()*fsm.getInputs().size());			
-			
-			
+
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -226,23 +230,81 @@ public class MainTest {
 
 	@Test
 	public void testRbac2Fsm() {
-	
+
 		List<RbacPolicy> pols = putUtils.getSmallPoliciesUnderTest();
-		
+
+
 		for (RbacPolicy rbacPolicy : pols) {
 			try {
 				FsmModel fsmGenerated = fsmUtils.rbac2Fsm(rbacPolicy);
 				FsmModel fsmConcurrentGenerated = fsmUtils.rbac2FsmConcurrent(rbacPolicy);
-				
+
 				fsmUtils.sorting(fsmGenerated);
 				fsmUtils.sorting(fsmConcurrentGenerated);
-	
+
 				assertEquals(fsmGenerated,fsmConcurrentGenerated);
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+
+	@Test
+	public void testFeasiblePolicies() {
+
+		List<RbacPolicy> pols = putUtils.getFeasiblePoliciesUnderTest();
+
+		int count = pols.size();
+		for (int i = 0; i < pols.size(); i++) {
+			//		for (int i = pols.size()-1; i >= 0; i--) {
+			RbacPolicy rbacPolicy = pols.get(i);
+			saveAllFormats(rbacPolicy);
+			System.out.println(count--);
+		}
+	}
+
+	public void saveAllFormats(RbacPolicy rbacPolicy) {
+		try {
+
+			File fRbacDir = new File("policies_example");
+			fRbacDir = new File(fRbacDir,rbacPolicy.getName());
+			fRbacDir.mkdirs();
+
+			File fRbac = new File(fRbacDir,rbacPolicy.getName()+".rbac");
+			File fFsm = new File(fRbacDir,rbacPolicy.getName()+".fsm");
+			File fDot = new File(fRbacDir,rbacPolicy.getName()+".dot");
+			File fKiss = new File(fRbacDir,rbacPolicy.getName()+".kiss");
+
+			if(!fRbac.exists()) {
+				rbacUtils.WriteRbacPolicyAsXML(rbacPolicy, fRbac);
+			}
+
+			FsmModel fsmConcurrentGenerated = null;
+			if(!fFsm.exists() && !fDot.exists() && !fKiss.exists()) {
+				fsmConcurrentGenerated = fsmUtils.rbac2FsmConcurrent(rbacPolicy);
+				fsmUtils.sorting(fsmConcurrentGenerated);
+				fsmUtils.WriteFsm(fsmConcurrentGenerated, fFsm);
+				if(!fDot.exists()) {
+					fsmUtils.WriteFsmAsDot(fsmConcurrentGenerated, fDot);
+				}
+				if(!fKiss.exists()) {
+					fsmUtils.WriteFsmAsKiss(fsmConcurrentGenerated, fKiss);
+				}
+			}
+			
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public static void main(String[] args) {
+		MainTest mt = new MainTest();
+		mt.testFeasiblePolicies();
 	}
 
 }
