@@ -823,15 +823,6 @@ public class PolicyUnderTestUtils {
 		//		Role[] dsodSet = {r2,r3};
 		//		rbac.getSSoDConstraint().add(new SSoDConstraint(dsodSet, 1));
 
-		rbacAdmin.assignUser(rbac, u1, r1);
-
-		Role[] roles ={r2,r3,r4,r5
-				//				,r6
-		};
-		for (Role r : roles) {
-			rbacAdmin.assignUser(rbac, u1, r);
-			rbacAdmin.assignUser(rbac, u2, r);
-		}
 
 		Role[] s1 = {r1,r2,r3};
 		Role[] s2 = {r4,r5};
@@ -842,6 +833,17 @@ public class PolicyUnderTestUtils {
 		rbac.getSSoDConstraint().add(new SSoDConstraint(s2, 1));
 		rbac.getDSoDConstraint().add(new DSoDConstraint(d1, 1));
 		rbac.getDSoDConstraint().add(new DSoDConstraint(d2, 2));
+
+		Role[] roles ={r2,r3,r4,r5
+				//				,r6
+		};
+
+		rbacAdmin.assignUser(rbac, u1, r1);
+		
+		for (Role r : roles) {
+			rbacAdmin.assignUser(rbac, u1, r);
+			rbacAdmin.assignUser(rbac, u2, r);
+		}
 
 		return rbac;
 	}
@@ -877,7 +879,7 @@ public class PolicyUnderTestUtils {
 	public RbacPolicy create_user11roles2v2(){
 		int totUsers = 11;
 		int totRoles = 2;
-		RbacPolicy rbac = new RbacPolicy("user"+totUsers+"roles"+totRoles);
+		RbacPolicy rbac = new RbacPolicy("user"+totUsers+"roles"+totRoles+"_v2");
 
 		//create users
 		for (int i = 1; i <= totUsers; i++) {
@@ -988,20 +990,20 @@ public class PolicyUnderTestUtils {
 		List<RbacPolicy> mutants2nd = new ArrayList<RbacPolicy>();
 
 		List<RbacPolicy> policies= new ArrayList<RbacPolicy>();
-		policies.add(create_SeniorTraineeDoctor()); 		//XXX OK!! 1st and 2nd order mutants
-		policies.add(create_Masood2010Example1()); 			//XXX OK!! 1st and 2nd order mutants
-		policies.add(create_ExperiencePointsv2()); 			//XXX OK!! 1st and 2nd order mutants
-		//////policies.add(create_Masood2009P2());
+//		policies.add(create_SeniorTraineeDoctor()); 		//XXX OK!! 1st and 2nd order mutants
+//		policies.add(create_Masood2010Example1()); 			//XXX OK!! 1st and 2nd order mutants
+//		policies.add(create_ExperiencePointsv2()); 			//XXX OK!! 1st and 2nd order mutants
+//		//////policies.add(create_Masood2009P2());
 		policies.add(create_Masood2009P2v2()); 				//XXX OK!! 1st order mutants  //TODO executar durante madrugada
 		//////policies.add(create_Masood2009Example1()); //XXX similar to Masood2010Example1
 		//////policies.add(create_user5roles3());
 		//////policies.add(create_userXrolesY());
 		//////policies.add(create_user11roles2());
-		policies.add(create_user11roles2v2()); 				//XXX OK!! 1st and 2nd order mutants
-		//////policies.add(create_Masood2009P1());
-		policies.add(create_Masood2009P1v2()); 				//XXX OK!! 1st and 2nd order mutants
-		//////policies.add(create_ProcureToStock());
-		policies.add(create_ProcureToStockV2());			//XXX OK!! 1st order mutants
+//		policies.add(create_user11roles2v2()); 				//XXX OK!! 1st and 2nd order mutants
+//		//////policies.add(create_Masood2009P1());
+//		policies.add(create_Masood2009P1v2()); 				//XXX OK!! 1st and 2nd order mutants
+//		//////policies.add(create_ProcureToStock());
+//		policies.add(create_ProcureToStockV2());			//XXX OK!! 1st order mutants
 
 
 		////////policies.add(create_Mondal2009Example1()); 			// TODO implement hierarchies
