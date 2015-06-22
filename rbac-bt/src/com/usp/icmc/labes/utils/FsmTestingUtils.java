@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -197,5 +198,19 @@ public class FsmTestingUtils {
 			}
 		}
 		return pSet;
+	}
+	
+	public FsmTestSuite transitionTour(FsmModel fsm) {
+		FsmTestSuite tt = new FsmTestSuite(fsm.getName());
+		tt.setGeneratedBy("TransitionTour");
+
+		CPP g = new CPP(fsm);
+		List<FsmTransition> cptPath = g.getCPT();
+
+		FsmTestCase  testCase = new FsmTestCase();
+		testCase.getPath().addAll(cptPath);
+		tt.getTestCases().add(testCase);
+		
+		return tt;
 	}
 }

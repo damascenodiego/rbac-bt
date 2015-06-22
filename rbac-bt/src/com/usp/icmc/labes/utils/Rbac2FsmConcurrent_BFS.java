@@ -121,6 +121,8 @@ public class Rbac2FsmConcurrent_BFS {
 		fsmModel.getInputs()		.addAll(inputs);
 		fsmModel.getOutputs()		.addAll(outputs);
 		fsmModel.setInitialState(FsmUtils.getInstance().getState(states,initialStateName ));
+		FsmUtils.getInstance().updateElements(fsmModel);
+		FsmUtils.getInstance().sorting(fsmModel);
 	}
 
 

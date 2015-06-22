@@ -448,5 +448,22 @@ public class FsmUtils {
 		fsmGenerated.getOutputs()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
 
 	}
+
+	public void updateElements(FsmModel fsmModel) {
+		for (FsmState s: fsmModel.getStates()) {
+			s.getIn().clear();
+			s.getOut().clear();
+		}
+		for (FsmTransition tr : fsmModel.getTransitions()) {
+			FsmState fr = fsmModel.getState(tr.getFrom().getName());
+			FsmState to = fsmModel.getState(tr.getTo().getName());
+			tr.setFrom(fr);
+			tr.setTo(to);
+			if(!fr.getOut().contains(tr)) fr.getOut().add(tr);
+			if(!to.getIn().contains(tr)) to.getIn().add(tr);
+
+		}
+		
+	}
 	
 }
