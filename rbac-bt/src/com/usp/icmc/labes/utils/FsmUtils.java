@@ -124,7 +124,7 @@ public class FsmUtils {
 //			if(tr.getOutput().equals("deny")) continue;
 			pw.println(tr.getFrom().getName()
 					+" -- "
-					+tr.getInput()+"/"+tr.getOutput()
+					+tr.getInput()+" / "+tr.getOutput()
 					+" -> "
 					+tr.getTo().getName());
 		}
