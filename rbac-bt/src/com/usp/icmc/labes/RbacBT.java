@@ -101,7 +101,6 @@ public class RbacBT {
 				else if(cmd.hasOption(DOT_PARAMETER)) outFormat = "dot";
 
 				if(output == null) output = rbacFile.getParentFile();
-				else output = new File(output,rbacPolicy.getName());
 				output.mkdirs();
 					
 				rbacFsmFile = new File(output,rbacPolicy.getName()+"."+outFormat);
@@ -126,8 +125,8 @@ public class RbacBT {
 					mutants.addAll(rbacMut.generateMutants(rbacPolicy , mutantType));
 
 				if(output == null) output = rbacFile.getParentFile();
-				else output = new File(output,rbacPolicy.getName());
 				output.mkdirs();
+				
 				for (RbacMutant rbacMutant : mutants) {
 					File mutTypeDir = new File(output, rbacMutant.getType().name());
 					if(!mutTypeDir.exists()) mutTypeDir.mkdirs();
@@ -136,19 +135,19 @@ public class RbacBT {
 					rbacUtils.WriteRbacPolicyAsXML(rbacMutant, rbacFsmFile);
 				}
 			}else if(cmd.hasOption(HELP_PARAMETER)) {
-				formatter.printHelp( "RbacBt", options );
+				formatter.printHelp( "rbacBt", options );
+			}else{
+				formatter.printHelp( "rbacBt", options );
 			}
-			return;
 		} catch (ParseException e) {
 			System.err.println( "Parsing failed.  Reason: " + e.getMessage() );
+			formatter.printHelp( "rbacBt", options );
 		} catch (ParserConfigurationException e) {
 			System.err.println("Error loading/writing RBAC policy file!!!!");
 		} catch (SAXException | IOException e) {
 			System.err.println("Error loading RBAC policy file!!!!");
 		} catch (TransformerException e) {
 			System.err.println("XML Parsing error!!!!");
-		}finally{
-			formatter.printHelp( "RbacBt", options );
 		}
 
 	}
