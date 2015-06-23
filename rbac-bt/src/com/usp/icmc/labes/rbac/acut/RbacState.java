@@ -2,6 +2,7 @@ package com.usp.icmc.labes.rbac.acut;
 
 import java.util.ArrayList;
 
+import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
@@ -37,6 +38,45 @@ public class RbacState {
 
 		for (PermissionRoleAssignment el : policy.getPermissionRoleAssignment()) 
 			prAsCopy.add(new PermissionRoleAssignment(el.getPermission(), el.getRole()));
+
+	}
+
+	public RbacState(RbacPolicy p, FsmState fState) {
+		this.policy=p;
+		urAsCopy = new ArrayList<UserRoleAssignment>();
+		urAcCopy = new ArrayList<UserRoleActivation>();
+		prAsCopy = new ArrayList<PermissionRoleAssignment>();
+
+		int pos = 0;
+		for (User usr: policy.getUser()) {
+			for (Role rol: policy.getRole()) {
+				String rel = fState.getName().substring(pos, pos+2);
+				switch (rel) {
+				case "10":
+					urAsCopy.add(new UserRoleAssignment(usr, rol));
+					break;
+				case "11":
+					urAsCopy.add(new UserRoleAssignment(usr, rol));
+					urAcCopy.add(new UserRoleActivation(usr, rol));
+					break;
+				}
+				pos+=2;
+			}	
+		}
+		for (Role rol: policy.getRole()) {
+			for (Permission prm: policy.getPermission()) {
+				String rel = fState.getName().substring(pos, pos+2);
+				switch (rel) {
+				case "10":
+					prAsCopy.add(new PermissionRoleAssignment(prm, rol));
+					break;
+				}
+				pos+=2;
+			}
+		}
+
+
+		
 
 	}
 
@@ -77,7 +117,7 @@ public class RbacState {
 	public RbacPolicy getPolicy() {
 		return policy;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getName();
@@ -122,7 +162,7 @@ public class RbacState {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		RbacState state = new RbacState(policy);
