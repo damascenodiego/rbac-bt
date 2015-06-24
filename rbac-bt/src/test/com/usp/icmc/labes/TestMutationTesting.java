@@ -21,6 +21,7 @@ import com.usp.icmc.labes.rbac.acut.RbacState;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.MutantType;
+import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
@@ -86,6 +87,8 @@ public class TestMutationTesting {
 		////////RbacTuple rbacPol = putUtils.create_SecureBank());					// TODO implement hierarchies
 
 		FsmModel fsm = fsmUtils.rbac2FsmConcurrent(rbacPol);
+		List<RbacMutant> a = rbacMut.generateMutants(rbacPol, MutantType.SSoD_REPLACE);
+		List<RbacMutant> b = rbacMut.generateMutants(rbacPol, MutantType.DSoD_REPLACE);
 		System.out.println(fsm);
 		try {
 			File fsmFile = new File("/home/damasceno/test.fsm");

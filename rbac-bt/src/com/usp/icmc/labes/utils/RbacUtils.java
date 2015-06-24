@@ -188,8 +188,8 @@ public class RbacUtils {
 				int card = Integer.valueOf(in.getAttribute("cardinality"));
 				subEl = in.getElementsByTagName("role");
 				List<Role> set = new ArrayList<Role>();
-				for (int j = 0; i < subEl.getLength(); i++) {
-					Element subIn = (Element) subEl.item(i);
+				for (int j = 0; j < subEl.getLength(); j++) {
+					Element subIn = (Element) subEl.item(j);
 					String roleName = subIn.getAttribute("name");
 					set.add(getRoleByName(result, roleName));
 				}
@@ -205,8 +205,8 @@ public class RbacUtils {
 				int card = Integer.valueOf(in.getAttribute("cardinality"));
 				subEl = in.getElementsByTagName("role");
 				List<Role> set = new ArrayList<Role>();
-				for (int j = 0; i < subEl.getLength(); i++) {
-					Element subIn = (Element) subEl.item(i);
+				for (int j = 0; j < subEl.getLength(); j++) {
+					Element subIn = (Element) subEl.item(j);
 					String roleName = subIn.getAttribute("name");
 					set.add(getRoleByName(result, roleName));
 				}
