@@ -59,7 +59,7 @@ public class Sr implements RbacElement, RbacMutableElement, RbacCardinality {
 
 
 	public String toString() {
-		return "RoleConstraint [role=" + role + ", staticConstr="
+		return "Sr [role=" + role + ", staticConstr="
 				+ staticConstr + "]";
 	}
 

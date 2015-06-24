@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
@@ -165,6 +166,11 @@ public class Rbac2FsmConcurrent_BFS {
 							FsmState to = new FsmState(destination.getName());
 							
 							FsmTransition transition = new FsmTransition(from, in.toString(), (out? "grant" : "deny"), to);
+							
+							if(!out) {
+								Properties trProp = (Properties) localAcut.getPolicy().getProperties().clone();
+								transition.setProperties(trProp);
+							}
 							
 							generatedTrs.put(transition,destination);
 						}

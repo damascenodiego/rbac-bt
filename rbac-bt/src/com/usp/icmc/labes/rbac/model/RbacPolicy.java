@@ -2,6 +2,7 @@ package com.usp.icmc.labes.rbac.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class RbacPolicy implements RbacTuple{
 	
@@ -21,6 +22,8 @@ public class RbacPolicy implements RbacTuple{
 	private List<ActivationHierarchy> activationHierarchy;
 	private List<InheritanceHierarchy> inheritanceHierarchy;
 	
+	private Properties properties;
+	
 	
 	public RbacPolicy() {
 		user = new ArrayList<User>();
@@ -37,6 +40,8 @@ public class RbacPolicy implements RbacTuple{
 		inheritanceHierarchy = new ArrayList<InheritanceHierarchy>();
 		ssodConstraint = new ArrayList<SSoDConstraint>();
 		dsodConstraint = new ArrayList<DSoDConstraint>();
+		
+		properties = new Properties();
 	}
 
 	public RbacPolicy(String name) {
@@ -301,4 +306,7 @@ public class RbacPolicy implements RbacTuple{
 				+ ", inheritanceHierarchy=" + inheritanceHierarchy + "]";
 	}
 
+	public Properties getProperties() {
+		return properties;
+	}
 }

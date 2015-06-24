@@ -31,6 +31,7 @@ import com.usp.icmc.labes.rbac.model.Dr;
 import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.RbacMutableElement;
 import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.RbacTuple;
@@ -41,6 +42,7 @@ import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
+import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class RbacUtils {
 
@@ -49,6 +51,16 @@ public class RbacUtils {
 
 	static RbacUtils instance;
 
+	public enum RbacFaultType {
+		SuFailed,
+		SrFailed,
+		SsodFailed,
+		DuFailed,
+		DrFailed,
+		DsodFailed,
+	};
+
+	
 	private RbacUtils() {
 	} 
 
@@ -508,7 +520,22 @@ public class RbacUtils {
 		}
 		return null;
 	}
+	
+	public List<SSoDConstraint> getSSoD(RbacTuple pol, Role rol) {
+		List<SSoDConstraint> result = new ArrayList<SSoDConstraint>();
+		for (SSoDConstraint set : pol.getSSoDConstraint()) {
+			if(set.getSodSet().contains(rol)) result.add(set);
+		}
+		return result;
+	}
 
+	public List<DSoDConstraint> getDSoD(RbacTuple pol, Role rol) {
+		List<DSoDConstraint> result = new ArrayList<DSoDConstraint>();
+		for (DSoDConstraint set : result) {
+			if(set.getSodSet().contains(rol)) result.add(set);
+		}
+		return result;
+	}
 
 	public boolean afterAssignSuIsValid(RbacTuple policy, User user) {
 		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithUser(policy, user);
@@ -652,6 +679,13 @@ public class RbacUtils {
 
 		}
 		return true;
+	}
+
+	public void failedDueTo(RbacPolicy p, RbacFaultType faultType, RbacMutableElement reason) {
+		synchronized (p.getProperties()) {
+			p.getProperties().putIfAbsent(faultType, new HashSet<RbacMutableElement>());
+			((Set)p.getProperties().get(faultType)).add(reason);	
+		}
 	}
 
 	//	boolean assignUser(RbacTuple pol, User usr, Role rol){

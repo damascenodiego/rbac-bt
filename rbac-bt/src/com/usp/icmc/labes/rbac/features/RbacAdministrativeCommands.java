@@ -2,13 +2,17 @@ package com.usp.icmc.labes.rbac.features;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.model.Dr;
 import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.RbacMutableElement;
+import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.SSoDConstraint;
@@ -18,12 +22,14 @@ import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.utils.RbacUtils;
+import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class RbacAdministrativeCommands {
 
 	private RbacUtils utils = RbacUtils.getInstance();
 	private static RbacAdministrativeCommands instance;
-
+	
+	
 	public static RbacAdministrativeCommands getInstance() {
 		if(instance==null){
 			instance = new RbacAdministrativeCommands();
@@ -125,6 +131,35 @@ public class RbacAdministrativeCommands {
 				){
 			policy.getUserRoleAssignment().add(new UserRoleAssignment(user,role));
 			return true;
+		}else{
+			RbacPolicy p = null;
+			if(policy instanceof RbacPolicy) {
+				p = (RbacPolicy) policy;
+			}else if(policy instanceof RbacAcut) {
+				p = ((RbacAcut) policy).getPolicy();
+			}
+			p.getProperties().clear();
+			RbacMutableElement reason = null;
+			RbacFaultType faultType = null;
+			if(!nextSuIsValid){
+				faultType = RbacFaultType.SuFailed;
+				reason = utils.getSu(policy, user);
+				utils.failedDueTo(p,faultType,reason);
+			}
+			if(!nextSrIsValid){
+				faultType = RbacFaultType.SrFailed;
+				reason = utils.getSr(policy, role);
+				utils.failedDueTo(p,faultType,reason);
+			}
+			if(!ssdValid){
+				faultType = RbacFaultType.SsodFailed;
+				List<SSoDConstraint> reasonList = utils.getSSoD(policy, role);
+				for (RbacMutableElement rbacMutableElement : reasonList) {
+					utils.failedDueTo(p,faultType,rbacMutableElement);
+				}
+			}
+			
+			
 		}
 		return false;
 

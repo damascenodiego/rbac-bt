@@ -3,18 +3,24 @@ package com.usp.icmc.labes.rbac.features;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.model.DSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Permission;
 import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
+import com.usp.icmc.labes.rbac.model.RbacMutableElement;
+import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.SSoDConstraint;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.utils.RbacUtils;
+import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class RbacSupportingSystemFunctions {
 
@@ -42,33 +48,9 @@ public class RbacSupportingSystemFunctions {
 		boolean nextDuIsValid 		= utils.afterActivateDuIsValid(policy, user);
 		boolean nextDrIsValid 		= utils.afterActivateDrIsValid(policy, role);
 
-//		if(		userExists &&
-//				roleExists &&
-//				userRoleAssigned &&
-//				nextDuIsValid &&
-//				nextDrIsValid &&
-//				!userRoleActive
-//				){
-//			policy.getUserRoleActivation().add(new UserRoleActivation(user, role));
-//			return true;
-//		}
-//		return false;
-//	}
-	
-//	public boolean addActiveRole(RbacTuple policy, User user, Role role){
-//		boolean userExists 			= utils.userExists(policy, user);
-//		boolean roleExists 			= utils.roleExists(policy,role); 
-//
 		Set<Role> rolesActive = utils.getRolesActivatedByUser(policy, user);
 		rolesActive.add(role);
-//		boolean userRoleAssigned 	= rolesAssigned.contains(role);
-//
-//		UserRoleActivation ua 		= utils.getUserRoleActivation(policy, user, role);
-//		boolean userRoleActive 		= (ua!=null);
-//
-//		boolean nextDuIsValid 		= utils.afterActivateDuIsValid(policy, user);
-//		boolean nextDrIsValid 		= utils.afterActivateDrIsValid(policy, role);
-//
+
 		Map<DSoDConstraint, Set<Role> > totalRolesActive = new HashMap<DSoDConstraint, Set<Role> > ();
 		boolean dsdValid = true;
 		for (DSoDConstraint dsd : policy.getDSoDConstraint()) {
@@ -91,6 +73,36 @@ public class RbacSupportingSystemFunctions {
 				){
 			policy.getUserRoleActivation().add(new UserRoleActivation(user, role));
 			return true;
+		}else{
+			RbacPolicy p = null;
+			if(policy instanceof RbacPolicy) {
+				p = (RbacPolicy) policy;
+			}else if(policy instanceof RbacAcut) {
+				p = ((RbacAcut) policy).getPolicy();
+			}
+			p.getProperties().clear();
+			RbacMutableElement reason = null;
+			RbacFaultType faultType = null;
+			if(!nextDuIsValid){
+				faultType = RbacFaultType.DuFailed;
+				reason = utils.getDu(policy, user);
+				utils.failedDueTo(p,faultType,reason);
+
+			}
+			if(!nextDrIsValid){
+				faultType = RbacFaultType.DrFailed;
+				reason = utils.getDr(policy, role);
+				utils.failedDueTo(p,faultType,reason);
+
+			}
+			if(!dsdValid){
+				faultType = RbacFaultType.DsodFailed;
+				List<DSoDConstraint> reasonList = utils.getDSoD(policy, role);
+				for (RbacMutableElement rbacMutableElement : reasonList) {
+					utils.failedDueTo(p,faultType,rbacMutableElement);
+				}
+
+			}
 		}
 		return false;
 	}

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,24 +42,26 @@ import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
 import com.usp.icmc.labes.rbac.acut.RbacState;
+import com.usp.icmc.labes.rbac.model.RbacMutableElement;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class FsmUtils {
 
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-	
+
 	static FsmUtils instance;
 
 	private FsmUtils() {
-//		xstream = new XStream(new DomDriver());
-//		xstream.alias("FSM", FsmModel.class);
-//		xstream.alias("state", FsmState.class);
-//		xstream.alias("transition", FsmTransition.class);
-//		xstream.processAnnotations(FsmModel.class);
-//		xstream.processAnnotations(FsmState.class);
-//		xstream.processAnnotations(FsmTransition.class);
+		//		xstream = new XStream(new DomDriver());
+		//		xstream.alias("FSM", FsmModel.class);
+		//		xstream.alias("state", FsmState.class);
+		//		xstream.alias("transition", FsmTransition.class);
+		//		xstream.processAnnotations(FsmModel.class);
+		//		xstream.processAnnotations(FsmState.class);
+		//		xstream.processAnnotations(FsmTransition.class);
 	}
 
 	public static  FsmUtils getInstance() {
@@ -121,7 +125,7 @@ public class FsmUtils {
 
 		List<FsmTransition> transit = fsm.getTransitions();
 		for (FsmTransition tr : transit) {
-//			if(tr.getOutput().equals("deny")) continue;
+			//			if(tr.getOutput().equals("deny")) continue;
 			pw.println(tr.getFrom().getName()
 					+" -- "
 					+tr.getInput()+" / "+tr.getOutput()
@@ -137,7 +141,7 @@ public class FsmUtils {
 		List<FsmTransition> transit = fsm.getTransitions();
 		pw.println("\"origin\",\"input\",\"output\",\"destination\"");
 		for (FsmTransition tr : transit) {
-//			if(tr.getOutput().equals("deny")) continue;
+			//			if(tr.getOutput().equals("deny")) continue;
 			pw.println(
 					"\""+tr.getFrom().getName()+"\","
 							+"\""+tr.getInput()+"\","
@@ -157,10 +161,10 @@ public class FsmUtils {
 		Element inputs = doc.createElement("type");
 		inputs.appendChild(inputs.getOwnerDocument().createTextNode("mealy"));
 		rootElement.appendChild(inputs);
-		
+
 		inputs = doc.createElement("automaton");
-		
-		
+
+
 		for (FsmState s: fsm.getStates()) {
 			Element child = doc.createElement("state");
 			child.setAttribute("id", Integer.toString(fsm.getStates().indexOf(s)));
@@ -189,7 +193,7 @@ public class FsmUtils {
 		rootElement.appendChild(inputs);
 
 		doc.appendChild(rootElement);
-		
+
 		// write the content into xml file
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
@@ -197,18 +201,18 @@ public class FsmUtils {
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(jff);
- 
+
 		// Output to console for testing
 		// StreamResult result = new StreamResult(System.out);
- 
+
 		transformer.transform(source, result);
-		
-//		OutputStream fos = new FileOutputStream(fsmFile);
-//		xstream.toXML(fsm, fos);
-		}
+
+		//		OutputStream fos = new FileOutputStream(fsmFile);
+		//		xstream.toXML(fsm, fos);
+	}
 
 	public FsmModel rbac2Fsm(RbacPolicy rbac) throws Exception {
-//		rbac.getUserRoleAssignment().clear();
+		//		rbac.getUserRoleAssignment().clear();
 		List<RbacRequest> input = new ArrayList<RbacRequest>();
 		for (Role rol: rbac.getRole()) {
 			for (User usr: rbac.getUser()) {
@@ -260,7 +264,7 @@ public class FsmUtils {
 		rbac2fsm.setInitialState(getState(rbac2fsm.getStates(),initialStateName));
 		return rbac2fsm;
 	}
-	
+
 	public FsmState getState(Collection<FsmState> states2, String s){
 		for (FsmState fsmState : states2) {
 			if(fsmState.getName().equals(s)){
@@ -291,7 +295,7 @@ public class FsmUtils {
 		Rbac2FsmConcurrent_BFS rbac2FsmConc = new Rbac2FsmConcurrent_BFS(acut,threadsNum);
 
 		rbac2FsmConc.start();
-		
+
 		return rbac2FsmConc.getFsmModel();
 	}
 
@@ -303,7 +307,7 @@ public class FsmUtils {
 		Element rootElement = doc.createElement("FSM");
 		rootElement.setAttribute("initialState",fsm.getInitialState().getName());
 		rootElement.setAttribute("name",fsm.getName());
-		
+
 		Element inputs = doc.createElement("inputs");
 		for (String in: fsm.getInputs()) {
 			Element child = doc.createElement("input");
@@ -311,7 +315,7 @@ public class FsmUtils {
 			inputs.appendChild(child);
 		}
 		rootElement.appendChild(inputs);
-		
+
 		Element outputs = doc.createElement("outputs");
 		for (String in: fsm.getOutputs()) {
 			Element child = doc.createElement("output");
@@ -319,8 +323,8 @@ public class FsmUtils {
 			outputs.appendChild(child);
 		}
 		rootElement.appendChild(outputs);
-		
-		
+
+
 		Element states = doc.createElement("states");
 		for (FsmState s: fsm.getStates()) {
 			Element child = doc.createElement("state");
@@ -328,7 +332,7 @@ public class FsmUtils {
 			states.appendChild(child);
 		}
 		rootElement.appendChild(states);
-		
+
 		Element transitions = doc.createElement("transitions");
 		for (FsmTransition t: fsm.getTransitions()) {
 			Element transition = doc.createElement("transition");
@@ -340,6 +344,26 @@ public class FsmUtils {
 		}
 		rootElement.appendChild(transitions);
 		
+		Element failures = doc.createElement("failures");
+		for (FsmTransition t: fsm.getTransitions()) {
+			
+			if(!t.getProperties().isEmpty()) {
+				Enumeration<Object> keys = t.getProperties().keys();
+				while (keys.hasMoreElements()) {
+					RbacFaultType k = (RbacFaultType) keys.nextElement();
+					Set<RbacMutableElement> fEls = (Set<RbacMutableElement>) t.getProperties().get(k);
+					for (RbacMutableElement el : fEls) {
+						Element failure = doc.createElement("failure");
+						failure.setAttribute("transition", t.toString());
+						failure.setAttribute("type", k.name());
+						failure.setAttribute("constraint", el.toString());
+						failures.appendChild(failure);
+					}
+				}
+			}
+		}
+		rootElement.appendChild(failures);
+
 		doc.appendChild(rootElement);
 
 		// write the content into xml file
@@ -349,17 +373,17 @@ public class FsmUtils {
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(fsmFile);
- 
+
 		// Output to console for testing
 		// StreamResult result = new StreamResult(System.out);
- 
+
 		transformer.transform(source, result);
-		
-//		OutputStream fos = new FileOutputStream(fsmFile);
-//		xstream.toXML(fsm, fos);
+
+		//		OutputStream fos = new FileOutputStream(fsmFile);
+		//		xstream.toXML(fsm, fos);
 
 	}
-	
+
 	public FsmModel LoadFsmFromXML(File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
 		FsmModel fsm = new FsmModel(); //(FsmModel) xstream.fromXML(fsmFile);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -368,28 +392,28 @@ public class FsmUtils {
 		doc.getDocumentElement().normalize();
 		Element fsmElement = doc.getDocumentElement();
 		fsm.setName(fsmElement.getAttribute("name"));
-		
+
 		Node node = fsmElement.getElementsByTagName("inputs").item(0);
 		NodeList el = ((Element)node).getElementsByTagName("input");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
 			fsm.getInputs().add(in.getAttribute("name"));
 		}
-		
+
 		node = fsmElement.getElementsByTagName("outputs").item(0);
 		el = ((Element)node).getElementsByTagName("output");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
 			fsm.getOutputs().add(in.getAttribute("name"));
 		}
-		
+
 		node = fsmElement.getElementsByTagName("states").item(0);
 		el = ((Element)node).getElementsByTagName("state");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
 			fsm.getStates().add(new FsmState(in.getAttribute("name")));
 		}
-		
+
 		fsm.setInitialState(fsm.getState(fsmElement.getAttribute("initialState")));
 		node = fsmElement.getElementsByTagName("transitions").item(0);
 		el = ((Element)node).getElementsByTagName("transition");
@@ -401,10 +425,10 @@ public class FsmUtils {
 			FsmState t = fsm.getState(in.getAttribute("to"));
 			fsm.addTransition(new FsmTransition(f, input, output, t));
 		}
-		
+
 		return fsm;
 	}
-	
+
 	public void fsmDiff(FsmModel f1, FsmModel f2, File fDiff) throws FileNotFoundException{
 		String edgeColor = "";
 		PrintWriter pw = new PrintWriter(fDiff);
@@ -463,7 +487,7 @@ public class FsmUtils {
 			if(!to.getIn().contains(tr)) to.getIn().add(tr);
 
 		}
-		
+
 	}
-	
+
 }

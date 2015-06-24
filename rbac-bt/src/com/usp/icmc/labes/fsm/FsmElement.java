@@ -21,6 +21,10 @@ public abstract class FsmElement {
 		return properties;
 	}
 	
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+	}
+	
 	public String getName() {
 		return name;
 	}
