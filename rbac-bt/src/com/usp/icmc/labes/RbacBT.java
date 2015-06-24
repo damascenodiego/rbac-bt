@@ -156,7 +156,11 @@ public class RbacBT {
 				File fsmFile = new File(fsmStr);
 				
 				FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
-				File suiteFile = new File(fsmFile.getParentFile(),fsmFile.getName().concat(".q.test"));
+
+				if(output == null) output = fsmFile.getParentFile();
+				output.mkdirs();
+
+				File suiteFile = new File(output,fsmFile.getName().concat(".q.test"));
 				
 				FsmTestSuite suite = testingUtils.stateCoverSet(fsm);
 				testingUtils.WriteFsmTestSuite(suite, suiteFile);
@@ -172,8 +176,11 @@ public class RbacBT {
 				
 				FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
 				FsmTestSuite suite = testingUtils.transitionCoverSet(fsm);
-				
-				File suiteFile = new File(fsmFile.getParentFile(),fsmFile.getName().concat(".p.test"));
+
+				if(output == null) output = fsmFile.getParentFile();
+				output.mkdirs();
+
+				File suiteFile = new File(output,fsmFile.getName().concat(".p.test"));
 				testingUtils.WriteFsmTestSuite(suite, suiteFile);
 				
 				chron.stop();
@@ -188,8 +195,11 @@ public class RbacBT {
 				
 				FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
 				FsmTestSuite suite = testingUtils.transitionTour(fsm);
-				
-				File suiteFile = new File(fsmFile.getParentFile(),fsmFile.getName().concat(".tt.test"));
+
+				if(output == null) output = fsmFile.getParentFile();
+				output.mkdirs();
+
+				File suiteFile = new File(output,fsmFile.getName().concat(".tt.test"));
 				testingUtils.WriteFsmTestSuite(suite, suiteFile);
 				
 				chron.stop();
