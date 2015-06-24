@@ -343,20 +343,20 @@ public class FsmUtils {
 			transitions.appendChild(transition);
 		}
 		rootElement.appendChild(transitions);
-		
+
 		Element failures = doc.createElement("failures");
 		for (FsmTransition t: fsm.getTransitions()) {
-			
+
 			if(!t.getProperties().isEmpty()) {
 				Enumeration<Object> keys = t.getProperties().keys();
 				while (keys.hasMoreElements()) {
-					RbacFaultType k = (RbacFaultType) keys.nextElement();
-					Set<RbacMutableElement> fEls = (Set<RbacMutableElement>) t.getProperties().get(k);
-					for (RbacMutableElement el : fEls) {
+					String k = (String) keys.nextElement();
+					Set<String> fEls = (Set<String>) t.getProperties().get(k);
+					for (String el : fEls) {
 						Element failure = doc.createElement("failure");
 						failure.setAttribute("transition", t.toString());
-						failure.setAttribute("type", k.name());
-						failure.setAttribute("constraint", el.toString());
+						failure.setAttribute("type", k);
+						failure.setAttribute("constraint", el);
 						failures.appendChild(failure);
 					}
 				}
@@ -426,7 +426,29 @@ public class FsmUtils {
 			fsm.addTransition(new FsmTransition(f, input, output, t));
 		}
 
+		node = fsmElement.getElementsByTagName("failures").item(0);
+		el = ((Element)node).getElementsByTagName("failure");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			String constraint = in.getAttribute("constraint");
+			String transition = in.getAttribute("transition");
+			String faultType = in.getAttribute("type");
+			FsmTransition tr = getTransition(fsm, transition);
+			tr.getProperties().putIfAbsent(faultType, new HashSet<String>());
+			Set<String> constraintsFailed = (Set<String>)tr.getProperties().get(faultType);
+			constraintsFailed.add(constraint);
+		}
+
 		return fsm;
+	}
+
+	FsmTransition getTransition(FsmModel fsm, String toStr){
+		for (FsmTransition tr : fsm.getTransitions()) {
+			if(tr.toString().equals(toStr)){
+				return tr;
+			}
+		}
+		return null;
 	}
 
 	public void fsmDiff(FsmModel f1, FsmModel f2, File fDiff) throws FileNotFoundException{

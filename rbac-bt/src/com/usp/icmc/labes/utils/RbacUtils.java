@@ -60,7 +60,7 @@ public class RbacUtils {
 		DsodFailed,
 	};
 
-	
+
 	private RbacUtils() {
 	} 
 
@@ -520,7 +520,7 @@ public class RbacUtils {
 		}
 		return null;
 	}
-	
+
 	public List<SSoDConstraint> getSSoD(RbacTuple pol, Role rol) {
 		List<SSoDConstraint> result = new ArrayList<SSoDConstraint>();
 		for (SSoDConstraint set : pol.getSSoDConstraint()) {
@@ -683,8 +683,8 @@ public class RbacUtils {
 
 	public void failedDueTo(RbacPolicy p, RbacFaultType faultType, RbacMutableElement reason) {
 		synchronized (p.getProperties()) {
-			p.getProperties().putIfAbsent(faultType, new HashSet<RbacMutableElement>());
-			((Set)p.getProperties().get(faultType)).add(reason);	
+			p.getProperties().putIfAbsent(faultType.name(), new HashSet<String>());
+			((Set)p.getProperties().get(faultType.name())).add(reason.toString());	
 		}
 	}
 
