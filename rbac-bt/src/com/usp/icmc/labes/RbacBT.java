@@ -20,11 +20,13 @@ import org.apache.commons.cli.ParseException;
 import org.xml.sax.SAXException;
 
 import com.usp.icmc.labes.fsm.FsmModel;
+import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.MutantType;
 import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.utils.Chronometer;
 import com.usp.icmc.labes.utils.FsmTestingUtils;
 import com.usp.icmc.labes.utils.FsmUtils;
 import com.usp.icmc.labes.utils.PolicyUnderTestUtils;
@@ -69,13 +71,16 @@ public class RbacBT {
 	private static final String HELP_PARAMETER = "help";
 	private static final String HELP_SHORT_PARAMETER = "h";
 	private static final String FSM_PARAMETER = "fsm";
+	private static final String Q_SET_PARAMETER = "qset";
+	private static final String P_SET_PARAMETER = "pset";
+	private static final String TT_PARAMETER = "tt";
 	
 	private static Options options;
 
 	public static void main(String[] args) {
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLineParser parser = new DefaultParser();
-		
+		Chronometer chron = new Chronometer();
 		try {
 			setupCliOptions();
 			CommandLine cmd,cmdMut;
@@ -87,6 +92,8 @@ public class RbacBT {
 				output = new File(outputStr);
 			}
 			if(cmd.hasOption(RBAC2FSM_PARAMETER)) {
+				chron.start();
+				String operation = "rbac2fsm";
 				String rbacPolicyStr = cmd.getOptionValue(RBAC2FSM_PARAMETER);
 				File rbacFile = new File(rbacPolicyStr);
 				RbacPolicy rbacPolicy = rbacUtils.LoadRbacPolicyFromXML(rbacFile);
@@ -109,8 +116,12 @@ public class RbacBT {
 				if(cmd.hasOption(KISS_PARAMETER)) fsmUtils.WriteFsmAsKiss(rbacFsm, rbacFsmFile);
 				else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(rbacFsm, rbacFsmFile);
 				else fsmUtils.WriteFsm(rbacFsm, rbacFsmFile);
+				chron.stop();
+				System.out.println("%"+operation+" | "+rbacFile.getName()+" | "+chron.getInSeconds()+" seconds");
 			}
 			else if(cmd.hasOption(RBAC_MUTATION_PARAMETER)) {
+				chron.start();
+				String operation = "rbacMutation";
 
 				String rbacPolicyStr = cmd.getOptionValue(RBAC_MUTATION_PARAMETER);
 
@@ -134,6 +145,55 @@ public class RbacBT {
 					File rbacFsmFile = new File(mutTypeDir,rbacMutant.getName()+".rbac");
 					rbacUtils.WriteRbacPolicyAsXML(rbacMutant, rbacFsmFile);
 				}
+				chron.stop();
+				System.out.println("%"+operation+" | "+rbacFile.getName()+" | "+chron.getInSeconds()+" seconds");
+
+			}else if(cmd.hasOption(Q_SET_PARAMETER)) {
+				chron.start();
+				String operation = "q set";
+
+				String fsmStr = cmd.getOptionValue(Q_SET_PARAMETER);
+				File fsmFile = new File(fsmStr);
+				
+				FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
+				File suiteFile = new File(fsmFile.getParentFile(),fsmFile.getName().concat(".q.test"));
+				
+				FsmTestSuite suite = testingUtils.stateCoverSet(fsm);
+				testingUtils.WriteFsmTestSuite(suite, suiteFile);
+				chron.stop();
+				System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
+				
+			}else if(cmd.hasOption(P_SET_PARAMETER)) {
+				chron.start();
+				String operation = "p set";
+
+				String fsmStr = cmd.getOptionValue(P_SET_PARAMETER);
+				File fsmFile = new File(fsmStr);
+				
+				FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
+				FsmTestSuite suite = testingUtils.transitionCoverSet(fsm);
+				
+				File suiteFile = new File(fsmFile.getParentFile(),fsmFile.getName().concat(".p.test"));
+				testingUtils.WriteFsmTestSuite(suite, suiteFile);
+				
+				chron.stop();
+				System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
+
+			}else if(cmd.hasOption(TT_PARAMETER)) {
+				chron.start();
+				String operation = "tt";
+
+				String fsmStr = cmd.getOptionValue(TT_PARAMETER);
+				File fsmFile = new File(fsmStr);
+				
+				FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
+				FsmTestSuite suite = testingUtils.transitionTour(fsm);
+				
+				File suiteFile = new File(fsmFile.getParentFile(),fsmFile.getName().concat(".tt.test"));
+				testingUtils.WriteFsmTestSuite(suite, suiteFile);
+				
+				chron.stop();
+				System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
 			}else if(cmd.hasOption(HELP_PARAMETER)) {
 				formatter.printHelp( "rbacBt", options );
 			}else{
@@ -206,10 +266,16 @@ public class RbacBT {
 		Option r2fOption = new Option(RBAC2FSM_PARAMETER, true, 		"Run rbac2fsm over an RBAC policy passed as parameter.\n");
 		Option rbacMutOption = new Option(RBAC_MUTATION_PARAMETER, true, 	"Run rbac mutation over an RBAC policy passed as parameter.");
 		Option helpOption = new Option(HELP_SHORT_PARAMETER,HELP_PARAMETER, false, "Help menu");
+		Option qSetOption = new Option(Q_SET_PARAMETER, true, "Generate Q Set (State cover) given an fsm");
+		Option pSetOption = new Option(P_SET_PARAMETER, true, "Generate P Set (Transition cover) given an fsm") ;
+		Option ttSetOption = new Option(TT_PARAMETER, true, "Generate Transition Tour given an fsm") ;
 		
 		grp.addOption(r2fOption);
 		grp.addOption(rbacMutOption);
 		grp.addOption(helpOption);
+		grp.addOption(qSetOption);
+		grp.addOption(pSetOption);
+		grp.addOption(ttSetOption);
 		grp.setRequired(true);
 		options.addOptionGroup(grp);
 		
