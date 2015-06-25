@@ -100,7 +100,7 @@ public class FsmTransition extends FsmElement{
 
 	@Override
 	public String toString() {
-		return from+" -- "+input+"/"+output+" -> "+to;
+		return from+" -- "+input+" / "+output+" -> "+to;
 	}
 
 }

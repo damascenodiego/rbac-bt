@@ -1,7 +1,10 @@
 package com.usp.icmc.labes.utils;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,9 +67,9 @@ public class FsmTestingUtils {
 	public void WriteFsmTestSuite(FsmTestSuite suite, File fSuite) throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document doc = docBuilder.newDocument();
-
+	
 		Element rootElement = doc.createElement("FsmTestSuite");
-
+	
 		rootElement.setAttribute("name",suite.getName());
 		rootElement.setAttribute("generatedBy",suite.getGeneratedBy());
 		
@@ -95,21 +98,42 @@ public class FsmTestingUtils {
 		}
 		rootElement.setAttribute("_length", Integer.toString(testSuiteLength));
 		rootElement.setAttribute("_noResets", Integer.toString(noResets));
-
+	
 		doc.appendChild(rootElement);
-
-
+	
+	
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(fSuite);
-
+	
 		// Output to console for testing
 		// StreamResult result = new StreamResult(System.out);
-
+	
 		transformer.transform(source, result);
+	}
+
+	public void WriteFsmTestSuiteAsTxt(FsmTestSuite suite, File fSuiteTxt) throws IOException {
+		FileWriter result = new FileWriter(fSuiteTxt);
+		
+
+		result.write("#name: "+suite.getName()+"\n");
+		result.write("#generatedBy: "+suite.getGeneratedBy()+"\n");
+		result.write("#FsmTestSuiteLength: "+Integer.toString(suite.getTestCases().size())+"\n");
+		int tcaseCount = 0;
+		for (FsmTestCase in: suite.getTestCases()) {
+			result.write("#FsmTestCase: "+Integer.toString(tcaseCount)+"\n");
+			result.write("#FsmTestCaseLength: "+Integer.toString(in.getPath().size())+"\n");
+			for (FsmTransition trIn: in.getPath()) {
+				result.write(trIn.toString()+"\n");
+			}
+			tcaseCount++;
+		}
+
+		result.close();
+
 	}
 
 	public FsmTestSuite LoadFsmTestSuiteFromFile(File fSuite) throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
@@ -150,10 +174,10 @@ public class FsmTestingUtils {
 	public FsmTestSuite stateCoverSet(FsmModel fsm){
 		FsmTestSuite tSuite = new FsmTestSuite(fsm.getName());
 		tSuite.setGeneratedBy("StateCoverSet");
-		FsmTestCase[] qSets = new FsmTestCase[fsm.getStates().size()];
+		List<FsmTestCase> qSets = new ArrayList<FsmTestCase>();
 		for (int i = 0; i < fsm.getStates().size(); i++) {
-			qSets[i] = new FsmTestCase();
-			qSets[i].addTransition(new FsmTransition(fsm.getInitialState(), "", "", fsm.getInitialState()));
+			qSets.add(new FsmTestCase());
+			qSets.get(i).addTransition(new FsmTransition(fsm.getInitialState(), "", "", fsm.getInitialState()));
 		}
 		FsmState current = fsm.getInitialState();
 		Queue<FsmState> toVisit = new LinkedList<FsmState>();
@@ -166,16 +190,16 @@ public class FsmTestingUtils {
 				if(!visited.contains(tr.getTo())){
 					int indexTo = fsm.getStates().indexOf(tr.getTo());
 					int indexFrom = fsm.getStates().indexOf(tr.getFrom());
-					if(qSets[indexFrom].getPath().size() > 1) qSets[indexTo].getPath().addAll(qSets[indexFrom].getPath().subList(1, qSets[indexFrom].getPath().size()-1));
-					qSets[indexTo].addTransition(tr);
-					if(qSets[indexTo].getInitialState().getName().equals(tr.getTo().getName())){
+					if(qSets.get(indexFrom).getPath().size() > 1) qSets.get(indexTo).getPath().addAll(qSets.get(indexFrom).getPath().subList(1, qSets.get(indexFrom).getPath().size()-1));
+					qSets.get(indexTo).addTransition(tr);
+					if(qSets.get(indexTo).getInitialState().getName().equals(tr.getTo().getName())){
 						visited.add(tr.getTo());
 					}
 					toVisit.add(tr.getTo());
 				}
 			}
 		}
-		tSuite.setTestCases(Arrays.asList(qSets));
+		tSuite.getTestCases().addAll(qSets);
 		tSuite.getTestCases().sort((o1, o2) -> Integer.compare(o1.getPath().size(), o2.getPath().size()) );
 		return tSuite;
 	}

@@ -117,7 +117,7 @@ public class RbacBT {
 				else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(rbacFsm, rbacFsmFile);
 				else fsmUtils.WriteFsm(rbacFsm, rbacFsmFile);
 				chron.stop();
-				System.out.println("%"+operation+" | "+rbacFile.getName()+" | "+chron.getInSeconds()+" seconds");
+				System.out.println("%"+operation+" | "+rbacFile.getName()+" | "+rbacFsm.getStates().size()+" states | "+rbacFsm.getTransitions().size()+" transitions | "+chron.getInSeconds()+" seconds");
 			}
 			else if(cmd.hasOption(RBAC_MUTATION_PARAMETER)) {
 				chron.start();
@@ -146,8 +146,7 @@ public class RbacBT {
 					rbacUtils.WriteRbacPolicyAsXML(rbacMutant, rbacFsmFile);
 				}
 				chron.stop();
-				System.out.println("%"+operation+" | "+rbacFile.getName()+" | "+chron.getInSeconds()+" seconds");
-
+				System.out.println("%"+operation+" | "+rbacFile.getName()+" | "+mutants.size()+" mutants | "+chron.getInSeconds()+" seconds");
 			}else if(cmd.hasOption(Q_SET_PARAMETER)) {
 				chron.start();
 				String operation = "q set";
@@ -163,7 +162,7 @@ public class RbacBT {
 				File suiteFile = new File(output,fsmFile.getName().concat(".q.test"));
 				
 				FsmTestSuite suite = testingUtils.stateCoverSet(fsm);
-				testingUtils.WriteFsmTestSuite(suite, suiteFile);
+				testingUtils.WriteFsmTestSuiteAsTxt(suite, suiteFile);
 				chron.stop();
 				System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
 				
@@ -181,7 +180,7 @@ public class RbacBT {
 				output.mkdirs();
 
 				File suiteFile = new File(output,fsmFile.getName().concat(".p.test"));
-				testingUtils.WriteFsmTestSuite(suite, suiteFile);
+				testingUtils.WriteFsmTestSuiteAsTxt(suite, suiteFile);
 				
 				chron.stop();
 				System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
@@ -200,7 +199,7 @@ public class RbacBT {
 				output.mkdirs();
 
 				File suiteFile = new File(output,fsmFile.getName().concat(".tt.test"));
-				testingUtils.WriteFsmTestSuite(suite, suiteFile);
+				testingUtils.WriteFsmTestSuiteAsTxt(suite, suiteFile);
 				
 				chron.stop();
 				System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
