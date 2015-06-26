@@ -130,6 +130,28 @@ public class FsmUtils {
 		}
 		pw.close();
 	}
+	
+	public void WriteFsmAsKissSimple(FsmModel fsm, File f) throws FileNotFoundException{
+		PrintWriter pw = new PrintWriter(f);
+
+		int from;
+		int in;
+		int out;
+		int to;
+		List<FsmTransition> transit = fsm.getTransitions();
+		for (FsmTransition tr : transit) {
+			from = fsm.getStates().indexOf(tr.getFrom());
+			in = fsm.getInputs().indexOf(tr.getInput());
+			out = fsm.getOutputs().indexOf(tr.getOutput());
+			to = fsm.getStates().indexOf(tr.getTo());
+			pw.println(from
+					+" -- "
+					+in+" / "+out
+					+" -> "
+					+to);
+		}
+		pw.close();
+	}
 
 	public void WriteFsmAsCsv(FsmModel fsm, File f) throws FileNotFoundException {
 		PrintWriter pw = new PrintWriter(f);

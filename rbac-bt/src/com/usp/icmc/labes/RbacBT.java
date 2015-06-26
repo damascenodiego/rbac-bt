@@ -48,7 +48,8 @@ public class RbacBT {
 	private static final String 	OUTPUT_PARAMETER 		= "o";
 	private static final String 	KISS_PARAMETER 			= "kiss";
 	private static final String 	DOT_PARAMETER 			= "dot";
-
+	private static final String 	KK_PARAMETER 			= "kk";
+	
 	private static final String 	RUR		=	"rur";
 	private static final String 	RURR	=	"rurr";
 	private static final String 	RURU	=	"ruru";
@@ -75,6 +76,7 @@ public class RbacBT {
 	private static final String P_SET_PARAMETER = "pset";
 	private static final String TT_PARAMETER = "tt";
 	private static final String FSMCONV_PARAMETER = "fsmConv";
+
 
 	private static Options options;
 
@@ -126,6 +128,7 @@ public class RbacBT {
 		String outFormat = null;
 		if(cmd.hasOption(DOT_PARAMETER)) outFormat  = "dot";
 		else if(cmd.hasOption(KISS_PARAMETER)) outFormat = "kiss";
+		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kc";
 		else outFormat = "kiss";
 
 		String operation = "fsmConverter"+'('+outFormat+')';
@@ -133,6 +136,7 @@ public class RbacBT {
 		File newFsmFile = new File(output,fsm.getName()+"."+outFormat);
 		if(cmd.hasOption(KISS_PARAMETER)) fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
 		else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(fsm, newFsmFile);
+		else if(cmd.hasOption(KK_PARAMETER)) fsmUtils.WriteFsmAsKissSimple(fsm, newFsmFile);
 		else fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
 		chron.stop();
 		
@@ -251,6 +255,8 @@ public class RbacBT {
 
 		if(cmd.hasOption(KISS_PARAMETER)) outFormat = "kiss";
 		else if(cmd.hasOption(DOT_PARAMETER)) outFormat = "dot";
+		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kc";
+		else outFormat = "fsm";
 
 		if(output == null) output = rbacFile.getParentFile();
 		output.mkdirs();
@@ -260,6 +266,7 @@ public class RbacBT {
 		//TODO count time interval
 		if(cmd.hasOption(KISS_PARAMETER)) fsmUtils.WriteFsmAsKiss(rbacFsm, rbacFsmFile);
 		else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(rbacFsm, rbacFsmFile);
+		else if(cmd.hasOption(KK_PARAMETER)) fsmUtils.WriteFsmAsKissSimple(rbacFsm, rbacFsmFile);
 		else fsmUtils.WriteFsm(rbacFsm, rbacFsmFile);
 		chron.stop();
 		System.out.println("%"+operation+" | "+rbacFile.getName()+" | "+rbacFsm.getStates().size()+" states | "+rbacFsm.getTransitions().size()+" transitions | "+chron.getInSeconds()+" seconds");
@@ -338,6 +345,7 @@ public class RbacBT {
 		grpFsmFormat.addOption(new Option(KISS_PARAMETER, 		"Writes fsm in .kiss format."));
 		grpFsmFormat.addOption(new Option(FSM_PARAMETER, 		"Writes fsm in .fsm format. (DEFAULT)"));
 		grpFsmFormat.addOption(new Option(DOT_PARAMETER, 		"Writes fsm in .dot format."));
+		grpFsmFormat.addOption(new Option(KK_PARAMETER, 		"Writes fsm in .kk format (Clean KISS format)."));
 		options.addOptionGroup(grpFsmFormat);
 
 		options.addOption(OUTPUT_PARAMETER, true, 		"Sets the file/directory destination.");
