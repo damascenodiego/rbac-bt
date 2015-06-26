@@ -1,35 +1,16 @@
 package test.com.usp.icmc.labes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
 
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
-import com.usp.icmc.labes.rbac.model.Dr;
-import com.usp.icmc.labes.rbac.model.Du;
-import com.usp.icmc.labes.rbac.model.Permission;
-import com.usp.icmc.labes.rbac.model.PermissionRoleAssignment;
-import com.usp.icmc.labes.rbac.model.RbacPolicy;
-import com.usp.icmc.labes.rbac.model.Role;
-import com.usp.icmc.labes.rbac.model.Sr;
-import com.usp.icmc.labes.rbac.model.Su;
-import com.usp.icmc.labes.rbac.model.User;
-import com.usp.icmc.labes.rbac.model.UserRoleActivation;
-import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 import com.usp.icmc.labes.utils.CPP;
 import com.usp.icmc.labes.utils.FsmTestingUtils;
 import com.usp.icmc.labes.utils.FsmUtils;

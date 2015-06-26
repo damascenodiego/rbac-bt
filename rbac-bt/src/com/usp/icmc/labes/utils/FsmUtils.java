@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -34,7 +33,6 @@ import org.xml.sax.SAXException;
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
-import com.usp.icmc.labes.fsm.testing.FsmTestStep;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.acut.RbacRequest;
 import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
@@ -42,11 +40,9 @@ import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
 import com.usp.icmc.labes.rbac.acut.RbacState;
-import com.usp.icmc.labes.rbac.model.RbacMutableElement;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
-import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class FsmUtils {
 

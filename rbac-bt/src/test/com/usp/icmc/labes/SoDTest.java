@@ -4,10 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-
 import org.junit.Test;
 
 import com.usp.icmc.labes.fsm.FsmModel;

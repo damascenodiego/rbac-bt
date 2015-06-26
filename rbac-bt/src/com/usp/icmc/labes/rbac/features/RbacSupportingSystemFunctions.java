@@ -15,7 +15,6 @@ import com.usp.icmc.labes.rbac.model.RbacMutableElement;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
-import com.usp.icmc.labes.rbac.model.SSoDConstraint;
 import com.usp.icmc.labes.rbac.model.User;
 import com.usp.icmc.labes.rbac.model.UserRoleActivation;
 import com.usp.icmc.labes.rbac.model.UserRoleAssignment;

@@ -8,8 +8,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestFailure;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -22,9 +20,7 @@ import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.Dr;
 import com.usp.icmc.labes.rbac.model.Du;
 import com.usp.icmc.labes.rbac.model.Permission;
-import com.usp.icmc.labes.rbac.model.RbacMutant;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
-import com.usp.icmc.labes.rbac.model.RbacTuple;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.Sr;
 import com.usp.icmc.labes.rbac.model.Su;

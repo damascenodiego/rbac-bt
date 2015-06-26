@@ -1,12 +1,10 @@
 package com.usp.icmc.labes.fsm.testing;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.usp.icmc.labes.fsm.FsmElement;
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
