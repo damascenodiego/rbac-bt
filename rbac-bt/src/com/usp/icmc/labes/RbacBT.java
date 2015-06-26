@@ -128,7 +128,7 @@ public class RbacBT {
 		String outFormat = null;
 		if(cmd.hasOption(DOT_PARAMETER)) outFormat  = "dot";
 		else if(cmd.hasOption(KISS_PARAMETER)) outFormat = "kiss";
-		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kc";
+		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kk";
 		else outFormat = "kiss";
 
 		String operation = "fsmConverter"+'('+outFormat+')';
@@ -255,7 +255,7 @@ public class RbacBT {
 
 		if(cmd.hasOption(KISS_PARAMETER)) outFormat = "kiss";
 		else if(cmd.hasOption(DOT_PARAMETER)) outFormat = "dot";
-		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kc";
+		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kk";
 		else outFormat = "fsm";
 
 		if(output == null) output = rbacFile.getParentFile();
