@@ -161,7 +161,7 @@ public class RbacBT {
 				File suiteFile = new File(output,fsmFile.getName().concat(".q.test"));
 				
 				FsmTestSuite suite = testingUtils.stateCoverSet(fsm);
-				testingUtils.WriteFsmTestSuiteAsTxt(suite, suiteFile);
+				testingUtils.WriteFsmTestSuite(suite, suiteFile);
 				chron.stop();
 				System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
 				
@@ -179,7 +179,7 @@ public class RbacBT {
 				output.mkdirs();
 
 				File suiteFile = new File(output,fsmFile.getName().concat(".p.test"));
-				testingUtils.WriteFsmTestSuiteAsTxt(suite, suiteFile);
+				testingUtils.WriteFsmTestSuite(suite, suiteFile);
 				
 				chron.stop();
 				System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
@@ -198,7 +198,7 @@ public class RbacBT {
 				output.mkdirs();
 
 				File suiteFile = new File(output,fsmFile.getName().concat(".tt.test"));
-				testingUtils.WriteFsmTestSuiteAsTxt(suite, suiteFile);
+				testingUtils.WriteFsmTestSuite(suite, suiteFile);
 				
 				chron.stop();
 				System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
