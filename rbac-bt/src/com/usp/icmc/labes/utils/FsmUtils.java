@@ -144,11 +144,11 @@ public class FsmUtils {
 			in = fsm.getInputs().indexOf(tr.getInput());
 			out = fsm.getOutputs().indexOf(tr.getOutput());
 			to = fsm.getStates().indexOf(tr.getTo());
-			pw.println(from
+			pw.println(Integer.toString(from)
 					+" -- "
-					+in+" / "+out
+					+Integer.toString(in)+" / "+Integer.toString(out)
 					+" -> "
-					+to);
+					+Integer.toString(to));
 		}
 		pw.close();
 	}
