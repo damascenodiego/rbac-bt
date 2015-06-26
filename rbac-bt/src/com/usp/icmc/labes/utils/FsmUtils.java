@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -48,16 +49,12 @@ public class FsmUtils {
 
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 
+	DecimalFormat stateFormat;
+	
 	static FsmUtils instance;
 
 	private FsmUtils() {
-		//		xstream = new XStream(new DomDriver());
-		//		xstream.alias("FSM", FsmModel.class);
-		//		xstream.alias("state", FsmState.class);
-		//		xstream.alias("transition", FsmTransition.class);
-		//		xstream.processAnnotations(FsmModel.class);
-		//		xstream.processAnnotations(FsmState.class);
-		//		xstream.processAnnotations(FsmTransition.class);
+		stateFormat = new DecimalFormat("00000000");
 	}
 
 	public static  FsmUtils getInstance() {
@@ -144,11 +141,11 @@ public class FsmUtils {
 			in = fsm.getInputs().indexOf(tr.getInput());
 			out = fsm.getOutputs().indexOf(tr.getOutput());
 			to = fsm.getStates().indexOf(tr.getTo());
-			pw.println("s_"+Integer.toString(from)
+			pw.println(stateFormat.format(from)
 					+" -- "
-					+"i_"+Integer.toString(in)+" / "+"o_"+Integer.toString(out)
+					+stateFormat.format(in)+" / "+stateFormat.format(out)
 					+" -> "
-					+"s_"+Integer.toString(to));
+					+stateFormat.format(to));
 		}
 		pw.close();
 	}
