@@ -113,11 +113,13 @@ public class RbacBT {
 	}
 
 	private static void fsmConverter(CommandLine cmd, File output) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
+		Chronometer chron = new Chronometer();
+		chron.start();
 		String fsmStr = cmd.getOptionValue(FSMCONV_PARAMETER);
 		File fsmFile = new File(fsmStr);
-
+		
 		FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
-
+		
 		if(output == null) output = fsmFile.getParentFile();
 		output.mkdirs();
 
@@ -126,10 +128,15 @@ public class RbacBT {
 		else if(cmd.hasOption(KISS_PARAMETER)) outFormat = "kiss";
 		else outFormat = "kiss";
 
+		String operation = "fsmConverter"+'('+outFormat+')';
+		
 		File newFsmFile = new File(output,fsm.getName()+"."+outFormat);
 		if(cmd.hasOption(KISS_PARAMETER)) fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
 		else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(fsm, newFsmFile);
-		else fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);		
+		else fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
+		chron.stop();
+		
+		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
 	}
 
 	private static void ttMethod(CommandLine cmd, File output) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
