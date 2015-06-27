@@ -54,7 +54,7 @@ public class FsmUtils {
 	static FsmUtils instance;
 
 	private FsmUtils() {
-		stateFormat = new DecimalFormat("00000000");
+		stateFormat = new DecimalFormat("000");
 	}
 
 	public static  FsmUtils getInstance() {
@@ -141,11 +141,11 @@ public class FsmUtils {
 			in = fsm.getInputs().indexOf(tr.getInput());
 			out = fsm.getOutputs().indexOf(tr.getOutput());
 			to = fsm.getStates().indexOf(tr.getTo());
-			pw.println(stateFormat.format(from)
+			pw.println(Integer.toString(from)
 					+" -- "
-					+stateFormat.format(in)+" / "+stateFormat.format(out)
+					+stateFormat.format(in)+" / "+Integer.toString(out)
 					+" -> "
-					+stateFormat.format(to));
+					+Integer.toString(to));
 		}
 		pw.close();
 	}
