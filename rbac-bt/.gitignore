@@ -1,3 +1,4 @@
+
 /bin/
 *.*~
 *.rbac
@@ -6,3 +7,4 @@
 *.kiss
 *.dot
 *.csv
+dist/rbacBt.jar
