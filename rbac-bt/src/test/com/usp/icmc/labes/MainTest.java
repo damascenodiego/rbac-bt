@@ -32,19 +32,63 @@ import com.usp.icmc.labes.utils.RbacUtils;
 
 public class MainTest {
 
+	public static void main(String[] args) {
+		MainTest mt = new MainTest();
+		mt.testFeasiblePolicies();
+	}
 	private RbacAdministrativeCommands rbacAdmin	= RbacAdministrativeCommands.getInstance();
 	private RbacSupportingSystemFunctions rbacSys 	= RbacSupportingSystemFunctions.getInstance();
 	private RbacUtils rbacUtils 					= RbacUtils.getInstance();
 	private FsmTestingUtils testingUtils 			= FsmTestingUtils.getInstance();
 	private FsmUtils fsmUtils 						= FsmUtils.getInstance();
+
+
 	private PolicyUnderTestUtils putUtils 			= PolicyUnderTestUtils.getInstance();
-
-
 	RbacPolicy rbac;
 	RbacAcut acut;
 	User u1,u2;
 	Role r1;
+
 	Permission p1,p2;
+
+
+	public void saveAllFormats(RbacPolicy rbacPolicy) {
+		try {
+
+			File fRbacDir = new File("policies_example");
+			fRbacDir = new File(fRbacDir,rbacPolicy.getName());
+			fRbacDir.mkdirs();
+
+			File fRbac = new File(fRbacDir,rbacPolicy.getName()+".rbac");
+			File fFsm = new File(fRbacDir,rbacPolicy.getName()+".fsm");
+			File fDot = new File(fRbacDir,rbacPolicy.getName()+".dot");
+			File fKiss = new File(fRbacDir,rbacPolicy.getName()+".kiss");
+
+			if(!fRbac.exists()) {
+				rbacUtils.WriteRbacPolicyAsXML(rbacPolicy, fRbac);
+			}
+
+			FsmModel fsmConcurrentGenerated = null;
+			if(!fFsm.exists() && !fDot.exists() && !fKiss.exists()) {
+				fsmConcurrentGenerated = fsmUtils.rbac2FsmConcurrent(rbacPolicy);
+				fsmUtils.sorting(fsmConcurrentGenerated);
+				fsmUtils.WriteFsm(fsmConcurrentGenerated, fFsm);
+				if(!fDot.exists()) {
+					fsmUtils.WriteFsmAsDot(fsmConcurrentGenerated, fDot);
+				}
+				if(!fKiss.exists()) {
+					fsmUtils.WriteFsmAsKiss(fsmConcurrentGenerated, fKiss);
+				}
+			}
+			
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
 
 	@Before
 	public void setupRbacPolicy() {
@@ -128,6 +172,46 @@ public class MainTest {
 	}
 
 
+	@Test
+	public void stateCoverAndTransitionCover() {
+
+		try {
+			RbacPolicy massod = putUtils.create_Masood2010Example1();
+			FsmModel fsmGenerated = fsmUtils.rbac2Fsm(massod);
+
+			File fsmFile = new File("test/Masood2010Example1.fsm");
+			File testSet = null;
+			fsmFile.getParentFile().mkdirs();
+
+			fsmUtils.WriteFsm(fsmGenerated, fsmFile);
+
+			FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
+
+			assertEquals(fsmGenerated,fsm);
+
+			FsmTestSuite qSet = testingUtils.stateCoverSet(fsm);
+
+			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_qSet.test");
+			testingUtils.WriteFsmTestSuite(qSet, testSet);
+
+			assertEquals(qSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
+			assertEquals(qSet.getTestCases().size(),fsm.getStates().size());
+
+			FsmTestSuite pSet = testingUtils.transitionCoverSet(fsm);
+
+			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_pSet.test");
+			testingUtils.WriteFsmTestSuite(pSet, testSet);
+
+			assertEquals(pSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
+			assertEquals(pSet.getTestCases().size(),fsm.getStates().size()*fsm.getInputs().size());			
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	@Ignore
 	@Test
 	public void test() {
@@ -183,46 +267,19 @@ public class MainTest {
 
 	}
 
-
 	@Test
-	public void stateCoverAndTransitionCover() {
+	public void testFeasiblePolicies() {
 
-		try {
-			RbacPolicy massod = putUtils.create_Masood2010Example1();
-			FsmModel fsmGenerated = fsmUtils.rbac2Fsm(massod);
+		List<RbacPolicy> pols = putUtils.getFeasiblePoliciesUnderTest();
 
-			File fsmFile = new File("test/Masood2010Example1.fsm");
-			File testSet = null;
-			fsmFile.getParentFile().mkdirs();
-
-			fsmUtils.WriteFsm(fsmGenerated, fsmFile);
-
-			FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
-
-			assertEquals(fsmGenerated,fsm);
-
-			FsmTestSuite qSet = testingUtils.stateCoverSet(fsm);
-
-			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_qSet.test");
-			testingUtils.WriteFsmTestSuite(qSet, testSet);
-
-			assertEquals(qSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
-			assertEquals(qSet.getTestCases().size(),fsm.getStates().size());
-
-			FsmTestSuite pSet = testingUtils.transitionCoverSet(fsm);
-
-			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_pSet.test");
-			testingUtils.WriteFsmTestSuite(pSet, testSet);
-
-			assertEquals(pSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
-			assertEquals(pSet.getTestCases().size(),fsm.getStates().size()*fsm.getInputs().size());			
-
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		int count = pols.size();
+		for (int i = 0; i < pols.size(); i++) {
+			//		for (int i = pols.size()-1; i >= 0; i--) {
+			RbacPolicy rbacPolicy = pols.get(i);
+			saveAllFormats(rbacPolicy);
+			System.out.println(count--);
 		}
 	}
-
 
 	@Test
 	public void testRbac2Fsm() {
@@ -244,63 +301,6 @@ public class MainTest {
 				e.printStackTrace();
 			}
 		}
-	}
-
-
-	@Test
-	public void testFeasiblePolicies() {
-
-		List<RbacPolicy> pols = putUtils.getFeasiblePoliciesUnderTest();
-
-		int count = pols.size();
-		for (int i = 0; i < pols.size(); i++) {
-			//		for (int i = pols.size()-1; i >= 0; i--) {
-			RbacPolicy rbacPolicy = pols.get(i);
-			saveAllFormats(rbacPolicy);
-			System.out.println(count--);
-		}
-	}
-
-	public void saveAllFormats(RbacPolicy rbacPolicy) {
-		try {
-
-			File fRbacDir = new File("policies_example");
-			fRbacDir = new File(fRbacDir,rbacPolicy.getName());
-			fRbacDir.mkdirs();
-
-			File fRbac = new File(fRbacDir,rbacPolicy.getName()+".rbac");
-			File fFsm = new File(fRbacDir,rbacPolicy.getName()+".fsm");
-			File fDot = new File(fRbacDir,rbacPolicy.getName()+".dot");
-			File fKiss = new File(fRbacDir,rbacPolicy.getName()+".kiss");
-
-			if(!fRbac.exists()) {
-				rbacUtils.WriteRbacPolicyAsXML(rbacPolicy, fRbac);
-			}
-
-			FsmModel fsmConcurrentGenerated = null;
-			if(!fFsm.exists() && !fDot.exists() && !fKiss.exists()) {
-				fsmConcurrentGenerated = fsmUtils.rbac2FsmConcurrent(rbacPolicy);
-				fsmUtils.sorting(fsmConcurrentGenerated);
-				fsmUtils.WriteFsm(fsmConcurrentGenerated, fFsm);
-				if(!fDot.exists()) {
-					fsmUtils.WriteFsmAsDot(fsmConcurrentGenerated, fDot);
-				}
-				if(!fKiss.exists()) {
-					fsmUtils.WriteFsmAsKiss(fsmConcurrentGenerated, fKiss);
-				}
-			}
-			
-			
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	public static void main(String[] args) {
-		MainTest mt = new MainTest();
-		mt.testFeasiblePolicies();
 	}
 
 }

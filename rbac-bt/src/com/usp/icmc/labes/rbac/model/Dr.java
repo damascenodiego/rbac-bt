@@ -13,31 +13,6 @@ public class Dr implements RbacElement, RbacMutableElement, RbacCardinality {
 	}
 
 
-	public Role getRole() {
-		return role;
-	}
-
-
-
-	public int getCardinality() {
-		return dynamicConstr;
-	}
-
-
-
-	public void setCardinality(int dynamicConstr) {
-		this.dynamicConstr = dynamicConstr;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + dynamicConstr;
-		result = prime * result + ((role == null) ? 0 : role.hashCode());
-		return result;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -55,6 +30,31 @@ public class Dr implements RbacElement, RbacMutableElement, RbacCardinality {
 		} else if (!role.equals(other.role))
 			return false;
 		return true;
+	}
+
+
+
+	public int getCardinality() {
+		return dynamicConstr;
+	}
+
+
+
+	public Role getRole() {
+		return role;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + dynamicConstr;
+		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		return result;
+	}
+
+	public void setCardinality(int dynamicConstr) {
+		this.dynamicConstr = dynamicConstr;
 	}
 
 

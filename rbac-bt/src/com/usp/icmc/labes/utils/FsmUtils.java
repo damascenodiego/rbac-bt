@@ -47,15 +47,7 @@ import com.usp.icmc.labes.rbac.model.User;
 
 public class FsmUtils {
 
-	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-
-	DecimalFormat stateFormat;
-	
 	static FsmUtils instance;
-
-	private FsmUtils() {
-		stateFormat = new DecimalFormat("000");
-	}
 
 	public static  FsmUtils getInstance() {
 		if(instance ==null){
@@ -63,167 +55,126 @@ public class FsmUtils {
 		}
 		return instance;
 	}
+	
+	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 
-	public void WriteFsmAsGML(FsmModel fsm, File f) throws FileNotFoundException{
-		PrintWriter pw = new PrintWriter(f);
+	DecimalFormat stateFormat;
 
-		pw.println("graph [");
-		pw.println("    directed 1");
-		pw.println("   	id 1");
-		pw.println("    label \""+fsm.getName()+"\"");
-
-		List<FsmState> states = fsm.getStates();
-
-		for (FsmState el : states) {
-			pw.println("    node [");
-			pw.println("        id "+states.indexOf(el));
-			pw.println("        label \""+el.getName()+"\"");
-			//pw.println("    		thisIsASampleAttribute 42");
-			pw.println("    	]");
-		}		
-		List<FsmTransition> transit = fsm.getTransitions();
-
-		for (FsmTransition tr : transit) {
-			if(tr.getOutput().equals("deny")) continue;
-			pw.println("    edge [");
-			pw.println("        source "+states.indexOf(tr.getFrom()));
-			pw.println("        target "+states.indexOf(tr.getTo()));
-			pw.println("        label \""+tr.getInput()+"/"+tr.getOutput()+"\"");
-			pw.println("    	]");
-		}
-		pw.println("]");
-		pw.close();
+	private FsmUtils() {
+		stateFormat = new DecimalFormat("000");
 	}
 
-
-	public void WriteFsmAsDot(FsmModel fsm, File f) throws FileNotFoundException{
-		PrintWriter pw = new PrintWriter(f);
-
+	public void fsmDiff(FsmModel f1, FsmModel f2, File fDiff) throws FileNotFoundException{
+		String edgeColor = "";
+		PrintWriter pw = new PrintWriter(fDiff);
 		pw.println("digraph rbac2Fsm {");
-		List<FsmTransition> transit = fsm.getTransitions();
-		for (FsmTransition tr : transit) {
-			if(tr.getOutput().equals("deny")) continue;
-			pw.println("  "+
-					tr.getFrom().getName()
-					+" -> "
-					+tr.getTo().getName()
-					+" [ label =\""+tr.getInput()+"/"+tr.getOutput()+"\"];");
+		pw.println("  {");
+		pw.println("  node [style=filled]");
+		for (FsmState s : f1.getStates()) {
+			if(!f2.getStates().contains(s)){
+				pw.println("  "+s.getName()+" [color=red]");
+			}	
+		}
+		pw.println("  }");
+		Set<FsmTransition> allTransitions = new HashSet<FsmTransition>();
+		allTransitions.addAll(f1.getTransitions());
+		allTransitions.addAll(f2.getTransitions());
+		for (FsmTransition tr : allTransitions) {
+			if(tr.getOutput().equals("grant")){
+				if(f1.getTransitions().contains(tr) && f2.getTransitions().contains(tr)){
+					edgeColor = "";
+				}else if(f1.getTransitions().contains(tr)){
+					edgeColor = ", color=red";
+				}else if(f2.getTransitions().contains(tr)){
+					edgeColor = ", color=green";
+				}	
+				pw.println("  "+
+						tr.getFrom().getName()
+						+" -> "
+						+tr.getTo().getName()
+						+" [ label =\""+tr.getInput()+"/"+tr.getOutput()+"\""+edgeColor+"];");
+			}
 		}
 		pw.println("}");
 		pw.close();
+
 	}
 
-	public void WriteFsmAsKiss(FsmModel fsm, File f) throws FileNotFoundException{
-		PrintWriter pw = new PrintWriter(f);
 
-		List<FsmTransition> transit = fsm.getTransitions();
-		for (FsmTransition tr : transit) {
-			//			if(tr.getOutput().equals("deny")) continue;
-			pw.println(tr.getFrom().getName()
-					+" -- "
-					+tr.getInput()+" / "+tr.getOutput()
-					+" -> "
-					+tr.getTo().getName());
+	public FsmState getState(Collection<FsmState> states2, String s){
+		for (FsmState fsmState : states2) {
+			if(fsmState.getName().equals(s)){
+				return fsmState;
+			}
 		}
-		pw.close();
+		return null;
+	}
+
+	FsmTransition getTransition(FsmModel fsm, String toStr){
+		for (FsmTransition tr : fsm.getTransitions()) {
+			if(tr.toString().equals(toStr)){
+				return tr;
+			}
+		}
+		return null;
 	}
 	
-	public void WriteFsmAsKissSimple(FsmModel fsm, File f) throws FileNotFoundException{
-		PrintWriter pw = new PrintWriter(f);
+	public FsmModel LoadFsmFromXML(File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
+		FsmModel fsm = new FsmModel(); //(FsmModel) xstream.fromXML(fsmFile);
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(fsmFile);
+		doc.getDocumentElement().normalize();
+		Element fsmElement = doc.getDocumentElement();
+		fsm.setName(fsmElement.getAttribute("name"));
 
-		int from;
-		int in;
-		int out;
-		int to;
-		List<FsmTransition> transit = fsm.getTransitions();
-		for (FsmTransition tr : transit) {
-			from = fsm.getStates().indexOf(tr.getFrom());
-			in = fsm.getInputs().indexOf(tr.getInput());
-			out = fsm.getOutputs().indexOf(tr.getOutput());
-			to = fsm.getStates().indexOf(tr.getTo());
-			pw.println(Integer.toString(from)
-					+" -- "
-					+stateFormat.format(in)+" / "+Integer.toString(out)
-					+" -> "
-					+Integer.toString(to));
+		Node node = fsmElement.getElementsByTagName("inputs").item(0);
+		NodeList el = ((Element)node).getElementsByTagName("input");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			fsm.getInputs().add(in.getAttribute("name"));
 		}
-		pw.close();
-	}
 
-	public void WriteFsmAsCsv(FsmModel fsm, File f) throws FileNotFoundException {
-		PrintWriter pw = new PrintWriter(f);
-
-		List<FsmTransition> transit = fsm.getTransitions();
-		pw.println("\"origin\",\"input\",\"output\",\"destination\"");
-		for (FsmTransition tr : transit) {
-			//			if(tr.getOutput().equals("deny")) continue;
-			pw.println(
-					"\""+tr.getFrom().getName()+"\","
-							+"\""+tr.getInput()+"\","
-							+"\""+tr.getOutput()+"\","
-							+"\""+tr.getTo().getName()+"\",");
+		node = fsmElement.getElementsByTagName("outputs").item(0);
+		el = ((Element)node).getElementsByTagName("output");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			fsm.getOutputs().add(in.getAttribute("name"));
 		}
-		pw.println("}");
-		pw.close();
-	}
 
-	public void WriteFsmAsJff(FsmModel fsm, File jff)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
-		sorting(fsm);
-		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-		Document doc = docBuilder.newDocument();
-
-		Element rootElement = doc.createElement("structure");
-		Element inputs = doc.createElement("type");
-		inputs.appendChild(inputs.getOwnerDocument().createTextNode("mealy"));
-		rootElement.appendChild(inputs);
-
-		inputs = doc.createElement("automaton");
-
-
-		for (FsmState s: fsm.getStates()) {
-			Element child = doc.createElement("state");
-			child.setAttribute("id", Integer.toString(fsm.getStates().indexOf(s)));
-			child.setAttribute("name", s.getName());
-			if(s.equals(fsm.getInitialState())){
-				child.appendChild(doc.createElement("initial"));
-			}
-			inputs.appendChild(child);
+		node = fsmElement.getElementsByTagName("states").item(0);
+		el = ((Element)node).getElementsByTagName("state");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			fsm.getStates().add(new FsmState(in.getAttribute("name")));
 		}
-		for (FsmTransition t: fsm.getTransitions()) {
-			Element transition = doc.createElement("transition");
-			Element from = doc.createElement("from");
-			from.appendChild(from.getOwnerDocument().createTextNode(Integer.toString(fsm.getStates().indexOf(t.getFrom()))));
-			Element to = doc.createElement("to");
-			to.appendChild(to.getOwnerDocument().createTextNode(Integer.toString(fsm.getStates().indexOf(t.getTo()))));
-			Element read = doc.createElement("read");
-			read.appendChild(read.getOwnerDocument().createTextNode(t.getInput()));
-			Element transout = doc.createElement("transout");
-			transout.appendChild(transout.getOwnerDocument().createTextNode(t.getOutput()));
-			transition.appendChild(from);
-			transition.appendChild(to);
-			transition.appendChild(read);
-			transition.appendChild(transout);
-			inputs.appendChild(transition);
+
+		fsm.setInitialState(fsm.getState(fsmElement.getAttribute("initialState")));
+		node = fsmElement.getElementsByTagName("transitions").item(0);
+		el = ((Element)node).getElementsByTagName("transition");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			FsmState f = fsm.getState(in.getAttribute("from"));
+			String input = in.getAttribute("in");
+			String output = in.getAttribute("out");
+			FsmState t = fsm.getState(in.getAttribute("to"));
+			fsm.addTransition(new FsmTransition(f, input, output, t));
 		}
-		rootElement.appendChild(inputs);
 
-		doc.appendChild(rootElement);
+		node = fsmElement.getElementsByTagName("failures").item(0);
+		el = ((Element)node).getElementsByTagName("failure");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			String constraint = in.getAttribute("constraint");
+			String transition = in.getAttribute("transition");
+			String faultType = in.getAttribute("type");
+			FsmTransition tr = getTransition(fsm, transition);
+			tr.getProperties().putIfAbsent(faultType, new HashSet<String>());
+			Set<String> constraintsFailed = (Set<String>)tr.getProperties().get(faultType);
+			constraintsFailed.add(constraint);
+		}
 
-		// write the content into xml file
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer();
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(jff);
-
-		// Output to console for testing
-		// StreamResult result = new StreamResult(System.out);
-
-		transformer.transform(source, result);
-
-		//		OutputStream fos = new FileOutputStream(fsmFile);
-		//		xstream.toXML(fsm, fos);
+		return fsm;
 	}
 
 	public FsmModel rbac2Fsm(RbacPolicy rbac) throws Exception {
@@ -280,15 +231,6 @@ public class FsmUtils {
 		return rbac2fsm;
 	}
 
-	public FsmState getState(Collection<FsmState> states2, String s){
-		for (FsmState fsmState : states2) {
-			if(fsmState.getName().equals(s)){
-				return fsmState;
-			}
-		}
-		return null;
-	}
-
 	public FsmModel rbac2FsmConcurrent(RbacPolicy rbac) {
 		List<RbacRequest> input = new ArrayList<RbacRequest>();
 		for (Role rol: rbac.getRole()) {
@@ -312,6 +254,31 @@ public class FsmUtils {
 		rbac2FsmConc.start();
 
 		return rbac2FsmConc.getFsmModel();
+	}
+
+	public void sorting(FsmModel fsmGenerated) {
+		fsmGenerated.getStates()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		fsmGenerated.getTransitions()	.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		fsmGenerated.getInputs()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		fsmGenerated.getOutputs()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+
+	}
+
+	public void updateElements(FsmModel fsmModel) {
+		for (FsmState s: fsmModel.getStates()) {
+			s.getIn().clear();
+			s.getOut().clear();
+		}
+		for (FsmTransition tr : fsmModel.getTransitions()) {
+			FsmState fr = fsmModel.getState(tr.getFrom().getName());
+			FsmState to = fsmModel.getState(tr.getTo().getName());
+			tr.setFrom(fr);
+			tr.setTo(to);
+			if(!fr.getOut().contains(tr)) fr.getOut().add(tr);
+			if(!to.getIn().contains(tr)) to.getIn().add(tr);
+
+		}
+
 	}
 
 	public void WriteFsm(FsmModel fsm, File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
@@ -399,132 +366,165 @@ public class FsmUtils {
 
 	}
 
-	public FsmModel LoadFsmFromXML(File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
-		FsmModel fsm = new FsmModel(); //(FsmModel) xstream.fromXML(fsmFile);
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(fsmFile);
-		doc.getDocumentElement().normalize();
-		Element fsmElement = doc.getDocumentElement();
-		fsm.setName(fsmElement.getAttribute("name"));
+	public void WriteFsmAsCsv(FsmModel fsm, File f) throws FileNotFoundException {
+		PrintWriter pw = new PrintWriter(f);
 
-		Node node = fsmElement.getElementsByTagName("inputs").item(0);
-		NodeList el = ((Element)node).getElementsByTagName("input");
-		for (int i = 0; i < el.getLength(); i++) {
-			Element in = (Element) el.item(i);
-			fsm.getInputs().add(in.getAttribute("name"));
-		}
-
-		node = fsmElement.getElementsByTagName("outputs").item(0);
-		el = ((Element)node).getElementsByTagName("output");
-		for (int i = 0; i < el.getLength(); i++) {
-			Element in = (Element) el.item(i);
-			fsm.getOutputs().add(in.getAttribute("name"));
-		}
-
-		node = fsmElement.getElementsByTagName("states").item(0);
-		el = ((Element)node).getElementsByTagName("state");
-		for (int i = 0; i < el.getLength(); i++) {
-			Element in = (Element) el.item(i);
-			fsm.getStates().add(new FsmState(in.getAttribute("name")));
-		}
-
-		fsm.setInitialState(fsm.getState(fsmElement.getAttribute("initialState")));
-		node = fsmElement.getElementsByTagName("transitions").item(0);
-		el = ((Element)node).getElementsByTagName("transition");
-		for (int i = 0; i < el.getLength(); i++) {
-			Element in = (Element) el.item(i);
-			FsmState f = fsm.getState(in.getAttribute("from"));
-			String input = in.getAttribute("in");
-			String output = in.getAttribute("out");
-			FsmState t = fsm.getState(in.getAttribute("to"));
-			fsm.addTransition(new FsmTransition(f, input, output, t));
-		}
-
-		node = fsmElement.getElementsByTagName("failures").item(0);
-		el = ((Element)node).getElementsByTagName("failure");
-		for (int i = 0; i < el.getLength(); i++) {
-			Element in = (Element) el.item(i);
-			String constraint = in.getAttribute("constraint");
-			String transition = in.getAttribute("transition");
-			String faultType = in.getAttribute("type");
-			FsmTransition tr = getTransition(fsm, transition);
-			tr.getProperties().putIfAbsent(faultType, new HashSet<String>());
-			Set<String> constraintsFailed = (Set<String>)tr.getProperties().get(faultType);
-			constraintsFailed.add(constraint);
-		}
-
-		return fsm;
-	}
-
-	FsmTransition getTransition(FsmModel fsm, String toStr){
-		for (FsmTransition tr : fsm.getTransitions()) {
-			if(tr.toString().equals(toStr)){
-				return tr;
-			}
-		}
-		return null;
-	}
-
-	public void fsmDiff(FsmModel f1, FsmModel f2, File fDiff) throws FileNotFoundException{
-		String edgeColor = "";
-		PrintWriter pw = new PrintWriter(fDiff);
-		pw.println("digraph rbac2Fsm {");
-		pw.println("  {");
-		pw.println("  node [style=filled]");
-		for (FsmState s : f1.getStates()) {
-			if(!f2.getStates().contains(s)){
-				pw.println("  "+s.getName()+" [color=red]");
-			}	
-		}
-		pw.println("  }");
-		Set<FsmTransition> allTransitions = new HashSet<FsmTransition>();
-		allTransitions.addAll(f1.getTransitions());
-		allTransitions.addAll(f2.getTransitions());
-		for (FsmTransition tr : allTransitions) {
-			if(tr.getOutput().equals("grant")){
-				if(f1.getTransitions().contains(tr) && f2.getTransitions().contains(tr)){
-					edgeColor = "";
-				}else if(f1.getTransitions().contains(tr)){
-					edgeColor = ", color=red";
-				}else if(f2.getTransitions().contains(tr)){
-					edgeColor = ", color=green";
-				}	
-				pw.println("  "+
-						tr.getFrom().getName()
-						+" -> "
-						+tr.getTo().getName()
-						+" [ label =\""+tr.getInput()+"/"+tr.getOutput()+"\""+edgeColor+"];");
-			}
+		List<FsmTransition> transit = fsm.getTransitions();
+		pw.println("\"origin\",\"input\",\"output\",\"destination\"");
+		for (FsmTransition tr : transit) {
+			//			if(tr.getOutput().equals("deny")) continue;
+			pw.println(
+					"\""+tr.getFrom().getName()+"\","
+							+"\""+tr.getInput()+"\","
+							+"\""+tr.getOutput()+"\","
+							+"\""+tr.getTo().getName()+"\",");
 		}
 		pw.println("}");
 		pw.close();
-
 	}
 
-	public void sorting(FsmModel fsmGenerated) {
-		fsmGenerated.getStates()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-		fsmGenerated.getTransitions()	.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-		fsmGenerated.getInputs()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-		fsmGenerated.getOutputs()		.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+	public void WriteFsmAsDot(FsmModel fsm, File f) throws FileNotFoundException{
+		PrintWriter pw = new PrintWriter(f);
 
+		pw.println("digraph rbac2Fsm {");
+		List<FsmTransition> transit = fsm.getTransitions();
+		for (FsmTransition tr : transit) {
+			if(tr.getOutput().equals("deny")) continue;
+			pw.println("  "+
+					tr.getFrom().getName()
+					+" -> "
+					+tr.getTo().getName()
+					+" [ label =\""+tr.getInput()+"/"+tr.getOutput()+"\"];");
+		}
+		pw.println("}");
+		pw.close();
 	}
 
-	public void updateElements(FsmModel fsmModel) {
-		for (FsmState s: fsmModel.getStates()) {
-			s.getIn().clear();
-			s.getOut().clear();
-		}
-		for (FsmTransition tr : fsmModel.getTransitions()) {
-			FsmState fr = fsmModel.getState(tr.getFrom().getName());
-			FsmState to = fsmModel.getState(tr.getTo().getName());
-			tr.setFrom(fr);
-			tr.setTo(to);
-			if(!fr.getOut().contains(tr)) fr.getOut().add(tr);
-			if(!to.getIn().contains(tr)) to.getIn().add(tr);
+	public void WriteFsmAsGML(FsmModel fsm, File f) throws FileNotFoundException{
+		PrintWriter pw = new PrintWriter(f);
 
-		}
+		pw.println("graph [");
+		pw.println("    directed 1");
+		pw.println("   	id 1");
+		pw.println("    label \""+fsm.getName()+"\"");
 
+		List<FsmState> states = fsm.getStates();
+
+		for (FsmState el : states) {
+			pw.println("    node [");
+			pw.println("        id "+states.indexOf(el));
+			pw.println("        label \""+el.getName()+"\"");
+			//pw.println("    		thisIsASampleAttribute 42");
+			pw.println("    	]");
+		}		
+		List<FsmTransition> transit = fsm.getTransitions();
+
+		for (FsmTransition tr : transit) {
+			if(tr.getOutput().equals("deny")) continue;
+			pw.println("    edge [");
+			pw.println("        source "+states.indexOf(tr.getFrom()));
+			pw.println("        target "+states.indexOf(tr.getTo()));
+			pw.println("        label \""+tr.getInput()+"/"+tr.getOutput()+"\"");
+			pw.println("    	]");
+		}
+		pw.println("]");
+		pw.close();
+	}
+
+	public void WriteFsmAsJff(FsmModel fsm, File jff)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
+		sorting(fsm);
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		Document doc = docBuilder.newDocument();
+
+		Element rootElement = doc.createElement("structure");
+		Element inputs = doc.createElement("type");
+		inputs.appendChild(inputs.getOwnerDocument().createTextNode("mealy"));
+		rootElement.appendChild(inputs);
+
+		inputs = doc.createElement("automaton");
+
+
+		for (FsmState s: fsm.getStates()) {
+			Element child = doc.createElement("state");
+			child.setAttribute("id", Integer.toString(fsm.getStates().indexOf(s)));
+			child.setAttribute("name", s.getName());
+			if(s.equals(fsm.getInitialState())){
+				child.appendChild(doc.createElement("initial"));
+			}
+			inputs.appendChild(child);
+		}
+		for (FsmTransition t: fsm.getTransitions()) {
+			Element transition = doc.createElement("transition");
+			Element from = doc.createElement("from");
+			from.appendChild(from.getOwnerDocument().createTextNode(Integer.toString(fsm.getStates().indexOf(t.getFrom()))));
+			Element to = doc.createElement("to");
+			to.appendChild(to.getOwnerDocument().createTextNode(Integer.toString(fsm.getStates().indexOf(t.getTo()))));
+			Element read = doc.createElement("read");
+			read.appendChild(read.getOwnerDocument().createTextNode(t.getInput()));
+			Element transout = doc.createElement("transout");
+			transout.appendChild(transout.getOwnerDocument().createTextNode(t.getOutput()));
+			transition.appendChild(from);
+			transition.appendChild(to);
+			transition.appendChild(read);
+			transition.appendChild(transout);
+			inputs.appendChild(transition);
+		}
+		rootElement.appendChild(inputs);
+
+		doc.appendChild(rootElement);
+
+		// write the content into xml file
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+		DOMSource source = new DOMSource(doc);
+		StreamResult result = new StreamResult(jff);
+
+		// Output to console for testing
+		// StreamResult result = new StreamResult(System.out);
+
+		transformer.transform(source, result);
+
+		//		OutputStream fos = new FileOutputStream(fsmFile);
+		//		xstream.toXML(fsm, fos);
+	}
+
+	public void WriteFsmAsKiss(FsmModel fsm, File f) throws FileNotFoundException{
+		PrintWriter pw = new PrintWriter(f);
+
+		List<FsmTransition> transit = fsm.getTransitions();
+		for (FsmTransition tr : transit) {
+			//			if(tr.getOutput().equals("deny")) continue;
+			pw.println(tr.getFrom().getName()
+					+" -- "
+					+tr.getInput()+" / "+tr.getOutput()
+					+" -> "
+					+tr.getTo().getName());
+		}
+		pw.close();
+	}
+
+	public void WriteFsmAsKissSimple(FsmModel fsm, File f) throws FileNotFoundException{
+		PrintWriter pw = new PrintWriter(f);
+
+		int from;
+		int in;
+		int out;
+		int to;
+		List<FsmTransition> transit = fsm.getTransitions();
+		for (FsmTransition tr : transit) {
+			from = fsm.getStates().indexOf(tr.getFrom());
+			in = fsm.getInputs().indexOf(tr.getInput());
+			out = fsm.getOutputs().indexOf(tr.getOutput());
+			to = fsm.getStates().indexOf(tr.getTo());
+			pw.println(Integer.toString(from)
+					+" -- "
+					+stateFormat.format(in)+" / "+Integer.toString(out)
+					+" -> "
+					+Integer.toString(to));
+		}
+		pw.close();
 	}
 
 }

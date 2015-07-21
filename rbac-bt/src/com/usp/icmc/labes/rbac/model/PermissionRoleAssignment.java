@@ -16,33 +16,6 @@ public class PermissionRoleAssignment implements RbacElement, RbacMutableElement
 		this.role = r;
 	}
 
-	public Permission getPermission() {
-		return permission;
-	}
-
-	public void setPermission(Permission permission) {
-		this.permission = permission;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((permission == null) ? 0 : permission.hashCode());
-		result = prime * result + ((role == null) ? 0 : role.hashCode());
-		return result;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -63,6 +36,33 @@ public class PermissionRoleAssignment implements RbacElement, RbacMutableElement
 		} else if (!role.equals(other.role))
 			return false;
 		return true;
+	}
+
+	public Permission getPermission() {
+		return permission;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((permission == null) ? 0 : permission.hashCode());
+		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		return result;
+	}
+
+	
+	public void setPermission(Permission permission) {
+		this.permission = permission;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 	@Override

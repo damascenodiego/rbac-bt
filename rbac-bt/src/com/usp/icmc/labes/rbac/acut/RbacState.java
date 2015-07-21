@@ -80,60 +80,16 @@ public class RbacState {
 
 	}
 
-	public String getName() {
-		String stateName = "";
-		for (User usr: policy.getUser()) {
-			for (Role rol: policy.getRole()) {
-				stateName += getBinaryRepresentation(usr, rol);
-			}	
-		}
-		for (Role rol: policy.getRole()) {
-			for (Permission prm: policy.getPermission()) {
-				stateName += getBinaryRepresentation(prm, rol);
-
-			}
-		}
-		return stateName;
-	}
-
-	private String getBinaryRepresentation(RoleAssignable assigned, Role rol) {
-
-		if (assigned instanceof User){
-			for (UserRoleActivation el : urAcCopy)
-				if(el.getUser().equals(assigned) && el.getRole().equals(rol)) 
-					return "11";
-			for (UserRoleAssignment el : urAsCopy)
-				if(el.getUser().equals(assigned) && el.getRole().equals(rol)) 
-					return "10";
-		}else if (assigned instanceof Permission){
-			for (PermissionRoleAssignment el : prAsCopy) 
-				if(el.getPermission().equals(assigned) && el.getRole().equals(rol)) 
-					return "10";
-		}
-
-		return "00";
-	}
-
-	public RbacPolicy getPolicy() {
-		return policy;
-	}
-
 	@Override
-	public String toString() {
-		return getName();
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((prAsCopy == null) ? 0 : prAsCopy.hashCode());
-		result = prime * result
-				+ ((urAcCopy == null) ? 0 : urAcCopy.hashCode());
-		result = prime * result
-				+ ((urAsCopy == null) ? 0 : urAsCopy.hashCode());
-		return result;
+	public Object clone() throws CloneNotSupportedException {
+		RbacState state = new RbacState(policy);
+		state.urAsCopy.clear();
+		state.urAcCopy.clear();
+		state.prAsCopy.clear();
+		state.urAsCopy.addAll(urAsCopy);
+		state.urAcCopy.addAll(urAcCopy);
+		state.prAsCopy.addAll(prAsCopy);
+		return state;
 	}
 
 	@Override
@@ -163,16 +119,60 @@ public class RbacState {
 		return true;
 	}
 
+	private String getBinaryRepresentation(RoleAssignable assigned, Role rol) {
+
+		if (assigned instanceof User){
+			for (UserRoleActivation el : urAcCopy)
+				if(el.getUser().equals(assigned) && el.getRole().equals(rol)) 
+					return "11";
+			for (UserRoleAssignment el : urAsCopy)
+				if(el.getUser().equals(assigned) && el.getRole().equals(rol)) 
+					return "10";
+		}else if (assigned instanceof Permission){
+			for (PermissionRoleAssignment el : prAsCopy) 
+				if(el.getPermission().equals(assigned) && el.getRole().equals(rol)) 
+					return "10";
+		}
+
+		return "00";
+	}
+
+	public String getName() {
+		String stateName = "";
+		for (User usr: policy.getUser()) {
+			for (Role rol: policy.getRole()) {
+				stateName += getBinaryRepresentation(usr, rol);
+			}	
+		}
+		for (Role rol: policy.getRole()) {
+			for (Permission prm: policy.getPermission()) {
+				stateName += getBinaryRepresentation(prm, rol);
+
+			}
+		}
+		return stateName;
+	}
+
+	public RbacPolicy getPolicy() {
+		return policy;
+	}
+
 	@Override
-	public Object clone() throws CloneNotSupportedException {
-		RbacState state = new RbacState(policy);
-		state.urAsCopy.clear();
-		state.urAcCopy.clear();
-		state.prAsCopy.clear();
-		state.urAsCopy.addAll(urAsCopy);
-		state.urAcCopy.addAll(urAcCopy);
-		state.prAsCopy.addAll(prAsCopy);
-		return state;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((prAsCopy == null) ? 0 : prAsCopy.hashCode());
+		result = prime * result
+				+ ((urAcCopy == null) ? 0 : urAcCopy.hashCode());
+		result = prime * result
+				+ ((urAsCopy == null) ? 0 : urAsCopy.hashCode());
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 }

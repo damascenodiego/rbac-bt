@@ -16,49 +16,6 @@ public class FsmSUT {
 		this.currentState = f.getInitialState();
 	}
 	
-	public FsmState getCurrentState() {
-		return currentState;
-	}
-	
-	public void setCurrentState(FsmState currentState) {
-		this.currentState = currentState;
-	}
-	
-	String input(String in){
-		for (int i = 0; i < currentState.getOut().size(); i++) {
-			FsmTransition tr = currentState.getOut().get(i);
-			if(tr.getInput().equals(in)){
-				currentState = tr.getTo();
-				lastInput = tr.getInput();
-				lastOutput = tr.getOutput();
-				return tr.getOutput();
-			}
-		}
-		return "";
-	}
-	
-	public String getLastInput() {
-		return lastInput;
-	}
-	
-	public String getLastOutput() {
-		return lastOutput;
-	}
-	
-	public FsmModel getSut() {
-		return sut;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((currentState == null) ? 0 : currentState.hashCode());
-		result = prime * result + ((sut == null) ? 0 : sut.hashCode());
-		return result;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -79,6 +36,49 @@ public class FsmSUT {
 		} else if (!sut.equals(other.sut))
 			return false;
 		return true;
+	}
+	
+	public FsmState getCurrentState() {
+		return currentState;
+	}
+	
+	public String getLastInput() {
+		return lastInput;
+	}
+	
+	public String getLastOutput() {
+		return lastOutput;
+	}
+	
+	public FsmModel getSut() {
+		return sut;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((currentState == null) ? 0 : currentState.hashCode());
+		result = prime * result + ((sut == null) ? 0 : sut.hashCode());
+		return result;
+	}
+
+	String input(String in){
+		for (int i = 0; i < currentState.getOut().size(); i++) {
+			FsmTransition tr = currentState.getOut().get(i);
+			if(tr.getInput().equals(in)){
+				currentState = tr.getTo();
+				lastInput = tr.getInput();
+				lastOutput = tr.getOutput();
+				return tr.getOutput();
+			}
+		}
+		return "";
+	}
+
+	public void setCurrentState(FsmState currentState) {
+		this.currentState = currentState;
 	}
 	
 	

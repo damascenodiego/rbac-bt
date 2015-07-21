@@ -3,18 +3,18 @@ package com.usp.icmc.labes.rbac.model;
 import java.util.List;
 
 public interface RbacTuple {
-	List<UserRoleAssignment> getUserRoleAssignment();
-	List<UserRoleActivation> getUserRoleActivation();
-	List<PermissionRoleAssignment> getPermissionRoleAssignment();
-	List<User> getUser();
-	List<Role> getRole();
-	List<Permission> getPermission();
-	List<Su> getSu();
-	List<Sr> getSr();
-	List<Du> getDu();
-	List<Dr> getDr();
-	List<SSoDConstraint> getSSoDConstraint();
-	List<DSoDConstraint> getDSoDConstraint();
 	List<ActivationHierarchy> getActivationHierarchy();
+	List<Dr> getDr();
+	List<DSoDConstraint> getDSoDConstraint();
+	List<Du> getDu();
 	List<InheritanceHierarchy> getInheritanceHierarchy();
+	List<Permission> getPermission();
+	List<PermissionRoleAssignment> getPermissionRoleAssignment();
+	List<Role> getRole();
+	List<Sr> getSr();
+	List<SSoDConstraint> getSSoDConstraint();
+	List<Su> getSu();
+	List<User> getUser();
+	List<UserRoleActivation> getUserRoleActivation();
+	List<UserRoleAssignment> getUserRoleAssignment();
 }

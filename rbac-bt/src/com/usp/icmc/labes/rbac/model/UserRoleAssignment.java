@@ -15,31 +15,6 @@ public class UserRoleAssignment implements RbacElement, RbacMutableElement {
 		this.role = r;
 	}
 
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((role == null) ? 0 : role.hashCode());
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
-		return result;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -60,6 +35,31 @@ public class UserRoleAssignment implements RbacElement, RbacMutableElement {
 		} else if (!user.equals(other.user))
 			return false;
 		return true;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		return result;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	@Override

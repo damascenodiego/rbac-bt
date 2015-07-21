@@ -23,15 +23,15 @@ import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class RbacSupportingSystemFunctions {
 
-	private RbacUtils utils = RbacUtils.getInstance();
 	private static RbacSupportingSystemFunctions instance;
-
 	public static RbacSupportingSystemFunctions getInstance() {
 		if(instance==null){
 			instance = new RbacSupportingSystemFunctions();
 		}
 		return instance;
 	}
+
+	private RbacUtils utils = RbacUtils.getInstance();
 
 	private RbacSupportingSystemFunctions() {}
 
@@ -106,6 +106,17 @@ public class RbacSupportingSystemFunctions {
 		return false;
 	}
 
+	public Set<Permission> checkAccess(RbacTuple pol, User usr, Permission permission){
+		Set<Role> rolesOfUsr = utils.getRolesAssignedToUser(pol, usr);
+		Set<Permission> prmSet = new HashSet<Permission>();
+		for (Role role : rolesOfUsr) {
+			for (PermissionRoleAssignment pr : utils.getPermissionRoleAssignmentWithRole(pol, role)) {
+				prmSet.add(pr.getPermission());
+			}
+		}
+		return prmSet;
+	}
+
 	public boolean dropActiveRole(RbacTuple policy, User user, Role role){
 		boolean userExists 			= utils.userExists(policy, user);
 		boolean roleExists 			= utils.roleExists(policy,role); 
@@ -126,17 +137,6 @@ public class RbacSupportingSystemFunctions {
 			return true;
 		}
 		return false;
-	}
-
-	public Set<Permission> checkAccess(RbacTuple pol, User usr, Permission permission){
-		Set<Role> rolesOfUsr = utils.getRolesAssignedToUser(pol, usr);
-		Set<Permission> prmSet = new HashSet<Permission>();
-		for (Role role : rolesOfUsr) {
-			for (PermissionRoleAssignment pr : utils.getPermissionRoleAssignmentWithRole(pol, role)) {
-				prmSet.add(pr.getPermission());
-			}
-		}
-		return prmSet;
 	}
 
 }

@@ -40,6 +40,14 @@ public class RbacAcut implements RbacTuple{
 	private RbacReviewFunctions rev = RbacReviewFunctions.getInstance();
 	private RbacAdvancedReviewFunctions adv = RbacAdvancedReviewFunctions.getInstance();
 
+	public RbacAcut(RbacAcut acut2) {
+		this(acut2.getPolicy());
+	}
+
+	//	private void saveState(RbacPolicy p) {
+	//		currentState = new RbacState(p);
+	//	}
+
 	public RbacAcut(RbacPolicy p) { 
 		policy = p;
 		//		saveState(p);
@@ -48,156 +56,6 @@ public class RbacAcut implements RbacTuple{
 		response = new RbacResponse();
 	}
 
-	//	private void saveState(RbacPolicy p) {
-	//		currentState = new RbacState(p);
-	//	}
-
-	public RbacAcut(RbacAcut acut2) {
-		this(acut2.getPolicy());
-	}
-
-	public void reset(RbacState state) {
-		getUserRoleAssignment()		.clear();
-		getUserRoleActivation()		.clear();
-		getPermissionRoleAssignment().clear();
-
-		for (UserRoleAssignment el : state.urAsCopy)
-			getUserRoleAssignment()
-			.add(new UserRoleAssignment(el.getUser(), el.getRole()));
-		for (UserRoleActivation el : state.urAcCopy)
-			getUserRoleActivation()
-			.add(new UserRoleActivation(el.getUser(), el.getRole()));
-		for (PermissionRoleAssignment el : state.prAsCopy) 
-			getPermissionRoleAssignment()
-			.add(new PermissionRoleAssignment(el.getPermission(), el.getRole()));
-		//		saveState(this);
-	}
-
-	public void reset() {
-		reset(initialState);
-	}
-
-	public RbacState getCurrentState() {
-		return currentState;
-	}
-
-	public String getName() {
-		return currentState.getName();
-	}
-
-	public boolean request(RbacRequest rq) {
-		boolean output = false;
-		if(rq instanceof RbacRequestAssignUR){
-			output = admin.assignUser(this, rq.getUser(), rq.getRole());
-		}else if(rq instanceof RbacRequestDeassignUR){
-			output = admin.deassignUser(this, rq.getUser(), rq.getRole());
-		}else if(rq instanceof RbacRequestActivateUR){
-			output = sys.addActiveRole(this, rq.getUser(), rq.getRole());
-		}else if(rq instanceof RbacRequestDeactivateUR){
-			output = sys.dropActiveRole(this, rq.getUser(), rq.getRole());
-		}else if(rq instanceof RbacRequestAssignPR){
-			output = admin.grantPermission(this, rq.getPermission(), rq.getRole());
-		}else if(rq instanceof RbacRequestDeassignPR){
-			output = admin.revokePermission(this, rq.getPermission(), rq.getRole());
-		}
-
-		//		saveState(policy);
-		//transition +="--"+rq.toString()+"/"+(output ? "granted": "denied")+"-->"+getCurrentState().toString();
-		//		transition +=" -> "+getCurrentState().toString()+"  [ label=\""+rq.toString()+"/"+(output ? "granted": "denied")+"\"];";
-		return output;
-	}
-
-	@Override
-	public String toString() {
-		return getName();
-	}
-
-	@Override
-	public List<UserRoleAssignment> getUserRoleAssignment() {
-		return getCurrentState().urAsCopy;
-	}
-
-	@Override
-	public List<UserRoleActivation> getUserRoleActivation() {
-		return getCurrentState().urAcCopy;
-	}
-
-	@Override
-	public List<PermissionRoleAssignment> getPermissionRoleAssignment() {
-		return getCurrentState().prAsCopy;
-	}
-
-	@Override
-	public List<User> getUser() {
-		return policy.getUser();
-	}
-
-	@Override
-	public List<Role> getRole() {
-		return policy.getRole();
-	}
-
-	@Override
-	public List<Permission> getPermission() {
-		return policy.getPermission();
-	}
-
-	@Override
-	public List<Su> getSu() {
-		return policy.getSu();
-	}
-
-	@Override
-	public List<Sr> getSr() {
-		return policy.getSr();
-	}
-
-	@Override
-	public List<Du> getDu() {
-		return policy.getDu();
-	}
-
-	@Override
-	public List<Dr> getDr() {
-		return policy.getDr();
-	}
-
-	@Override
-	public List<SSoDConstraint> getSSoDConstraint() {
-		return policy.getSSoDConstraint();
-	}
-
-	@Override
-	public List<DSoDConstraint> getDSoDConstraint() {
-		return policy.getDSoDConstraint();
-	}
-
-	public void setResponse(RbacResponse response) {
-		this.response = response;
-	}
-
-	public RbacResponse getResponse() {
-		return response;
-	}
-
-	@Override
-	public List<ActivationHierarchy> getActivationHierarchy() {
-		return policy.getActivationHierarchy();
-	}
-
-	@Override
-	public List<InheritanceHierarchy> getInheritanceHierarchy() {
-		return policy.getInheritanceHierarchy();
-	}
-
-	public RbacPolicy getPolicy() {
-		return policy;
-	}
-	
-	public void setPolicy(RbacPolicy policy) {
-		this.policy = policy;
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -279,5 +137,147 @@ public class RbacAcut implements RbacTuple{
 		} else if (!getUserRoleAssignment().equals(other.getUserRoleAssignment()))
 			return false;
 		return true;
+	}
+
+	@Override
+	public List<ActivationHierarchy> getActivationHierarchy() {
+		return policy.getActivationHierarchy();
+	}
+
+	public RbacState getCurrentState() {
+		return currentState;
+	}
+
+	@Override
+	public List<Dr> getDr() {
+		return policy.getDr();
+	}
+
+	@Override
+	public List<DSoDConstraint> getDSoDConstraint() {
+		return policy.getDSoDConstraint();
+	}
+
+	@Override
+	public List<Du> getDu() {
+		return policy.getDu();
+	}
+
+	@Override
+	public List<InheritanceHierarchy> getInheritanceHierarchy() {
+		return policy.getInheritanceHierarchy();
+	}
+
+	public String getName() {
+		return currentState.getName();
+	}
+
+	@Override
+	public List<Permission> getPermission() {
+		return policy.getPermission();
+	}
+
+	@Override
+	public List<PermissionRoleAssignment> getPermissionRoleAssignment() {
+		return getCurrentState().prAsCopy;
+	}
+
+	public RbacPolicy getPolicy() {
+		return policy;
+	}
+
+	public RbacResponse getResponse() {
+		return response;
+	}
+
+	@Override
+	public List<Role> getRole() {
+		return policy.getRole();
+	}
+
+	@Override
+	public List<Sr> getSr() {
+		return policy.getSr();
+	}
+
+	@Override
+	public List<SSoDConstraint> getSSoDConstraint() {
+		return policy.getSSoDConstraint();
+	}
+
+	@Override
+	public List<Su> getSu() {
+		return policy.getSu();
+	}
+
+	@Override
+	public List<User> getUser() {
+		return policy.getUser();
+	}
+
+	@Override
+	public List<UserRoleActivation> getUserRoleActivation() {
+		return getCurrentState().urAcCopy;
+	}
+
+	@Override
+	public List<UserRoleAssignment> getUserRoleAssignment() {
+		return getCurrentState().urAsCopy;
+	}
+
+	public boolean request(RbacRequest rq) {
+		boolean output = false;
+		if(rq instanceof RbacRequestAssignUR){
+			output = admin.assignUser(this, rq.getUser(), rq.getRole());
+		}else if(rq instanceof RbacRequestDeassignUR){
+			output = admin.deassignUser(this, rq.getUser(), rq.getRole());
+		}else if(rq instanceof RbacRequestActivateUR){
+			output = sys.addActiveRole(this, rq.getUser(), rq.getRole());
+		}else if(rq instanceof RbacRequestDeactivateUR){
+			output = sys.dropActiveRole(this, rq.getUser(), rq.getRole());
+		}else if(rq instanceof RbacRequestAssignPR){
+			output = admin.grantPermission(this, rq.getPermission(), rq.getRole());
+		}else if(rq instanceof RbacRequestDeassignPR){
+			output = admin.revokePermission(this, rq.getPermission(), rq.getRole());
+		}
+
+		//		saveState(policy);
+		//transition +="--"+rq.toString()+"/"+(output ? "granted": "denied")+"-->"+getCurrentState().toString();
+		//		transition +=" -> "+getCurrentState().toString()+"  [ label=\""+rq.toString()+"/"+(output ? "granted": "denied")+"\"];";
+		return output;
+	}
+
+	public void reset() {
+		reset(initialState);
+	}
+
+	public void reset(RbacState state) {
+		getUserRoleAssignment()		.clear();
+		getUserRoleActivation()		.clear();
+		getPermissionRoleAssignment().clear();
+
+		for (UserRoleAssignment el : state.urAsCopy)
+			getUserRoleAssignment()
+			.add(new UserRoleAssignment(el.getUser(), el.getRole()));
+		for (UserRoleActivation el : state.urAcCopy)
+			getUserRoleActivation()
+			.add(new UserRoleActivation(el.getUser(), el.getRole()));
+		for (PermissionRoleAssignment el : state.prAsCopy) 
+			getPermissionRoleAssignment()
+			.add(new PermissionRoleAssignment(el.getPermission(), el.getRole()));
+		//		saveState(this);
+	}
+
+	public void setPolicy(RbacPolicy policy) {
+		this.policy = policy;
+	}
+	
+	public void setResponse(RbacResponse response) {
+		this.response = response;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
 	}
 }

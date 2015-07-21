@@ -15,32 +15,8 @@ public class FsmPath extends FsmElement{
 		this.paths = new ArrayList<FsmTransition>();
 	}
 
-	public List<FsmTransition> getPath() {
-		return paths;
-	}
-
-	public void setPath(List<FsmTransition> paths) {
-		this.paths = paths;
-	}
-
-	public FsmState getInitialState(){
-		return this.paths.get(0).getFrom();
-	}
-
-	public FsmState getFinalState(){
-		return this.paths.get(this.paths.size()-1).getTo();
-	}
-
 	public void addTransition(FsmTransition t){
 		getPath().add(t);
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((paths == null) ? 0 : paths.hashCode());
-		return result;
 	}
 
 	@Override
@@ -58,6 +34,30 @@ public class FsmPath extends FsmElement{
 		} else if (!paths.equals(other.paths))
 			return false;
 		return true;
+	}
+
+	public FsmState getFinalState(){
+		return this.paths.get(this.paths.size()-1).getTo();
+	}
+
+	public FsmState getInitialState(){
+		return this.paths.get(0).getFrom();
+	}
+
+	public List<FsmTransition> getPath() {
+		return paths;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((paths == null) ? 0 : paths.hashCode());
+		return result;
+	}
+
+	public void setPath(List<FsmTransition> paths) {
+		this.paths = paths;
 	}
 
 	@Override

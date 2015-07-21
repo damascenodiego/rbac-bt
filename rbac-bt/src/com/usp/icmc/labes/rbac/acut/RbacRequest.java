@@ -31,60 +31,6 @@ public abstract class RbacRequest {
 
 	public RbacRequest() { }
 	
-	public String getType() {
-		return type;
-	}
-
-	protected void setType(String type) {
-		this.type = type;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	protected void setUser(User user) {
-		this.user = user;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	protected void setRole(Role role) {
-		this.role = role;
-	}
-
-	public Permission getPermission() {
-		return permission;
-	}
-
-	protected void setPermission(Permission permission) {
-		this.permission = permission;
-	}
-
-	@Override
-	public String toString() {
-		String output = null;
-		if(user!=null && permission==null) 
-			output = type+"("+user.getName()+","+role.getName()+")";
-		if(user==null && permission!=null) 
-			output = type+"("+permission.getName()+","+role.getName()+")";
-		return output;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((permission == null) ? 0 : permission.hashCode());
-		result = prime * result + ((role == null) ? 0 : role.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
-		return result;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -115,6 +61,60 @@ public abstract class RbacRequest {
 		} else if (!user.equals(other.user))
 			return false;
 		return true;
+	}
+
+	public Permission getPermission() {
+		return permission;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((permission == null) ? 0 : permission.hashCode());
+		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		return result;
+	}
+
+	protected void setPermission(Permission permission) {
+		this.permission = permission;
+	}
+
+	protected void setRole(Role role) {
+		this.role = role;
+	}
+
+	protected void setType(String type) {
+		this.type = type;
+	}
+
+	protected void setUser(User user) {
+		this.user = user;
+	}
+
+	@Override
+	public String toString() {
+		String output = null;
+		if(user!=null && permission==null) 
+			output = type+"("+user.getName()+","+role.getName()+")";
+		if(user==null && permission!=null) 
+			output = type+"("+permission.getName()+","+role.getName()+")";
+		return output;
 	}
 	
 }

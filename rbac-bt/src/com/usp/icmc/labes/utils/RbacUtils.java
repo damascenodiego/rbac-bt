@@ -46,10 +46,6 @@ import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 public class RbacUtils {
 
 
-	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-
-	static RbacUtils instance;
-
 	public enum RbacFaultType {
 		SuFailed,
 		SrFailed,
@@ -57,17 +53,312 @@ public class RbacUtils {
 		DuFailed,
 		DrFailed,
 		DsodFailed,
-	};
+	}
 
-
-	private RbacUtils() {
-	} 
+	static RbacUtils instance;
 
 	public static RbacUtils getInstance() {
 		if(instance ==null){
 			instance = new RbacUtils();
 		}
 		return instance;
+	};
+
+
+	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance(); 
+
+	private RbacUtils() {
+	}
+
+	public boolean afterActivateDrIsValid(RbacTuple policy, Role role) {
+		Set<UserRoleActivation> urList = getUserRoleActivationWithRole(policy, role);
+		int total = urList.size();
+		Dr constr = getDr(policy, role);
+		if(constr==null) return true;
+		return total<constr.getCardinality();
+	}
+
+	public boolean afterActivateDuIsValid(RbacTuple policy, User user) {
+		Set<UserRoleActivation> urList = getUserRoleActivationWithUser(policy, user);
+		int total = urList.size();
+		Du constr = getDu(policy, user);
+		if(constr==null) return true;
+		return total<constr.getCardinality();
+	}
+
+	public boolean afterAssignSrIsValid(RbacTuple policy, Role role) {
+		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithRole(policy, role);
+		int total = urList.size();
+		Sr constr = getSr(policy, role);
+		if(constr==null) return true;
+		return total<constr.getCardinality();
+	}
+
+	public boolean afterAssignSuIsValid(RbacTuple policy, User user) {
+		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithUser(policy, user);
+		int total = urList.size();
+		Su constr = getSu(policy, user);
+		if(constr==null) return true; 
+		return total<constr.getCardinality();
+	}
+
+	public void failedDueTo(RbacPolicy p, RbacFaultType faultType, RbacMutableElement reason) {
+		synchronized (p.getProperties()) {
+			p.getProperties().putIfAbsent(faultType.name(), new HashSet<String>());
+			((Set)p.getProperties().get(faultType.name())).add(reason.toString());	
+		}
+	}
+
+
+	public Dr getDr(RbacTuple pol, Role rol) {
+		for (Dr card: pol.getDr()) {
+			if(card.getRole().equals(rol)){
+				return card;
+			}
+		}
+		return null;
+	}
+
+	public List<DSoDConstraint> getDSoD(RbacTuple pol, Role rol) {
+		List<DSoDConstraint> result = new ArrayList<DSoDConstraint>();
+		for (DSoDConstraint set : result) {
+			if(set.getSodSet().contains(rol)) result.add(set);
+		}
+		return result;
+	}
+
+	public Du getDu(RbacTuple pol, User usr) {
+		for (Du card: pol.getDu()) {
+			if(card.getUser().equals(usr)){
+				return card;
+			}
+		}
+		return null;
+	}
+
+	public Permission getPermissionByName(RbacTuple t, String n){
+		for (Permission u: t.getPermission()) {
+			if(u.getName().equals(n)){
+				return u;
+			}
+		}
+		return null;
+	}
+
+	public PermissionRoleAssignment getPermissionRoleAssignment(RbacTuple pol, Permission pr, Role rol) {
+		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
+		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
+			if(el.getPermission().equals(pr) && el.getRole().equals(rol)){
+				return el;
+			}
+		}
+		return null;
+	}	
+
+	public Set<PermissionRoleAssignment> getPermissionRoleAssignmentWithPermission(RbacTuple pol, Permission pr) {
+		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
+		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
+			if(el.getPermission().equals(pr)){
+				result.add(el);
+			}
+		}
+		return result;
+	}
+
+	public Set<PermissionRoleAssignment> getPermissionRoleAssignmentWithRole(RbacTuple pol, Role rol) {
+		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
+		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
+			if(el.getRole().equals(rol)){
+				result.add(el);
+			}
+		}
+		return result;
+	}
+
+	public Role getRoleByName(RbacTuple t, String n){
+		for (Role u: t.getRole()) {
+			if(u.getName().equals(n)){
+				return u;
+			}
+		}
+		return null;
+	}
+
+	public Set<Role> getRolesActivatedByUser(RbacTuple pol, User usr){
+		Set<Role> result = new HashSet<Role>();
+		List<UserRoleActivation> userRoleActivation = pol.getUserRoleActivation();
+		for (UserRoleActivation ur : userRoleActivation) {
+			if(ur.getUser().equals(usr))
+				result.add(ur.getRole());
+		}
+		return result;
+	}
+
+	public Set<Role> getRolesAssignedToUser(RbacTuple pol, User usr){
+		Set<Role> result = new HashSet<Role>();
+		List<UserRoleAssignment> userRoleAssignments = pol.getUserRoleAssignment();
+		for (UserRoleAssignment ur : userRoleAssignments) {
+			if(ur.getUser().equals(usr))
+				result.add(ur.getRole());
+		}
+		return result;
+	}
+
+	public Sr getSr(RbacTuple pol, Role rol) {
+		for (Sr card: pol.getSr()) {
+			if(card.getRole().equals(rol)){
+				return card;
+			}
+		}
+		return null;
+	}
+
+	public List<SSoDConstraint> getSSoD(RbacTuple pol, Role rol) {
+		List<SSoDConstraint> result = new ArrayList<SSoDConstraint>();
+		for (SSoDConstraint set : pol.getSSoDConstraint()) {
+			if(set.getSodSet().contains(rol)) result.add(set);
+		}
+		return result;
+	}
+
+	public Su getSu(RbacTuple pol, User usr) {
+		for (Su card: pol.getSu()) {
+			if(card.getUser().equals(usr)){
+				return card;
+			}
+		}
+		return null;
+	}
+
+	public User getUserByName(RbacTuple t, String n){
+		for (User u: t.getUser()) {
+			if(u.getName().equals(n)){
+				return u;
+			}
+		}
+		return null;
+	}
+
+	public UserRoleActivation getUserRoleActivation(RbacTuple policy, User user, Role role) {
+		for (UserRoleActivation el : policy.getUserRoleActivation()) {
+			if(el.getUser().equals(user) && el.getRole().equals(role)){
+				return el;
+			}
+		}
+		return null;
+	}
+
+	public Set<UserRoleActivation> getUserRoleActivationWithRole(RbacTuple policy, Role role) {
+		Set<UserRoleActivation> result = new HashSet<UserRoleActivation>();
+		for (UserRoleActivation el : policy.getUserRoleActivation()) {
+			if(el.getRole().equals(role)){
+				result.add(el);
+			}
+		}
+		return result;
+	}
+
+	public Set<UserRoleActivation> getUserRoleActivationWithUser(RbacTuple policy, User user) {
+		Set<UserRoleActivation> result = new HashSet<UserRoleActivation>();
+		for (UserRoleActivation el : policy.getUserRoleActivation()) {
+			if(el.getUser().equals(user)){
+				result.add(el);
+			}
+		}
+		return result;
+	}
+
+	public UserRoleAssignment getUserRoleAssignment(RbacTuple pol, User usr, Role rol) {
+		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
+			if(el.getUser().equals(usr) && el.getRole().equals(rol)){
+				return el;
+			}
+		}
+		return null;
+	}
+
+	public Set<UserRoleAssignment> getUserRoleAssignmentWithRole(RbacTuple pol, Role rol) {
+		Set<UserRoleAssignment> result = new HashSet<UserRoleAssignment>(); 
+		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
+			if(el.getRole().equals(rol)){
+				result.add(el);
+			}
+		}
+		return result;
+	}
+
+	public Set<UserRoleAssignment> getUserRoleAssignmentWithUser(RbacTuple pol, User usr) {
+		Set<UserRoleAssignment> result = new HashSet<UserRoleAssignment>(); 
+		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
+			if(el.getUser().equals(usr)){
+				result.add(el);
+			}
+		}
+		return result;
+	}
+
+	public boolean isValidPolicy(RbacMutant mutPol) {
+
+		int[] staticUser 	= new int[mutPol.getUser().size()];
+		int[] staticRole 	= new int[mutPol.getRole().size()];
+
+		int[] dynamicUser 	= new int[mutPol.getUser().size()];
+		int[] dynamicRole 	= new int[mutPol.getRole().size()];
+
+		Map<User,Set<Role>> urAssignment = new HashMap<User,Set<Role>>();
+		Map<User,Set<Role>> urActivation = new HashMap<User,Set<Role>>();
+
+		for (UserRoleAssignment el : mutPol.getUserRoleAssignment()) {
+			int userIndex = mutPol.getUser().indexOf(el.getUser());
+			int roleIndex = mutPol.getRole().indexOf(el.getRole());
+			staticUser[userIndex]++;
+			staticRole[roleIndex]++;
+			urAssignment.putIfAbsent(el.getUser(), new HashSet<>());
+			urAssignment.get(el.getUser()).add(el.getRole());
+		}
+		for (UserRoleActivation el : mutPol.getUserRoleActivation()) {
+			int userIndex = mutPol.getUser().indexOf(el.getUser());
+			int roleIndex = mutPol.getRole().indexOf(el.getRole());
+			dynamicUser[userIndex]++;
+			dynamicRole[roleIndex]++;
+			urActivation.putIfAbsent(el.getUser(), new HashSet<>());
+			urActivation.get(el.getUser()).add(el.getRole());
+		}
+		for (Sr i : mutPol.getSr()) {
+			int roleIndex = mutPol.getRole().indexOf(i.getRole());
+			if (staticRole[roleIndex]>i.getCardinality()) return false; 
+
+		}
+		for (Dr i : mutPol.getDr()) {
+			int roleIndex = mutPol.getRole().indexOf(i.getRole());
+			if (dynamicRole[roleIndex]>i.getCardinality()) return false;
+		}
+		for (Su i : mutPol.getSu()) {
+			int userIndex = mutPol.getUser().indexOf(i.getUser());
+			if (staticUser[userIndex]>i.getCardinality()) return false;
+		}
+		for (Du i : mutPol.getDu()) {
+			int userIndex = mutPol.getUser().indexOf(i.getUser());
+			if (dynamicUser[userIndex]>i.getCardinality()) return false;
+		}
+		for (SSoDConstraint i : mutPol.getSSoDConstraint()) {
+			for (User u : urAssignment.keySet()) {
+				Set<Role> set = new HashSet<Role>();
+				set.addAll(i.getSodSet());
+				set.retainAll(urAssignment.get(u));
+				if(set.size()>i.getCardinality()) return false;
+			}
+		}
+		for (DSoDConstraint i : mutPol.getDSoDConstraint()) {
+			for (User u : urActivation.keySet()) {
+				Set<Role> set = new HashSet<Role>();
+				set.addAll(i.getSodSet());
+				set.retainAll(urActivation.get(u));
+				if(set.size()>i.getCardinality()) return false;
+			}
+
+		}
+		return true;
 	}
 
 	public RbacPolicy LoadRbacPolicyFromXML(File xmlFile) throws ParserConfigurationException, SAXException, IOException{
@@ -215,6 +506,34 @@ public class RbacUtils {
 
 		return result;
 
+	}
+
+
+	public boolean permissionExists(RbacTuple pol, Permission pr){
+		return pol.getPermission().contains(pr);
+	}
+
+	public boolean permissionRoleAssignmentExists(RbacTuple pol, Permission pr, Role rol) {
+		if(getPermissionRoleAssignment(pol, pr, rol) != null){
+			return true;
+		}
+		return false;
+	}
+
+	public boolean roleExists(RbacTuple pol, Role rol){
+		return pol.getRole().contains(rol);
+	}
+
+	public boolean userExists(RbacTuple pol, User usr){
+		return pol.getUser().contains(usr);
+	}
+
+	public boolean userRoleActivationExists(RbacTuple policy, User user, Role role) {
+		return (getUserRoleActivation(policy, user, role)!=null);
+	}
+
+	public boolean userRoleAssignmentExists(RbacTuple pol, User usr, Role rol) {
+		return (getUserRoleAssignment(pol, usr, rol) != null);
 	}
 
 	public void WriteRbacPolicyAsXML(RbacTuple rbacPol, File xmlFile) throws TransformerException, ParserConfigurationException{
@@ -366,325 +685,6 @@ public class RbacUtils {
 
 		//		OutputStream fos = new FileOutputStream(fsmFile);
 		//		xstream.toXML(fsm, fos);
-	}
-
-	public boolean userExists(RbacTuple pol, User usr){
-		return pol.getUser().contains(usr);
-	}
-
-	public boolean roleExists(RbacTuple pol, Role rol){
-		return pol.getRole().contains(rol);
-	}
-
-	public boolean permissionExists(RbacTuple pol, Permission pr){
-		return pol.getPermission().contains(pr);
-	}
-
-
-	public boolean userRoleAssignmentExists(RbacTuple pol, User usr, Role rol) {
-		return (getUserRoleAssignment(pol, usr, rol) != null);
-	}
-
-	public UserRoleAssignment getUserRoleAssignment(RbacTuple pol, User usr, Role rol) {
-		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
-			if(el.getUser().equals(usr) && el.getRole().equals(rol)){
-				return el;
-			}
-		}
-		return null;
-	}
-
-	public Set<UserRoleAssignment> getUserRoleAssignmentWithUser(RbacTuple pol, User usr) {
-		Set<UserRoleAssignment> result = new HashSet<UserRoleAssignment>(); 
-		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
-			if(el.getUser().equals(usr)){
-				result.add(el);
-			}
-		}
-		return result;
-	}
-
-	public Set<UserRoleAssignment> getUserRoleAssignmentWithRole(RbacTuple pol, Role rol) {
-		Set<UserRoleAssignment> result = new HashSet<UserRoleAssignment>(); 
-		for (UserRoleAssignment el : pol.getUserRoleAssignment()) {
-			if(el.getRole().equals(rol)){
-				result.add(el);
-			}
-		}
-		return result;
-	}
-
-	public boolean userRoleActivationExists(RbacTuple policy, User user, Role role) {
-		return (getUserRoleActivation(policy, user, role)!=null);
-	}	
-
-	public UserRoleActivation getUserRoleActivation(RbacTuple policy, User user, Role role) {
-		for (UserRoleActivation el : policy.getUserRoleActivation()) {
-			if(el.getUser().equals(user) && el.getRole().equals(role)){
-				return el;
-			}
-		}
-		return null;
-	}
-
-	public Set<UserRoleActivation> getUserRoleActivationWithUser(RbacTuple policy, User user) {
-		Set<UserRoleActivation> result = new HashSet<UserRoleActivation>();
-		for (UserRoleActivation el : policy.getUserRoleActivation()) {
-			if(el.getUser().equals(user)){
-				result.add(el);
-			}
-		}
-		return result;
-	}
-
-	public Set<UserRoleActivation> getUserRoleActivationWithRole(RbacTuple policy, Role role) {
-		Set<UserRoleActivation> result = new HashSet<UserRoleActivation>();
-		for (UserRoleActivation el : policy.getUserRoleActivation()) {
-			if(el.getRole().equals(role)){
-				result.add(el);
-			}
-		}
-		return result;
-	}
-
-	public boolean permissionRoleAssignmentExists(RbacTuple pol, Permission pr, Role rol) {
-		if(getPermissionRoleAssignment(pol, pr, rol) != null){
-			return true;
-		}
-		return false;
-	}
-
-	public PermissionRoleAssignment getPermissionRoleAssignment(RbacTuple pol, Permission pr, Role rol) {
-		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
-		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
-			if(el.getPermission().equals(pr) && el.getRole().equals(rol)){
-				return el;
-			}
-		}
-		return null;
-	}
-
-	public Set<PermissionRoleAssignment> getPermissionRoleAssignmentWithRole(RbacTuple pol, Role rol) {
-		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
-		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
-			if(el.getRole().equals(rol)){
-				result.add(el);
-			}
-		}
-		return result;
-	}
-
-	public Set<PermissionRoleAssignment> getPermissionRoleAssignmentWithPermission(RbacTuple pol, Permission pr) {
-		Set<PermissionRoleAssignment> result = new HashSet<PermissionRoleAssignment>();
-		for (PermissionRoleAssignment el : pol.getPermissionRoleAssignment()) {
-			if(el.getPermission().equals(pr)){
-				result.add(el);
-			}
-		}
-		return result;
-	}
-
-	public Su getSu(RbacTuple pol, User usr) {
-		for (Su card: pol.getSu()) {
-			if(card.getUser().equals(usr)){
-				return card;
-			}
-		}
-		return null;
-	}
-
-	public Sr getSr(RbacTuple pol, Role rol) {
-		for (Sr card: pol.getSr()) {
-			if(card.getRole().equals(rol)){
-				return card;
-			}
-		}
-		return null;
-	}
-
-	public Du getDu(RbacTuple pol, User usr) {
-		for (Du card: pol.getDu()) {
-			if(card.getUser().equals(usr)){
-				return card;
-			}
-		}
-		return null;
-	}
-
-	public Dr getDr(RbacTuple pol, Role rol) {
-		for (Dr card: pol.getDr()) {
-			if(card.getRole().equals(rol)){
-				return card;
-			}
-		}
-		return null;
-	}
-
-	public List<SSoDConstraint> getSSoD(RbacTuple pol, Role rol) {
-		List<SSoDConstraint> result = new ArrayList<SSoDConstraint>();
-		for (SSoDConstraint set : pol.getSSoDConstraint()) {
-			if(set.getSodSet().contains(rol)) result.add(set);
-		}
-		return result;
-	}
-
-	public List<DSoDConstraint> getDSoD(RbacTuple pol, Role rol) {
-		List<DSoDConstraint> result = new ArrayList<DSoDConstraint>();
-		for (DSoDConstraint set : result) {
-			if(set.getSodSet().contains(rol)) result.add(set);
-		}
-		return result;
-	}
-
-	public boolean afterAssignSuIsValid(RbacTuple policy, User user) {
-		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithUser(policy, user);
-		int total = urList.size();
-		Su constr = getSu(policy, user);
-		if(constr==null) return true; 
-		return total<constr.getCardinality();
-	}
-
-	public boolean afterAssignSrIsValid(RbacTuple policy, Role role) {
-		Set<UserRoleAssignment> urList = getUserRoleAssignmentWithRole(policy, role);
-		int total = urList.size();
-		Sr constr = getSr(policy, role);
-		if(constr==null) return true;
-		return total<constr.getCardinality();
-	}
-
-	public boolean afterActivateDuIsValid(RbacTuple policy, User user) {
-		Set<UserRoleActivation> urList = getUserRoleActivationWithUser(policy, user);
-		int total = urList.size();
-		Du constr = getDu(policy, user);
-		if(constr==null) return true;
-		return total<constr.getCardinality();
-	}
-
-	public boolean afterActivateDrIsValid(RbacTuple policy, Role role) {
-		Set<UserRoleActivation> urList = getUserRoleActivationWithRole(policy, role);
-		int total = urList.size();
-		Dr constr = getDr(policy, role);
-		if(constr==null) return true;
-		return total<constr.getCardinality();
-	}
-
-
-	public Set<Role> getRolesAssignedToUser(RbacTuple pol, User usr){
-		Set<Role> result = new HashSet<Role>();
-		List<UserRoleAssignment> userRoleAssignments = pol.getUserRoleAssignment();
-		for (UserRoleAssignment ur : userRoleAssignments) {
-			if(ur.getUser().equals(usr))
-				result.add(ur.getRole());
-		}
-		return result;
-	}
-
-	public Set<Role> getRolesActivatedByUser(RbacTuple pol, User usr){
-		Set<Role> result = new HashSet<Role>();
-		List<UserRoleActivation> userRoleActivation = pol.getUserRoleActivation();
-		for (UserRoleActivation ur : userRoleActivation) {
-			if(ur.getUser().equals(usr))
-				result.add(ur.getRole());
-		}
-		return result;
-	}
-
-	public User getUserByName(RbacTuple t, String n){
-		for (User u: t.getUser()) {
-			if(u.getName().equals(n)){
-				return u;
-			}
-		}
-		return null;
-	}
-
-	public Role getRoleByName(RbacTuple t, String n){
-		for (Role u: t.getRole()) {
-			if(u.getName().equals(n)){
-				return u;
-			}
-		}
-		return null;
-	}
-
-	public Permission getPermissionByName(RbacTuple t, String n){
-		for (Permission u: t.getPermission()) {
-			if(u.getName().equals(n)){
-				return u;
-			}
-		}
-		return null;
-	}
-
-	public boolean isValidPolicy(RbacMutant mutPol) {
-
-		int[] staticUser 	= new int[mutPol.getUser().size()];
-		int[] staticRole 	= new int[mutPol.getRole().size()];
-
-		int[] dynamicUser 	= new int[mutPol.getUser().size()];
-		int[] dynamicRole 	= new int[mutPol.getRole().size()];
-
-		Map<User,Set<Role>> urAssignment = new HashMap<User,Set<Role>>();
-		Map<User,Set<Role>> urActivation = new HashMap<User,Set<Role>>();
-
-		for (UserRoleAssignment el : mutPol.getUserRoleAssignment()) {
-			int userIndex = mutPol.getUser().indexOf(el.getUser());
-			int roleIndex = mutPol.getRole().indexOf(el.getRole());
-			staticUser[userIndex]++;
-			staticRole[roleIndex]++;
-			urAssignment.putIfAbsent(el.getUser(), new HashSet<>());
-			urAssignment.get(el.getUser()).add(el.getRole());
-		}
-		for (UserRoleActivation el : mutPol.getUserRoleActivation()) {
-			int userIndex = mutPol.getUser().indexOf(el.getUser());
-			int roleIndex = mutPol.getRole().indexOf(el.getRole());
-			dynamicUser[userIndex]++;
-			dynamicRole[roleIndex]++;
-			urActivation.putIfAbsent(el.getUser(), new HashSet<>());
-			urActivation.get(el.getUser()).add(el.getRole());
-		}
-		for (Sr i : mutPol.getSr()) {
-			int roleIndex = mutPol.getRole().indexOf(i.getRole());
-			if (staticRole[roleIndex]>i.getCardinality()) return false; 
-
-		}
-		for (Dr i : mutPol.getDr()) {
-			int roleIndex = mutPol.getRole().indexOf(i.getRole());
-			if (dynamicRole[roleIndex]>i.getCardinality()) return false;
-		}
-		for (Su i : mutPol.getSu()) {
-			int userIndex = mutPol.getUser().indexOf(i.getUser());
-			if (staticUser[userIndex]>i.getCardinality()) return false;
-		}
-		for (Du i : mutPol.getDu()) {
-			int userIndex = mutPol.getUser().indexOf(i.getUser());
-			if (dynamicUser[userIndex]>i.getCardinality()) return false;
-		}
-		for (SSoDConstraint i : mutPol.getSSoDConstraint()) {
-			for (User u : urAssignment.keySet()) {
-				Set<Role> set = new HashSet<Role>();
-				set.addAll(i.getSodSet());
-				set.retainAll(urAssignment.get(u));
-				if(set.size()>i.getCardinality()) return false;
-			}
-		}
-		for (DSoDConstraint i : mutPol.getDSoDConstraint()) {
-			for (User u : urActivation.keySet()) {
-				Set<Role> set = new HashSet<Role>();
-				set.addAll(i.getSodSet());
-				set.retainAll(urActivation.get(u));
-				if(set.size()>i.getCardinality()) return false;
-			}
-
-		}
-		return true;
-	}
-
-	public void failedDueTo(RbacPolicy p, RbacFaultType faultType, RbacMutableElement reason) {
-		synchronized (p.getProperties()) {
-			p.getProperties().putIfAbsent(faultType.name(), new HashSet<String>());
-			((Set)p.getProperties().get(faultType.name())).add(reason.toString());	
-		}
 	}
 
 	//	boolean assignUser(RbacTuple pol, User usr, Role rol){

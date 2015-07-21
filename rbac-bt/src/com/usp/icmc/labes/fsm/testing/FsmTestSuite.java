@@ -23,23 +23,6 @@ public class FsmTestSuite extends FsmElement{
 	}
 	
 	
-	public List<FsmTestCase> getTestCases() {
-		return testCases;
-	}
-	
-	public void setTestCases(List<FsmTestCase> testCases) {
-		this.testCases = testCases;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result
-				+ ((testCases == null) ? 0 : testCases.hashCode());
-		return result;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -60,8 +43,25 @@ public class FsmTestSuite extends FsmElement{
 	public String getGeneratedBy() {
 		return generatedBy;
 	}
+
+	public List<FsmTestCase> getTestCases() {
+		return testCases;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ ((testCases == null) ? 0 : testCases.hashCode());
+		return result;
+	}
 	
 	public void setGeneratedBy(String generatedBy) {
 		this.generatedBy = generatedBy;
+	}
+	
+	public void setTestCases(List<FsmTestCase> testCases) {
+		this.testCases = testCases;
 	}
 }

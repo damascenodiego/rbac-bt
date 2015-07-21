@@ -11,6 +11,9 @@ public class FsmModel extends FsmElement{
 	List<String> inputs;
 	List<String> outputs;
 
+	public FsmModel() {
+		this("");
+	}
 	public FsmModel(String n) {
 		super(n);
 		this.states = new ArrayList<FsmState>();
@@ -18,72 +21,13 @@ public class FsmModel extends FsmElement{
 		this.inputs = new ArrayList<String>();
 		this.outputs = new ArrayList<String>();
 	}
-	public FsmModel() {
-		this("");
-	}
 
-	public List<FsmState> getStates() {
-		return this.states;
-	}
-
-	public FsmState getState(String name) {
-		for (FsmState fsmState : states) {
-			if(fsmState.getName().equals(name)) 
-				return fsmState;
-		}
-		return null;
-	}
-
-	public FsmState getState(FsmState s) {
-		for (FsmState fsmState : states) {
-			if(fsmState.equals(s)) 
-				return fsmState;
-		}
-		return null;
-	}
-
-	public List<FsmTransition> getTransitions() {
-		return this.transitions;
-	}
-
-	public void addState(FsmState el){
-		if(!this.states.contains(el)) this.states.add(el);			
-		if(initialState==null) this.initialState = el;
-	}
-	
-	public void setInitialState(FsmState initialState) {
-		this.initialState = initialState;
-	}
-	
-	public FsmState getInitialState() {
-		return initialState;
-	}
-
-	
-	public void addTransition(FsmTransition el){
-		if(!this.transitions.contains(el)){
-			this.transitions.add(el);
-			addState(el.getFrom());
-			addState(el.getTo());
-			addInput(el.getInput());
-			addOutputs(el.getOutput());
-		}
-	}
-	
-	public List<String> getInputs() {
-		return inputs;
-	}
-	
 	public boolean addInput(String in){
 		if(!this.inputs.contains(in)){
 			this.inputs.add(in);
 			return true;
 		}
 		return false;
-	}
-	
-	public List<String> getOutputs() {
-		return outputs;
 	}
 
 	public boolean addOutputs(String out){
@@ -93,15 +37,20 @@ public class FsmModel extends FsmElement{
 		}
 		return false;
 	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((states == null) ? 0 : states.hashCode());
-		result = prime * result
-				+ ((transitions == null) ? 0 : transitions.hashCode());
-		return result;
+
+	public void addState(FsmState el){
+		if(!this.states.contains(el)) this.states.add(el);			
+		if(initialState==null) this.initialState = el;
+	}
+
+	public void addTransition(FsmTransition el){
+		if(!this.transitions.contains(el)){
+			this.transitions.add(el);
+			addState(el.getFrom());
+			addState(el.getTo());
+			addInput(el.getInput());
+			addOutputs(el.getOutput());
+		}
 	}
 
 	@Override
@@ -122,6 +71,57 @@ public class FsmModel extends FsmElement{
 		} else if (!transitions.equals(other.transitions))
 			return false;
 		return true;
+	}
+	
+	public FsmState getInitialState() {
+		return initialState;
+	}
+	
+	public List<String> getInputs() {
+		return inputs;
+	}
+
+	
+	public List<String> getOutputs() {
+		return outputs;
+	}
+	
+	public FsmState getState(FsmState s) {
+		for (FsmState fsmState : states) {
+			if(fsmState.equals(s)) 
+				return fsmState;
+		}
+		return null;
+	}
+	
+	public FsmState getState(String name) {
+		for (FsmState fsmState : states) {
+			if(fsmState.getName().equals(name)) 
+				return fsmState;
+		}
+		return null;
+	}
+	
+	public List<FsmState> getStates() {
+		return this.states;
+	}
+
+	public List<FsmTransition> getTransitions() {
+		return this.transitions;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((states == null) ? 0 : states.hashCode());
+		result = prime * result
+				+ ((transitions == null) ? 0 : transitions.hashCode());
+		return result;
+	}
+
+	public void setInitialState(FsmState initialState) {
+		this.initialState = initialState;
 	}
 
 }

@@ -17,30 +17,6 @@ public abstract class FsmElement {
 		name = n;
 	}
 	
-	public Properties getProperties() {
-		return properties;
-	}
-	
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
-	
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
-
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -56,6 +32,30 @@ public abstract class FsmElement {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public Properties getProperties() {
+		return properties;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public void setProperties(Properties properties) {
+		this.properties = properties;
 	}
 
 	@Override

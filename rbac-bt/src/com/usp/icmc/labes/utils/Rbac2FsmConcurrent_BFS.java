@@ -32,97 +32,6 @@ import com.usp.icmc.labes.rbac.model.User;
 
 public class Rbac2FsmConcurrent_BFS {
 
-	private final RbacAcut acut;
-	private final ExecutorService pool;
-	private final int THREADS_NUM;
-	private final int MAX_DEPTH;
-	private final CountDownLatch latch;
-	//	private final ConcurrentMap<RbacState, Integer> depth = new ConcurrentHashMap<RbacState, Integer>();
-	private final ConcurrentMap<String, Boolean> used = new ConcurrentHashMap<String, Boolean>();
-	private LinkedBlockingQueue<RbacState> curQ = new LinkedBlockingQueue<RbacState>();
-	private LinkedBlockingQueue<RbacState> nextQ = new LinkedBlockingQueue<RbacState>();
-
-	private volatile int lvl = 0; // really need this???
-	private CyclicBarrier barrier;
-	private List<RbacRequest> rqs; 
-
-	private FsmModel fsmModel;
-
-	public Rbac2FsmConcurrent_BFS(RbacAcut sut, int threadNum) {
-		this.acut = sut;
-		THREADS_NUM = threadNum;
-		MAX_DEPTH = 6*sut.getUser().size()*sut.getRole().size();
-		pool = Executors.newFixedThreadPool(THREADS_NUM);
-		latch = new CountDownLatch(THREADS_NUM + 1);
-		barrier = new CyclicBarrier(THREADS_NUM);
-		rqs = new ArrayList<RbacRequest>();
-		for (Role rol: sut.getRole()) {
-			for (User usr: sut.getUser()) {
-				rqs.add(new RbacRequestAssignUR(usr, rol));
-				rqs.add(new RbacRequestDeassignUR(usr, rol));
-				rqs.add(new RbacRequestActivateUR(usr, rol));
-				rqs.add(new RbacRequestDeactivateUR(usr, rol));
-			}
-			//			for (Permission prms: rbac.getPermission()) {
-			//				input.add(new RbacRequestAssignPR(prms, rol));
-			//				input.add(new RbacRequestDeassignPR(prms, rol));
-			//			}
-		}
-	}
-
-	//	public int[] getDepth() {
-	//		int n = depth.length();
-	//		int[] a = new int[n];
-	//		for(int i = 0; i < n; i++) {
-	//			a[i] = depth.get(i);
-	//		}
-	//		return a;
-	//	}
-
-	public void start() {
-		fsmModel = new FsmModel(acut.getPolicy().getName());
-		String initialStateName = acut.getName();
-		SearchTask[] tasks = new SearchTask[THREADS_NUM];
-		try {
-			curQ.add(acut.getCurrentState());
-			used.put(acut.getCurrentState().getName(), true);
-			for (int i = 0; i < THREADS_NUM; i++) {
-				SearchTask t = new SearchTask(i);
-				pool.execute(t);
-				tasks[i]=t;
-			}
-			latch.countDown();
-			latch.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} finally {
-			pool.shutdown();
-		}
-		Set<FsmState> states = new HashSet<FsmState>();
-		Set<FsmTransition> transitions = new HashSet<FsmTransition>();
-		Set<String> inputs = new HashSet<String>();
-		Set<String>outputs = new HashSet<String>();
-		for (SearchTask t : tasks) {
-			states.addAll(t.getStates());
-			transitions.addAll(t.getTransitions());
-			inputs.addAll(t.getInputs());
-			outputs.addAll(t.getOutputs());
-		}
-		fsmModel.getStates()		.addAll(states);
-		fsmModel.getTransitions()	.addAll(transitions);
-		fsmModel.getInputs()		.addAll(inputs);
-		fsmModel.getOutputs()		.addAll(outputs);
-		fsmModel.setInitialState(FsmUtils.getInstance().getState(states,initialStateName ));
-		FsmUtils.getInstance().updateElements(fsmModel);
-		FsmUtils.getInstance().sorting(fsmModel);
-	}
-
-
-	
-	public FsmModel getFsmModel(){
-		return fsmModel;
-	}
-
 	protected class SearchTask implements Runnable {
 		private int name;
 
@@ -135,6 +44,18 @@ public class Rbac2FsmConcurrent_BFS {
 			this.name = name;
 		}
 
+		public Set<String> getInputs() {
+			return inputs;
+		}
+		public Set<String> getOutputs() {
+			return outputs;
+		}
+		public Set<FsmState> getStates() {
+			return states;
+		}
+		public Set<FsmTransition> getTransitions() {
+			return transitions;
+		}
 		@Override
 		public void run() {
 			//System.out.println("[Thread # " + name + " start execution]");
@@ -207,18 +128,97 @@ public class Rbac2FsmConcurrent_BFS {
 				latch.countDown();
 			}
 		}
-		public Set<FsmState> getStates() {
-			return states;
+	}
+	private final RbacAcut acut;
+	private final ExecutorService pool;
+	private final int THREADS_NUM;
+	private final int MAX_DEPTH;
+	private final CountDownLatch latch;
+	//	private final ConcurrentMap<RbacState, Integer> depth = new ConcurrentHashMap<RbacState, Integer>();
+	private final ConcurrentMap<String, Boolean> used = new ConcurrentHashMap<String, Boolean>();
+	private LinkedBlockingQueue<RbacState> curQ = new LinkedBlockingQueue<RbacState>();
+
+	private LinkedBlockingQueue<RbacState> nextQ = new LinkedBlockingQueue<RbacState>();
+	private volatile int lvl = 0; // really need this???
+	private CyclicBarrier barrier; 
+
+	private List<RbacRequest> rqs;
+
+	private FsmModel fsmModel;
+
+	//	public int[] getDepth() {
+	//		int n = depth.length();
+	//		int[] a = new int[n];
+	//		for(int i = 0; i < n; i++) {
+	//			a[i] = depth.get(i);
+	//		}
+	//		return a;
+	//	}
+
+	public Rbac2FsmConcurrent_BFS(RbacAcut sut, int threadNum) {
+		this.acut = sut;
+		THREADS_NUM = threadNum;
+		MAX_DEPTH = 6*sut.getUser().size()*sut.getRole().size();
+		pool = Executors.newFixedThreadPool(THREADS_NUM);
+		latch = new CountDownLatch(THREADS_NUM + 1);
+		barrier = new CyclicBarrier(THREADS_NUM);
+		rqs = new ArrayList<RbacRequest>();
+		for (Role rol: sut.getRole()) {
+			for (User usr: sut.getUser()) {
+				rqs.add(new RbacRequestAssignUR(usr, rol));
+				rqs.add(new RbacRequestDeassignUR(usr, rol));
+				rqs.add(new RbacRequestActivateUR(usr, rol));
+				rqs.add(new RbacRequestDeactivateUR(usr, rol));
+			}
+			//			for (Permission prms: rbac.getPermission()) {
+			//				input.add(new RbacRequestAssignPR(prms, rol));
+			//				input.add(new RbacRequestDeassignPR(prms, rol));
+			//			}
 		}
-		public Set<String> getInputs() {
-			return inputs;
+	}
+
+
+	
+	public FsmModel getFsmModel(){
+		return fsmModel;
+	}
+
+	public void start() {
+		fsmModel = new FsmModel(acut.getPolicy().getName());
+		String initialStateName = acut.getName();
+		SearchTask[] tasks = new SearchTask[THREADS_NUM];
+		try {
+			curQ.add(acut.getCurrentState());
+			used.put(acut.getCurrentState().getName(), true);
+			for (int i = 0; i < THREADS_NUM; i++) {
+				SearchTask t = new SearchTask(i);
+				pool.execute(t);
+				tasks[i]=t;
+			}
+			latch.countDown();
+			latch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			pool.shutdown();
 		}
-		public Set<String> getOutputs() {
-			return outputs;
+		Set<FsmState> states = new HashSet<FsmState>();
+		Set<FsmTransition> transitions = new HashSet<FsmTransition>();
+		Set<String> inputs = new HashSet<String>();
+		Set<String>outputs = new HashSet<String>();
+		for (SearchTask t : tasks) {
+			states.addAll(t.getStates());
+			transitions.addAll(t.getTransitions());
+			inputs.addAll(t.getInputs());
+			outputs.addAll(t.getOutputs());
 		}
-		public Set<FsmTransition> getTransitions() {
-			return transitions;
-		}
+		fsmModel.getStates()		.addAll(states);
+		fsmModel.getTransitions()	.addAll(transitions);
+		fsmModel.getInputs()		.addAll(inputs);
+		fsmModel.getOutputs()		.addAll(outputs);
+		fsmModel.setInitialState(FsmUtils.getInstance().getState(states,initialStateName ));
+		FsmUtils.getInstance().updateElements(fsmModel);
+		FsmUtils.getInstance().sorting(fsmModel);
 	}
 
 }

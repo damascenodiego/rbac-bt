@@ -15,14 +15,6 @@ public class SSoDConstraint implements SoDConstraint  {
 	}
 
 
-	public SSoDConstraint(Role[] set, int card) {
-		this();
-		for (int i = 0; i < set.length; i++) {
-			sodSet.add(set[i]);
-		}
-		this.ss = card;
-	}
-
 	public SSoDConstraint(Collection<Role> set, int card) {
 		this();
 		Iterator<Role> roles = set.iterator();
@@ -32,18 +24,26 @@ public class SSoDConstraint implements SoDConstraint  {
 		this.ss = card;
 	}
 
+	public SSoDConstraint(Role[] set, int card) {
+		this();
+		for (int i = 0; i < set.length; i++) {
+			sodSet.add(set[i]);
+		}
+		this.ss = card;
+	}
+
 	public int getCardinality() {
 		return ss;
 	}
 
 
-	public void setCardinality(int cardinality) {
-		this.ss = cardinality;
+	public Set<Role> getSodSet() {
+		return sodSet;
 	}
 
 
-	public Set<Role> getSodSet() {
-		return sodSet;
+	public void setCardinality(int cardinality) {
+		this.ss = cardinality;
 	}
 
 

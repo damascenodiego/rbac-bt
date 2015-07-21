@@ -12,15 +12,15 @@ import com.usp.icmc.labes.utils.RbacUtils;
 
 public class RbacAdvancedReviewFunctions {
 
-	private RbacUtils utils = RbacUtils.getInstance();
 	static private RbacAdvancedReviewFunctions instance;
-
 	public static RbacAdvancedReviewFunctions getInstance() {
 		if(instance==null){
 			instance = new RbacAdvancedReviewFunctions();
 		}
 		return instance;
 	}
+
+	private RbacUtils utils = RbacUtils.getInstance();
 
 	private RbacAdvancedReviewFunctions() {}
 

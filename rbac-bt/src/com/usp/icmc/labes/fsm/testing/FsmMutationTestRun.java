@@ -26,8 +26,10 @@ public class FsmMutationTestRun{
 		this.testSuite = suite;
 	}
 
-	public FsmMutationTestRun setTestSuite(FsmTestSuite testSuite) {
-		this.testSuite = testSuite;
+	public FsmMutationTestRun addAllSut(List<FsmSUT> allSuts){
+		for (FsmSUT sut : allSuts) {
+			addSut(sut);
+		}
 		return this;
 	}
 
@@ -39,36 +41,41 @@ public class FsmMutationTestRun{
 		return this;
 	}
 
-	public FsmMutationTestRun addAllSut(List<FsmSUT> allSuts){
-		for (FsmSUT sut : allSuts) {
-			addSut(sut);
-		}
-		return this;
-	}
-
-	public FsmTestSuite getTestSuite() {
-		return this.testSuite;
-	}
-
-	public FsmSUT getSpecification() {
-		return this.specification;
-	}
-
 	public List<FsmSUT> getAlivePolicies() {
 		return alivePolicies;
-	}
-
-	public List<FsmSUT> getKilledPolicies() {
-		return killedPolicies;
 	}
 
 	public Set<FsmSUT> getFsmSuts() {
 		return fsmSuts;
 	}
 
+	public List<FsmSUT> getKilledPolicies() {
+		return killedPolicies;
+	}
+
+	public FsmSUT getSpecification() {
+		return this.specification;
+	}
+
+	public FsmTestSuite getTestSuite() {
+		return this.testSuite;
+	}
+
+	private void resetAll() {
+		for (FsmSUT sut : alivePolicies) {
+			sut.setCurrentState(sut.getSut().getInitialState());
+		}
+		specification.setCurrentState(specification.getSut().getInitialState());
+	}
+
+	public FsmMutationTestRun setTestSuite(FsmTestSuite testSuite) {
+		this.testSuite = testSuite;
+		return this;
+	}
 	public boolean testInputWithOutput(){
 		return testInputWithOutput(false);
 	}
+
 	public boolean testInputWithOutput(boolean reset){
 		String in = null;
 		String out = null;
@@ -89,13 +96,6 @@ public class FsmMutationTestRun{
 			}
 		}
 		return alivePolicies.removeAll(killedPolicies);
-	}
-
-	private void resetAll() {
-		for (FsmSUT sut : alivePolicies) {
-			sut.setCurrentState(sut.getSut().getInitialState());
-		}
-		specification.setCurrentState(specification.getSut().getInitialState());
 	}
 
 	public boolean testInputWithState(){

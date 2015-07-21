@@ -25,6 +25,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -33,26 +34,20 @@ import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.fsm.testing.FsmTestCase;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
+import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 
 public class FsmTestingUtils {
 
-	private FsmUtils fsmUtils = FsmUtils.getInstance();
 	private static RbacAdministrativeCommands rbacAdmin = RbacAdministrativeCommands.getInstance();
 	private static RbacSupportingSystemFunctions rbacSys = RbacSupportingSystemFunctions.getInstance();
 	private static RbacUtils rbacUtils = RbacUtils.getInstance();
 	private static RbacMutationUtils rbacMut = RbacMutationUtils.getInstance();
-
-	
-	
-	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-
 	static FsmTestingUtils instance;
 
-	private FsmTestingUtils() {
-	}
-
+	
+	
 	public static  FsmTestingUtils getInstance() {
 		if(instance ==null){
 			instance = new FsmTestingUtils();
@@ -60,7 +55,156 @@ public class FsmTestingUtils {
 		return instance;
 	}
 
+	private FsmUtils fsmUtils = FsmUtils.getInstance();
 
+	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+
+	private FsmTestingUtils() {
+	}
+
+
+
+	public FsmTestSuite LoadFsmTestSuiteFromFile(File fSuite) throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
+
+		FsmTestSuite suite = new FsmTestSuite(); //(FsmModel) xstream.fromXML(fsmFile);
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(fSuite);
+		doc.getDocumentElement().normalize();
+		Element fsmElement = doc.getDocumentElement();
+		suite.setName(fsmElement.getAttribute("name"));
+		suite.setGeneratedBy(fsmElement.getAttribute("generatedBy"));
+
+		Map<String,FsmState> states = new HashMap<String,FsmState>();
+		NodeList el = null;
+		NodeList subEl = null;
+
+		for (int i = 0; i < fsmElement.getElementsByTagName("FsmTestCase").getLength(); i++) {
+			el = (NodeList) fsmElement.getElementsByTagName("FsmTestCase").item(i);
+			subEl = ((Element)el).getElementsByTagName("FsmTestStep");
+			FsmTestCase testCase = new FsmTestCase(); 
+			for (int j = 0; j < subEl.getLength(); j++) {
+				String from = 	((Element)((NodeList)subEl).item(j)).getAttribute("from");
+				String in 	=	((Element)((NodeList)subEl).item(j)).getAttribute("in");
+				String out 	= 	((Element)((NodeList)subEl).item(j)).getAttribute("out");
+				String to 	= 	((Element)((NodeList)subEl).item(j)).getAttribute("to");
+
+				FsmState f = states.getOrDefault(from, new FsmState(from));
+				FsmState t = states.getOrDefault(to, new FsmState(to));
+				testCase.addTransition(new FsmTransition(f, in, out, t));
+			}
+			suite.getTestCases().add(testCase);
+		}
+
+		return suite;
+	}
+
+	public RbacTestConfiguration loadRbacTestConfiguration(File testCnfFile) throws ParserConfigurationException, SAXException, IOException {
+		RbacTestConfiguration out = new RbacTestConfiguration();
+	
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(testCnfFile);
+		doc.getDocumentElement().normalize();
+		Element fsmElement = doc.getDocumentElement();
+		out.setName(fsmElement.getAttribute("name"));
+
+		if(fsmElement.getElementsByTagName("TESTSUITE").getLength()>0){
+			Node testSuiteNode = fsmElement.getElementsByTagName("TESTSUITE").item(0);
+			FsmTestSuite testSuite = loadTestSuiteFromNode(testSuiteNode);
+			out.setTestSuite(testSuite);
+		}
+
+		Node sutSpecNode = fsmElement.getElementsByTagName("SUT_SPEC").item(0);
+		out.setRbacSpecification(loadSutSpecFromNode(sutSpecNode));
+		
+		Node sutMutants = fsmElement.getElementsByTagName("SUT_MUTANTS").item(0);
+		NodeList el = ((Element)sutMutants).getElementsByTagName("SUT_MUTANT");
+		for (int i = 0; i < el.getLength(); i++) {
+			Element in = (Element) el.item(i);
+			File rbacMutant = new File(testCnfFile.getParentFile(),in.getAttribute("name"));
+			out.addRbacMutant(rbacMutant);
+		}
+		
+		return out;
+	}
+
+	private Object loadSutSpecFromNode(Node sutSpecNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private FsmTestSuite loadTestSuiteFromNode(Node testSuiteNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public FsmTestSuite stateCoverSet(FsmModel fsm){
+		FsmTestSuite tSuite = new FsmTestSuite(fsm.getName());
+		tSuite.setGeneratedBy("StateCoverSet");
+		List<FsmTestCase> qSets = new ArrayList<FsmTestCase>();
+		for (int i = 0; i < fsm.getStates().size(); i++) {
+			qSets.add(new FsmTestCase());
+			qSets.get(i).addTransition(new FsmTransition(fsm.getInitialState(), "", "", fsm.getInitialState()));
+		}
+		FsmState current = fsm.getInitialState();
+		Queue<FsmState> toVisit = new LinkedList<FsmState>();
+		Set<FsmState> visited = new HashSet<FsmState>();
+		toVisit.add(current);
+		while(!toVisit.isEmpty()){
+			current = toVisit.remove();
+			visited.add(current);
+			for (FsmTransition tr: fsm.getState(current).getOut()) {
+				if(!visited.contains(tr.getTo())){
+					int indexTo = fsm.getStates().indexOf(tr.getTo());
+					int indexFrom = fsm.getStates().indexOf(tr.getFrom());
+					if(qSets.get(indexFrom).getPath().size() > 1) qSets.get(indexTo).getPath().addAll(qSets.get(indexFrom).getPath().subList(1, qSets.get(indexFrom).getPath().size()-1));
+					qSets.get(indexTo).addTransition(tr);
+					if(qSets.get(indexTo).getInitialState().getName().equals(tr.getTo().getName())){
+						visited.add(tr.getTo());
+					}
+					toVisit.add(tr.getTo());
+				}
+			}
+		}
+		tSuite.getTestCases().addAll(qSets);
+		tSuite.getTestCases().sort((o1, o2) -> Integer.compare(o1.getPath().size(), o2.getPath().size()) );
+		return tSuite;
+	}
+	
+	public FsmTestSuite transitionCoverSet(FsmModel fsm) {
+		FsmTestSuite qSet = stateCoverSet(fsm);
+		FsmTestSuite pSet = new FsmTestSuite(fsm.getName());
+		pSet.setGeneratedBy("TransitionCoverSet");
+
+		for (FsmTestCase path : qSet.getTestCases()) {
+			FsmState finalState = path.getFinalState();
+
+			for (FsmTransition tr : finalState.getOut()) {
+				if(tr.getInput().length()==0 && tr.getOutput().length()==0) continue;
+				FsmTestCase pSetEl = new FsmTestCase();
+				pSetEl.getPath().addAll(path.getPath());
+				pSetEl.addTransition(tr);
+				if(pSet.getTestCases().contains(pSetEl)) continue;
+				pSet.getTestCases().add(pSetEl);
+			}
+		}
+		return pSet;
+	}
+
+	public FsmTestSuite transitionTour(FsmModel fsm) {
+		FsmTestSuite tt = new FsmTestSuite(fsm.getName());
+		tt.setGeneratedBy("TransitionTour");
+
+		CPP g = new CPP(fsm);
+		List<FsmTransition> cptPath = g.getCPT();
+
+		FsmTestCase  testCase = new FsmTestCase();
+		testCase.getPath().addAll(cptPath);
+		tt.getTestCases().add(testCase);
+		
+		return tt;
+	}
 
 	public void WriteFsmTestSuite(FsmTestSuite suite, File fSuite) throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -132,107 +276,5 @@ public class FsmTestingUtils {
 
 		result.close();
 
-	}
-
-	public FsmTestSuite LoadFsmTestSuiteFromFile(File fSuite) throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
-
-		FsmTestSuite suite = new FsmTestSuite(); //(FsmModel) xstream.fromXML(fsmFile);
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(fSuite);
-		doc.getDocumentElement().normalize();
-		Element fsmElement = doc.getDocumentElement();
-		suite.setName(fsmElement.getAttribute("name"));
-		suite.setGeneratedBy(fsmElement.getAttribute("generatedBy"));
-
-		Map<String,FsmState> states = new HashMap<String,FsmState>();
-		NodeList el = null;
-		NodeList subEl = null;
-
-		for (int i = 0; i < fsmElement.getElementsByTagName("FsmTestCase").getLength(); i++) {
-			el = (NodeList) fsmElement.getElementsByTagName("FsmTestCase").item(i);
-			subEl = ((Element)el).getElementsByTagName("FsmTestStep");
-			FsmTestCase testCase = new FsmTestCase(); 
-			for (int j = 0; j < subEl.getLength(); j++) {
-				String from = 	((Element)((NodeList)subEl).item(j)).getAttribute("from");
-				String in 	=	((Element)((NodeList)subEl).item(j)).getAttribute("in");
-				String out 	= 	((Element)((NodeList)subEl).item(j)).getAttribute("out");
-				String to 	= 	((Element)((NodeList)subEl).item(j)).getAttribute("to");
-
-				FsmState f = states.getOrDefault(from, new FsmState(from));
-				FsmState t = states.getOrDefault(to, new FsmState(to));
-				testCase.addTransition(new FsmTransition(f, in, out, t));
-			}
-			suite.getTestCases().add(testCase);
-		}
-
-		return suite;
-	}
-
-	public FsmTestSuite stateCoverSet(FsmModel fsm){
-		FsmTestSuite tSuite = new FsmTestSuite(fsm.getName());
-		tSuite.setGeneratedBy("StateCoverSet");
-		List<FsmTestCase> qSets = new ArrayList<FsmTestCase>();
-		for (int i = 0; i < fsm.getStates().size(); i++) {
-			qSets.add(new FsmTestCase());
-			qSets.get(i).addTransition(new FsmTransition(fsm.getInitialState(), "", "", fsm.getInitialState()));
-		}
-		FsmState current = fsm.getInitialState();
-		Queue<FsmState> toVisit = new LinkedList<FsmState>();
-		Set<FsmState> visited = new HashSet<FsmState>();
-		toVisit.add(current);
-		while(!toVisit.isEmpty()){
-			current = toVisit.remove();
-			visited.add(current);
-			for (FsmTransition tr: fsm.getState(current).getOut()) {
-				if(!visited.contains(tr.getTo())){
-					int indexTo = fsm.getStates().indexOf(tr.getTo());
-					int indexFrom = fsm.getStates().indexOf(tr.getFrom());
-					if(qSets.get(indexFrom).getPath().size() > 1) qSets.get(indexTo).getPath().addAll(qSets.get(indexFrom).getPath().subList(1, qSets.get(indexFrom).getPath().size()-1));
-					qSets.get(indexTo).addTransition(tr);
-					if(qSets.get(indexTo).getInitialState().getName().equals(tr.getTo().getName())){
-						visited.add(tr.getTo());
-					}
-					toVisit.add(tr.getTo());
-				}
-			}
-		}
-		tSuite.getTestCases().addAll(qSets);
-		tSuite.getTestCases().sort((o1, o2) -> Integer.compare(o1.getPath().size(), o2.getPath().size()) );
-		return tSuite;
-	}
-	
-	public FsmTestSuite transitionCoverSet(FsmModel fsm) {
-		FsmTestSuite qSet = stateCoverSet(fsm);
-		FsmTestSuite pSet = new FsmTestSuite(fsm.getName());
-		pSet.setGeneratedBy("TransitionCoverSet");
-
-		for (FsmTestCase path : qSet.getTestCases()) {
-			FsmState finalState = path.getFinalState();
-
-			for (FsmTransition tr : finalState.getOut()) {
-				if(tr.getInput().length()==0 && tr.getOutput().length()==0) continue;
-				FsmTestCase pSetEl = new FsmTestCase();
-				pSetEl.getPath().addAll(path.getPath());
-				pSetEl.addTransition(tr);
-				if(pSet.getTestCases().contains(pSetEl)) continue;
-				pSet.getTestCases().add(pSetEl);
-			}
-		}
-		return pSet;
-	}
-	
-	public FsmTestSuite transitionTour(FsmModel fsm) {
-		FsmTestSuite tt = new FsmTestSuite(fsm.getName());
-		tt.setGeneratedBy("TransitionTour");
-
-		CPP g = new CPP(fsm);
-		List<FsmTransition> cptPath = g.getCPT();
-
-		FsmTestCase  testCase = new FsmTestCase();
-		testCase.getPath().addAll(cptPath);
-		tt.getTestCases().add(testCase);
-		
-		return tt;
 	}
 }

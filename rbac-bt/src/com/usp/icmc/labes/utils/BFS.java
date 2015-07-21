@@ -21,18 +21,104 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 public class BFS {
 
-	private final Graph graph;
-	private final ExecutorService pool;
-	private final int THREADS_NUM;
-	private final int MAX_DEPTH;
-	private final CountDownLatch latch;
-	private final AtomicIntegerArray depth;
-	private final ConcurrentMap<Integer, Boolean> used = new ConcurrentHashMap<Integer, Boolean>();
-	private LinkedBlockingQueue<Integer> curQ = new LinkedBlockingQueue<Integer>();
-	private LinkedBlockingQueue<Integer> nextQ = new LinkedBlockingQueue<Integer>();
-	private volatile int lvl = 0; // really need this???
-	private CyclicBarrier barrier;
+	static class Graph {
 
+		protected List<Integer>[] g;
+
+		public Graph(int min, int max) {
+			int size = min + (int) (Math.random() * (max - min));
+			g = new ArrayList[size];
+			for (int i = 0; i < size; i++) {
+				g[i] = new ArrayList<Integer>();
+			}
+
+			int step = (int) Math.sqrt(size);
+			for (int i = 0; i < size; i++) {
+				for (int j = 0; j < size; j+=step + 1 + (Math.random() * 11)) {
+					g[i].add(j);
+				}
+			}
+		}
+
+		public List<Integer> getAdj(int u) {
+			return (u < g.length) ? g[u]  : null;
+		}
+	}
+	protected class SearchTask implements Runnable {
+		private int name;
+
+		public SearchTask(int name) {
+			this.name = name;
+		}
+
+		@Override
+		public void run() {
+			//System.out.println("[Thread # " + name + " start execution]");
+			try {
+				while (true) {
+					Integer u = curQ.poll();
+					if (u != null) {
+						List<Integer> adj = graph.getAdj(u);
+						//                        TimeUnit.MILLISECONDS.sleep(10);
+						for (Integer v : adj) {
+							if(used.putIfAbsent(v, true) == null) {
+								nextQ.add(v);
+								depth.set(v, depth.get(u) + 1);
+							}
+						}
+					} else  {
+						//System.out.println("[Thread # " + name + " is arrived to cs:");
+						//magic here
+						int num = barrier.getNumberWaiting();
+						if(num == THREADS_NUM - 1) {
+							//broken barrier exception??
+							lvl = nextQ.isEmpty() ? MAX_DEPTH : lvl + 1;
+							LinkedBlockingQueue<Integer> tmp = curQ;
+							curQ = nextQ;
+							nextQ = tmp; 
+							barrier.await();
+							barrier.reset();
+						}else {
+							barrier.await();
+						}
+						//System.out.println("[Thread # " + name + " exit cs:");
+						if(lvl == MAX_DEPTH) {
+							break;
+						}
+					}
+				}
+			} catch (InterruptedException | BrokenBarrierException e) {
+
+			} finally {
+				//System.out.println("[Thread # " + name + " finish execution]");
+				latch.countDown();
+			}
+		}
+	}
+	static int[] bfs2(Graph g, int n, int d, int s) {
+		boolean[] used = new boolean[n];
+		int[] depth = new int[n];
+		Queue<Integer> q = new LinkedList<Integer>();
+		q.add(s);
+		used[s] = true;
+		while (!q.isEmpty()){
+			int u = q.remove();
+			//            try {
+			//				TimeUnit.MILLISECONDS.sleep(10);
+			//			} catch (InterruptedException e) {
+			//				// TODO Auto-generated catch block
+			//				e.printStackTrace();
+			//			}
+			for(Integer v : g.getAdj(u)) {
+				if(!used[v] && depth[v] < d){
+					q.add(v);
+					used[v] = true;
+					depth[v] = depth[u] + 1;
+				}
+			}
+		}
+		return depth;
+	}
 	public static void main(String[] args) {
 		PrintWriter pw;
 		try {
@@ -111,6 +197,21 @@ public class BFS {
 		}
 
 	}
+	private final Graph graph;
+	private final ExecutorService pool;
+	private final int THREADS_NUM;
+	private final int MAX_DEPTH;
+	private final CountDownLatch latch;
+	private final AtomicIntegerArray depth;
+	private final ConcurrentMap<Integer, Boolean> used = new ConcurrentHashMap<Integer, Boolean>();
+
+	private LinkedBlockingQueue<Integer> curQ = new LinkedBlockingQueue<Integer>();
+
+	private LinkedBlockingQueue<Integer> nextQ = new LinkedBlockingQueue<Integer>();
+
+	private volatile int lvl = 0; // really need this???
+
+	private CyclicBarrier barrier;
 
 	public BFS(Graph graph, int threadNum, int maxDepth, int n) {
 		this.graph = graph;
@@ -145,106 +246,5 @@ public class BFS {
 		} finally {
 			pool.shutdown();
 		}
-	}
-
-	protected class SearchTask implements Runnable {
-		private int name;
-
-		public SearchTask(int name) {
-			this.name = name;
-		}
-
-		@Override
-		public void run() {
-			//System.out.println("[Thread # " + name + " start execution]");
-			try {
-				while (true) {
-					Integer u = curQ.poll();
-					if (u != null) {
-						List<Integer> adj = graph.getAdj(u);
-						//                        TimeUnit.MILLISECONDS.sleep(10);
-						for (Integer v : adj) {
-							if(used.putIfAbsent(v, true) == null) {
-								nextQ.add(v);
-								depth.set(v, depth.get(u) + 1);
-							}
-						}
-					} else  {
-						//System.out.println("[Thread # " + name + " is arrived to cs:");
-						//magic here
-						int num = barrier.getNumberWaiting();
-						if(num == THREADS_NUM - 1) {
-							//broken barrier exception??
-							lvl = nextQ.isEmpty() ? MAX_DEPTH : lvl + 1;
-							LinkedBlockingQueue<Integer> tmp = curQ;
-							curQ = nextQ;
-							nextQ = tmp; 
-							barrier.await();
-							barrier.reset();
-						}else {
-							barrier.await();
-						}
-						//System.out.println("[Thread # " + name + " exit cs:");
-						if(lvl == MAX_DEPTH) {
-							break;
-						}
-					}
-				}
-			} catch (InterruptedException | BrokenBarrierException e) {
-
-			} finally {
-				//System.out.println("[Thread # " + name + " finish execution]");
-				latch.countDown();
-			}
-		}
-	}
-
-	static class Graph {
-
-		protected List<Integer>[] g;
-
-		public Graph(int min, int max) {
-			int size = min + (int) (Math.random() * (max - min));
-			g = new ArrayList[size];
-			for (int i = 0; i < size; i++) {
-				g[i] = new ArrayList<Integer>();
-			}
-
-			int step = (int) Math.sqrt(size);
-			for (int i = 0; i < size; i++) {
-				for (int j = 0; j < size; j+=step + 1 + (Math.random() * 11)) {
-					g[i].add(j);
-				}
-			}
-		}
-
-		public List<Integer> getAdj(int u) {
-			return (u < g.length) ? g[u]  : null;
-		}
-	}
-
-	static int[] bfs2(Graph g, int n, int d, int s) {
-		boolean[] used = new boolean[n];
-		int[] depth = new int[n];
-		Queue<Integer> q = new LinkedList<Integer>();
-		q.add(s);
-		used[s] = true;
-		while (!q.isEmpty()){
-			int u = q.remove();
-			//            try {
-			//				TimeUnit.MILLISECONDS.sleep(10);
-			//			} catch (InterruptedException e) {
-			//				// TODO Auto-generated catch block
-			//				e.printStackTrace();
-			//			}
-			for(Integer v : g.getAdj(u)) {
-				if(!used[v] && depth[v] < d){
-					q.add(v);
-					used[v] = true;
-					depth[v] = depth[u] + 1;
-				}
-			}
-		}
-		return depth;
 	}
 }

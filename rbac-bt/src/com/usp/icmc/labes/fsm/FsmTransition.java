@@ -23,49 +23,6 @@ public class FsmTransition extends FsmElement{
 		t.getIn().add(this);
 	}
 	
-	public FsmState getFrom() {
-		return from;
-	}
-	
-	public FsmState getTo() {
-		return to;
-	}
-	
-	public String getInput() {
-		return input;
-	}
-	
-	public String getOutput() {
-		return output;
-	}
-	
-	public void setFrom(FsmState from) {
-		this.from = from;
-	}
-
-	public void setInput(String input) {
-		this.input = input;
-	}
-
-	public void setOutput(String output) {
-		this.output = output;
-	}
-
-	public void setTo(FsmState to) {
-		this.to = to;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((from == null) ? 0 : from.hashCode());
-		result = prime * result + ((input == null) ? 0 : input.hashCode());
-		result = prime * result + ((output == null) ? 0 : output.hashCode());
-		result = prime * result + ((to == null) ? 0 : to.hashCode());
-		return result;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -96,6 +53,49 @@ public class FsmTransition extends FsmElement{
 		} else if (!to.equals(other.to))
 			return false;
 		return true;
+	}
+	
+	public FsmState getFrom() {
+		return from;
+	}
+	
+	public String getInput() {
+		return input;
+	}
+	
+	public String getOutput() {
+		return output;
+	}
+	
+	public FsmState getTo() {
+		return to;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((from == null) ? 0 : from.hashCode());
+		result = prime * result + ((input == null) ? 0 : input.hashCode());
+		result = prime * result + ((output == null) ? 0 : output.hashCode());
+		result = prime * result + ((to == null) ? 0 : to.hashCode());
+		return result;
+	}
+
+	public void setFrom(FsmState from) {
+		this.from = from;
+	}
+
+	public void setInput(String input) {
+		this.input = input;
+	}
+
+	public void setOutput(String output) {
+		this.output = output;
+	}
+
+	public void setTo(FsmState to) {
+		this.to = to;
 	}
 
 	@Override

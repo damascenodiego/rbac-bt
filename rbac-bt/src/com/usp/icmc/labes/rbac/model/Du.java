@@ -12,34 +12,6 @@ public class Du implements RbacElement, RbacMutableElement, RbacCardinality {
 	}
 
 
-	public User getUser() {
-		return user;
-	}
-
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-
-	public int getCardinality() {
-		return dynamicConstr;
-	}
-
-
-	public void setCardinality(int dynamicConstr) {
-		this.dynamicConstr = dynamicConstr;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + dynamicConstr;
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
-		return result;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -57,6 +29,34 @@ public class Du implements RbacElement, RbacMutableElement, RbacCardinality {
 		} else if (!user.equals(other.user))
 			return false;
 		return true;
+	}
+
+
+	public int getCardinality() {
+		return dynamicConstr;
+	}
+
+
+	public User getUser() {
+		return user;
+	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + dynamicConstr;
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		return result;
+	}
+
+	public void setCardinality(int dynamicConstr) {
+		this.dynamicConstr = dynamicConstr;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	@Override

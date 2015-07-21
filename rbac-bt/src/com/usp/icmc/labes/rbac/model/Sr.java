@@ -13,31 +13,6 @@ public class Sr implements RbacElement, RbacMutableElement, RbacCardinality {
 	}
 
 
-	public Role getRole() {
-		return role;
-	}
-
-
-	public int getCardinality() {
-		return staticConstr;
-	}
-
-
-	public void setCardinality(int staticConstr) {
-		this.staticConstr = staticConstr;
-	}
-
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((role == null) ? 0 : role.hashCode());
-		result = prime * result + staticConstr;
-		return result;
-	}
-
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -55,6 +30,31 @@ public class Sr implements RbacElement, RbacMutableElement, RbacCardinality {
 		if (staticConstr != other.staticConstr)
 			return false;
 		return true;
+	}
+
+
+	public int getCardinality() {
+		return staticConstr;
+	}
+
+
+	public Role getRole() {
+		return role;
+	}
+
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		result = prime * result + staticConstr;
+		return result;
+	}
+
+
+	public void setCardinality(int staticConstr) {
+		this.staticConstr = staticConstr;
 	}
 
 

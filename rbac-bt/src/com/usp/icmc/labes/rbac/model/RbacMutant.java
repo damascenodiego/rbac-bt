@@ -9,15 +9,6 @@ public class RbacMutant extends RbacPolicy{
 	private RbacMutableElement mutantElement;
 	private MutantType type;
 
-	public RbacMutant(RbacPolicy pol, RbacMutableElement orig, RbacMutableElement delt, MutantType t) {
-		this(pol);
-		this.mutantElement = delt;
-		this.originalElement = orig;
-		type = t;
-		setupMutant();
-		this.setName(pol.getName()+"_"+getType().name());
-	}
-
 	public RbacMutant(RbacMutant mut, RbacMutableElement orig, RbacMutableElement delt, MutantType t) {
 		this((RbacTuple) mut);
 		this.mutantElement = delt;
@@ -25,6 +16,15 @@ public class RbacMutant extends RbacPolicy{
 		type = t;
 		setupMutant();
 		this.setName(getName()+"_"+getType().name());
+	}
+
+	public RbacMutant(RbacPolicy pol, RbacMutableElement orig, RbacMutableElement delt, MutantType t) {
+		this(pol);
+		this.mutantElement = delt;
+		this.originalElement = orig;
+		type = t;
+		setupMutant();
+		this.setName(pol.getName()+"_"+getType().name());
 	}
 
 	private RbacMutant(RbacTuple pol) {
@@ -39,6 +39,14 @@ public class RbacMutant extends RbacPolicy{
 	}
 
 
+
+	public MutantType getType() {
+		return type;
+	}
+
+	public void setType(MutantType type) {
+		this.type = type;
+	}
 
 	private void setupMutant() {
 		getUser().addAll(policy.getUser());
@@ -106,14 +114,6 @@ public class RbacMutant extends RbacPolicy{
 			getDSoDConstraint().set(index,(DSoDConstraint) mutantElement);
 			getDSoDConstraint().remove(originalElement);
 		}
-	}
-
-	public MutantType getType() {
-		return type;
-	}
-
-	public void setType(MutantType type) {
-		this.type = type;
 	}
 
 }

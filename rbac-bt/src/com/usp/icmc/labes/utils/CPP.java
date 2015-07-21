@@ -19,6 +19,23 @@ import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmTransition;
 
 public class CPP {	
+	static final int NONE = -1; // anything < 0
+	static public void main(String args[]){	
+		CPP G = new CPP(4); // create a graph of four vertices
+
+		// add the arcs for the example graph
+		G
+		.addArc(1, 0, 1, 1)
+		.addArc(2, 0, 2, 1)
+		.addArc(3, 1, 2, 1)
+		.addArc(4, 1, 3, 1)
+		.addArc(5, 2, 3, 1)
+		.addArc(6, 3, 0, 1);
+
+		G.solve(); // find the CPT
+		G.printCPT(0); // print it, starting from vertex 0
+		System.out.println("Cost = "+G.cost());
+	}
 	int N; // number of vertices
 	int delta[]; // deltas of vertices
 	int neg[], pos[]; // unbalanced vertices
@@ -29,15 +46,19 @@ public class CPP {
 	Integer cheapestLabel[][]; // labels of cheapest arcs
 	boolean defined[][]; // whether path cost is defined between vertices
 	int path[][]; // spanning tree of the graph
-	float basicCost; // total cost of traversing each arc once
-	private FsmModel fsm;
 
-	protected void solve() {	
-		leastCostPaths();
-		checkValid();
-		findUnbalanced();
-		findFeasible();
-		while( improvements() );
+	float basicCost; // total cost of traversing each arc once
+
+	private FsmModel fsm;
+	
+	public CPP(FsmModel f) {
+		this(f.getStates().size());
+		this.fsm = f;
+		for (FsmTransition tr : fsm.getTransitions()) {
+			int u = fsm.getStates().indexOf(tr.getFrom());
+			int v = fsm.getStates().indexOf(tr.getTo()); 
+			addArc(fsm.getTransitions().indexOf(tr), u, v, 1);
+		}
 	}
 
 	// allocate array memory, and instantiate graph object
@@ -52,16 +73,6 @@ public class CPP {
 		cheapestLabel = new Integer[N][N];
 		path = new int[N][N];
 		basicCost = 0;
-	}
-	
-	public CPP(FsmModel f) {
-		this(f.getStates().size());
-		this.fsm = f;
-		for (FsmTransition tr : fsm.getTransitions()) {
-			int u = fsm.getStates().indexOf(tr.getFrom());
-			int v = fsm.getStates().indexOf(tr.getTo()); 
-			addArc(fsm.getTransitions().indexOf(tr), u, v, 1);
-		}
 	}
 
 	public CPP addArc(Integer arcId, int u, int v, float cost) {	
@@ -80,24 +91,6 @@ public class CPP {
 		return this;
 	}
 
-	/** Floyd-Warshall algorithm
-	 *  Assumes no negative self-cycles.
-	 *  Finds least cost paths or terminates on finding any non-trivial negative cycle.
-	 */
-	void leastCostPaths() {	
-		for( int k = 0; k < N; k++ )
-			for( int i = 0; i < N; i++ )
-				if( defined[i][k] )
-					for( int j = 0; j < N; j++ )
-						if( defined[k][j]
-								&& (!defined[i][j] || c[i][j] > c[i][k]+c[k][j]) ) {	
-							path[i][j] = path[i][k];
-							c[i][j] = c[i][k]+c[k][j];
-							defined[i][j] = true;
-							if( i == j && c[i][j] < 0 ) return; // stop on negative cycle
-						}
-	}
-
 	void checkValid() {	
 		for( int i = 0; i < N; i++ ) {	
 			for( int j = 0; j < N; j++ )
@@ -110,27 +103,59 @@ public class CPP {
 	{	return basicCost+phi();
 	}
 
-	float phi()	{	
-		float phi = 0;
-		for( int i = 0; i < N; i++ )
+	// Print out most of the matrices: defined, path and f
+	void debug() {
+		for( int i = 0; i < N; i++ ) {	
+			System.out.print(i+" ");
 			for( int j = 0; j < N; j++ )
-				phi += c[i][j]*f[i][j];
-		return phi;
+				System.out.print(j+":"+(defined[i][j]?"T":"F")+" "+
+						c[i][j]+" p="+path[i][j]+" f="+f[i][j]+"; ");
+			System.out.println();
+		}
 	}
 
-	void findUnbalanced() {	
-		int nn = 0, np = 0; // number of vertices of negative/positive delta
-
+	// Print arcs and f
+	void debugarcf() {	
 		for( int i = 0; i < N; i++ )
-			if( delta[i] < 0 ) nn++;
-			else if( delta[i] > 0 ) np++;
+		{	System.out.print("f["+i+"]= ");
+		for( int j = 0; j < N; j++ )
+			System.out.print(f[i][j]+" ");
+		System.out.print("  arcs["+i+"]= ");
+		for( int j = 0; j < N; j++ )
+			System.out.print(arcs[i][j]+" ");
+		System.out.println();
+		}
+	}
 
-		neg = new int[nn];
-		pos = new int[np];
-		nn = np = 0;
-		for( int i = 0; i < N; i++ ) // initialise sets
-			if( delta[i] < 0 ) neg[nn++] = i;
-			else if( delta[i] > 0 ) pos[np++] = i;
+	// Print out cost matrix.
+	void debugc() {
+		for( int i = 0; i < N; i++ ) {
+			boolean any = false;
+			for( int j = 0; j < N; j++ )
+				if( c[i][j] != 0 ) {
+					any = true;
+					System.out.print("c("+i+","+j+":"+label[i][j]+")="+c[i][j]+"  ");
+				}
+			if( any )
+				System.out.println();
+		}
+	}
+
+	// Print out non zero f elements, and phi
+	void debugf() {
+		float sum = 0;
+		for( int i = 0; i < N; i++ ) {	
+			boolean any = false;
+			for( int j = 0; j < N; j++ )
+				if( f[i][j] != 0 ) {
+					any = true;
+					System.out.print("f("+i+","+j+":"+label[i][j]+")="+f[i][j]+"@"+c[i][j]+"  ");
+					sum += f[i][j]*c[i][j];
+				}
+			if( any )
+				System.out.println();
+		}
+		System.out.println("-->phi="+sum);
 	}
 
 	void findFeasible() {	
@@ -150,84 +175,25 @@ public class CPP {
 		}
 	}
 
-	boolean improvements() {
-		CPP residual = new CPP(N); 
-		for( int u = 0; u < neg.length; u++ ) {
-			int i = neg[u];
-			for( int v = 0; v < pos.length; v++ ) {
-				int j = pos[v];
-				residual.addArc(null, i, j, c[i][j]);
-				if( f[i][j] != 0 ) residual.addArc(null, j, i, -c[i][j]);
-			}
-		}	
-		residual.leastCostPaths(); // find a negative cycle
-		for( int i = 0; i < N; i++ ) 
-			if( residual.c[i][i] < 0 ){ // cancel the cycle (if any)
-				int k = 0, u, v; 
-				boolean kunset = true;
-				u = i; 
-				do { // find k to cancel
-					v = residual.path[u][i];
-					if( residual.c[u][v] < 0 && (kunset || k > f[v][u]) )  {
-						k = f[v][u];
-						kunset = false;
-					}
-				} while( (u = v) != i );
-				u = i; do{ // cancel k along the cycle
-					v = residual.path[u][i];
-					if( residual.c[u][v] < 0 ) f[v][u] -= k;
-					else f[u][v] += k;
-				} while( (u = v) != i );
-				return true; // have another go
-			}
-		return false; // no improvements found
-	}
-
-	static final int NONE = -1; // anything < 0
-
 	int findPath(int from, int f[][]) {// find a path between unbalanced vertices
 		for( int i = 0; i < N; i++ )
 			if( f[from][i] > 0 ) return i;
 		return NONE; 
 	}
 
-	public void printCPT(int startVertex){
-		int v = startVertex;
+	void findUnbalanced() {	
+		int nn = 0, np = 0; // number of vertices of negative/positive delta
 
-		// delete next 7 lines to be faster, but non-reentrant
-		int arcs[][] = new int[N][N];
-		int f[][] = new int[N][N];
 		for( int i = 0; i < N; i++ )
-			for( int j = 0; j < N; j++ ){
-				arcs[i][j] = this.arcs[i][j];
-				f[i][j] = this.f[i][j];
-			}
+			if( delta[i] < 0 ) nn++;
+			else if( delta[i] > 0 ) np++;
 
-		while( true ) {
-			int u = v;
-			if( (v = findPath(u, f)) != NONE ) {
-				f[u][v]--; // remove path
-				for( int p; u != v; u = p ) {// break down path into its arcs
-					p = path[u][v];
-					System.out.println("Take arc "+cheapestLabel[u][p]
-							+" from "+u+" to "+p);
-				}
-			}	
-			else{
-				int bridgeVertex = path[u][startVertex];
-				if( arcs[u][bridgeVertex] == 0 )
-					break; // finished if bridge already used
-				v = bridgeVertex;
-				for( int i = 0; i < N; i++ ) // find an unused arc, using bridge last
-					if( i != bridgeVertex && arcs[u][i] > 0 ){
-						v = i;
-						break;
-					}
-				arcs[u][v]--; // decrement count of parallel arcs
-				System.out.println("Take arc "+label[u][v].elementAt(arcs[u][v])
-						+" from "+u+" to "+v); // use each arc label in turn
-			}
-		}
+		neg = new int[nn];
+		pos = new int[np];
+		nn = np = 0;
+		for( int i = 0; i < N; i++ ) // initialise sets
+			if( delta[i] < 0 ) neg[nn++] = i;
+			else if( delta[i] > 0 ) pos[np++] = i;
 	}
 
 	public List<FsmTransition> getCPT() {
@@ -312,76 +278,110 @@ public class CPP {
 		}
 	}
 	
-	static public void main(String args[]){	
-		CPP G = new CPP(4); // create a graph of four vertices
-
-		// add the arcs for the example graph
-		G
-		.addArc(1, 0, 1, 1)
-		.addArc(2, 0, 2, 1)
-		.addArc(3, 1, 2, 1)
-		.addArc(4, 1, 3, 1)
-		.addArc(5, 2, 3, 1)
-		.addArc(6, 3, 0, 1);
-
-		G.solve(); // find the CPT
-		G.printCPT(0); // print it, starting from vertex 0
-		System.out.println("Cost = "+G.cost());
+	boolean improvements() {
+		CPP residual = new CPP(N); 
+		for( int u = 0; u < neg.length; u++ ) {
+			int i = neg[u];
+			for( int v = 0; v < pos.length; v++ ) {
+				int j = pos[v];
+				residual.addArc(null, i, j, c[i][j]);
+				if( f[i][j] != 0 ) residual.addArc(null, j, i, -c[i][j]);
+			}
+		}	
+		residual.leastCostPaths(); // find a negative cycle
+		for( int i = 0; i < N; i++ ) 
+			if( residual.c[i][i] < 0 ){ // cancel the cycle (if any)
+				int k = 0, u, v; 
+				boolean kunset = true;
+				u = i; 
+				do { // find k to cancel
+					v = residual.path[u][i];
+					if( residual.c[u][v] < 0 && (kunset || k > f[v][u]) )  {
+						k = f[v][u];
+						kunset = false;
+					}
+				} while( (u = v) != i );
+				u = i; do{ // cancel k along the cycle
+					v = residual.path[u][i];
+					if( residual.c[u][v] < 0 ) f[v][u] -= k;
+					else f[u][v] += k;
+				} while( (u = v) != i );
+				return true; // have another go
+			}
+		return false; // no improvements found
 	}
 
-	// Print arcs and f
-	void debugarcf() {	
+	/** Floyd-Warshall algorithm
+	 *  Assumes no negative self-cycles.
+	 *  Finds least cost paths or terminates on finding any non-trivial negative cycle.
+	 */
+	void leastCostPaths() {	
+		for( int k = 0; k < N; k++ )
+			for( int i = 0; i < N; i++ )
+				if( defined[i][k] )
+					for( int j = 0; j < N; j++ )
+						if( defined[k][j]
+								&& (!defined[i][j] || c[i][j] > c[i][k]+c[k][j]) ) {	
+							path[i][j] = path[i][k];
+							c[i][j] = c[i][k]+c[k][j];
+							defined[i][j] = true;
+							if( i == j && c[i][j] < 0 ) return; // stop on negative cycle
+						}
+	}
+
+	float phi()	{	
+		float phi = 0;
 		for( int i = 0; i < N; i++ )
-		{	System.out.print("f["+i+"]= ");
-		for( int j = 0; j < N; j++ )
-			System.out.print(f[i][j]+" ");
-		System.out.print("  arcs["+i+"]= ");
-		for( int j = 0; j < N; j++ )
-			System.out.print(arcs[i][j]+" ");
-		System.out.println();
-		}
+			for( int j = 0; j < N; j++ )
+				phi += c[i][j]*f[i][j];
+		return phi;
 	}
 
-	// Print out most of the matrices: defined, path and f
-	void debug() {
-		for( int i = 0; i < N; i++ ) {	
-			System.out.print(i+" ");
-			for( int j = 0; j < N; j++ )
-				System.out.print(j+":"+(defined[i][j]?"T":"F")+" "+
-						c[i][j]+" p="+path[i][j]+" f="+f[i][j]+"; ");
-			System.out.println();
-		}
-	}
+	public void printCPT(int startVertex){
+		int v = startVertex;
 
-	// Print out non zero f elements, and phi
-	void debugf() {
-		float sum = 0;
-		for( int i = 0; i < N; i++ ) {	
-			boolean any = false;
-			for( int j = 0; j < N; j++ )
-				if( f[i][j] != 0 ) {
-					any = true;
-					System.out.print("f("+i+","+j+":"+label[i][j]+")="+f[i][j]+"@"+c[i][j]+"  ");
-					sum += f[i][j]*c[i][j];
+		// delete next 7 lines to be faster, but non-reentrant
+		int arcs[][] = new int[N][N];
+		int f[][] = new int[N][N];
+		for( int i = 0; i < N; i++ )
+			for( int j = 0; j < N; j++ ){
+				arcs[i][j] = this.arcs[i][j];
+				f[i][j] = this.f[i][j];
+			}
+
+		while( true ) {
+			int u = v;
+			if( (v = findPath(u, f)) != NONE ) {
+				f[u][v]--; // remove path
+				for( int p; u != v; u = p ) {// break down path into its arcs
+					p = path[u][v];
+					System.out.println("Take arc "+cheapestLabel[u][p]
+							+" from "+u+" to "+p);
 				}
-			if( any )
-				System.out.println();
+			}	
+			else{
+				int bridgeVertex = path[u][startVertex];
+				if( arcs[u][bridgeVertex] == 0 )
+					break; // finished if bridge already used
+				v = bridgeVertex;
+				for( int i = 0; i < N; i++ ) // find an unused arc, using bridge last
+					if( i != bridgeVertex && arcs[u][i] > 0 ){
+						v = i;
+						break;
+					}
+				arcs[u][v]--; // decrement count of parallel arcs
+				System.out.println("Take arc "+label[u][v].elementAt(arcs[u][v])
+						+" from "+u+" to "+v); // use each arc label in turn
+			}
 		}
-		System.out.println("-->phi="+sum);
 	}
 
-	// Print out cost matrix.
-	void debugc() {
-		for( int i = 0; i < N; i++ ) {
-			boolean any = false;
-			for( int j = 0; j < N; j++ )
-				if( c[i][j] != 0 ) {
-					any = true;
-					System.out.print("c("+i+","+j+":"+label[i][j]+")="+c[i][j]+"  ");
-				}
-			if( any )
-				System.out.println();
-		}
+	protected void solve() {	
+		leastCostPaths();
+		checkValid();
+		findUnbalanced();
+		findFeasible();
+		while( improvements() );
 	}	
 }
 

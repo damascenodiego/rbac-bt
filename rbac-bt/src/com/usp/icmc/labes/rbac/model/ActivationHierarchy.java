@@ -11,27 +11,6 @@ public class ActivationHierarchy implements Hierarchy {
 		this.senior = sr;
 		this.junior = jr;
 	}
-	public Role getSenior() {
-		return senior;
-	}
-	public void setSenior(Role senior) {
-		this.senior = senior;
-	}
-	public Role getJunior() {
-		return junior;
-	}
-	public void setJunior(Role junior) {
-		this.junior = junior;
-	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((junior == null) ? 0 : junior.hashCode());
-		result = prime * result + ((senior == null) ? 0 : senior.hashCode());
-		return result;
-	}
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -52,6 +31,27 @@ public class ActivationHierarchy implements Hierarchy {
 		} else if (!senior.equals(other.senior))
 			return false;
 		return true;
+	}
+	public Role getJunior() {
+		return junior;
+	}
+	public Role getSenior() {
+		return senior;
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((junior == null) ? 0 : junior.hashCode());
+		result = prime * result + ((senior == null) ? 0 : senior.hashCode());
+		return result;
+	}
+	
+	public void setJunior(Role junior) {
+		this.junior = junior;
+	}
+	public void setSenior(Role senior) {
+		this.senior = senior;
 	}
 	@Override
 	public String toString() {
