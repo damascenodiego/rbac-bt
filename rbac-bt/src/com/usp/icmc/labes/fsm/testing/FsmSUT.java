@@ -64,7 +64,7 @@ public class FsmSUT {
 		return result;
 	}
 
-	String input(String in){
+	public String input(String in){
 		for (int i = 0; i < currentState.getOut().size(); i++) {
 			FsmTransition tr = currentState.getOut().get(i);
 			if(tr.getInput().equals(in)){

@@ -3,7 +3,11 @@ package com.usp.icmc.labes;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
@@ -20,8 +24,13 @@ import org.apache.commons.cli.ParseException;
 import org.xml.sax.SAXException;
 
 import com.usp.icmc.labes.fsm.FsmModel;
+import com.usp.icmc.labes.fsm.FsmTransition;
+import com.usp.icmc.labes.fsm.testing.FsmSUT;
+import com.usp.icmc.labes.fsm.testing.FsmTestCase;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
+import com.usp.icmc.labes.rbac.acut.RbacAcut;
+import com.usp.icmc.labes.rbac.acut.RbacRequest;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.MutantType;
@@ -305,8 +314,46 @@ public class RbacBT {
 		chron.start();
 		String testCnfStr = cmd.getOptionValue(RUNTEST_PARAMETER);
 		File testCnfFile = new File(testCnfStr);
+		Map<String,RbacRequest> rqMap = new HashMap<String,RbacRequest>();
 		try {
+			Map<RbacAcut,Map<FsmTestCase,Integer>> killed = new HashMap<RbacAcut,Map<FsmTestCase,Integer>>();
+			Set<RbacAcut> alive = new HashSet<RbacAcut>();
 			RbacTestConfiguration testCnf = testingUtils.loadRbacTestConfiguration(testCnfFile);
+			List<RbacAcut> mutants = testCnf.getRbacMutant();
+			FsmModel spec = testCnf.getRbacSpecification();
+			FsmSUT specSut = new FsmSUT(spec);
+			for (FsmTestCase tc : testCnf.getTestSuite().getTestCases()) {
+				for (int i = 0; i < tc.getPath().size(); i++) {
+					FsmTransition tr = tc.getPath().get(i);
+					String specOut = specSut.input(tr.getInput());
+					boolean specBool = specOut.equals("grant");
+					//System.out.println(specOut);
+					for (RbacAcut rbacAcut : mutants) {
+						//if(killed.containsKey(rbacAcut)) continue;
+						rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),rbacAcut));
+						boolean out = rbacAcut.request(rqMap.get(tr.getInput()));
+						//System.out.println(out);
+						if(out ^ specBool){
+							killed.putIfAbsent(rbacAcut, new HashMap<FsmTestCase,Integer>());
+							killed.get(rbacAcut).putIfAbsent(tc,i+1);
+						}
+					}
+				}
+				specSut.setCurrentState(spec.getInitialState());
+				for (RbacAcut rbacAcut : mutants)  rbacAcut.reset();
+			}
+			alive.addAll(mutants);
+			alive.removeAll(killed.keySet());
+			System.out.println(alive.size());
+//			Object [] aliveArray = alive.toArray();
+			System.out.println(killed.size());
+//			for (FsmTestCase tc : testCnf.getTestSuite().getTestCases()) {
+//				if(tcAcut.get(tc).size()>0) System.out.println(testCnf.getTestSuite().getTestCases().indexOf(tc)+":"+tcAcut.get(tc).size());
+//			}
+//			for (RbacAcut rbacAcut : mutants){
+//				if(acutTc.get(rbacAcut).size()>0) System.out.println(mutants.indexOf(rbacAcut)+":"+acutTc.get(rbacAcut).size());
+//			}
+
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -316,7 +363,14 @@ public class RbacBT {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (TransformerConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		chron.stop();
 	}
 
 	private static void setupCliOptions() {

@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,6 +28,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
+import com.usp.icmc.labes.rbac.acut.RbacRequest;
+import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
 import com.usp.icmc.labes.rbac.model.DSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Dr;
 import com.usp.icmc.labes.rbac.model.Du;
@@ -685,6 +692,28 @@ public class RbacUtils {
 
 		//		OutputStream fos = new FileOutputStream(fsmFile);
 		//		xstream.toXML(fsm, fos);
+	}
+
+	public RbacRequest createRbacRequest(String input, RbacTuple rbacAcut) {
+		Pattern p = Pattern.compile("([AD][SC])\\(([a-zA-Z0-9_-]+),([a-zA-Z0-9_-]+)\\)");
+		Matcher m = p.matcher(input);
+		m.matches();
+		String rqType = m.group(1);
+		String uStr = m.group(2);
+		String rStr = m.group(3);
+		User u = getUserByName(rbacAcut,uStr);
+		Role r = getRoleByName(rbacAcut,rStr);
+		switch (rqType) {
+		case RbacRequest.ASSIGN_UR:
+			return new RbacRequestAssignUR(u, r);
+		case RbacRequest.DEASSIGN_UR:
+			return new RbacRequestDeassignUR(u, r);
+		case RbacRequest.ACTIVATE_UR:
+			return new RbacRequestActivateUR(u, r);
+		case RbacRequest.DEACTIVATE_UR:
+			return new RbacRequestDeactivateUR(u, r);
+		} 
+		return null;
 	}
 
 	//	boolean assignUser(RbacTuple pol, User usr, Role rol){

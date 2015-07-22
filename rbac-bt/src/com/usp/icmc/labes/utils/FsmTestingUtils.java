@@ -1,6 +1,9 @@
 package com.usp.icmc.labes.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,8 +38,10 @@ import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.fsm.testing.FsmTestCase;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
+import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
+import com.usp.icmc.labes.rbac.model.RbacPolicy;
 
 public class FsmTestingUtils {
 
@@ -44,6 +49,7 @@ public class FsmTestingUtils {
 	private static RbacSupportingSystemFunctions rbacSys = RbacSupportingSystemFunctions.getInstance();
 	private static RbacUtils rbacUtils = RbacUtils.getInstance();
 	private static RbacMutationUtils rbacMut = RbacMutationUtils.getInstance();
+	private static FsmUtils fsmUtils = FsmUtils.getInstance();
 	static FsmTestingUtils instance;
 
 	
@@ -54,8 +60,6 @@ public class FsmTestingUtils {
 		}
 		return instance;
 	}
-
-	private FsmUtils fsmUtils = FsmUtils.getInstance();
 
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 
@@ -99,7 +103,7 @@ public class FsmTestingUtils {
 		return suite;
 	}
 
-	public RbacTestConfiguration loadRbacTestConfiguration(File testCnfFile) throws ParserConfigurationException, SAXException, IOException {
+	public RbacTestConfiguration loadRbacTestConfiguration(File testCnfFile) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {
 		RbacTestConfiguration out = new RbacTestConfiguration();
 	
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -108,37 +112,77 @@ public class FsmTestingUtils {
 		doc.getDocumentElement().normalize();
 		Element fsmElement = doc.getDocumentElement();
 		out.setName(fsmElement.getAttribute("name"));
-
+		out.setPath(testCnfFile.getParentFile());
+		
+		Node sutSpecNode = fsmElement.getElementsByTagName("SUT_SPEC").item(0);
+		loadSutSpecFromNode(out,sutSpecNode);
+		
 		if(fsmElement.getElementsByTagName("TESTSUITE").getLength()>0){
 			Node testSuiteNode = fsmElement.getElementsByTagName("TESTSUITE").item(0);
-			FsmTestSuite testSuite = loadTestSuiteFromNode(testSuiteNode);
-			out.setTestSuite(testSuite);
+			loadTestSuiteFromNode(out,testSuiteNode);
 		}
 
-		Node sutSpecNode = fsmElement.getElementsByTagName("SUT_SPEC").item(0);
-		out.setRbacSpecification(loadSutSpecFromNode(sutSpecNode));
 		
 		Node sutMutants = fsmElement.getElementsByTagName("SUT_MUTANTS").item(0);
 		NodeList el = ((Element)sutMutants).getElementsByTagName("SUT_MUTANT");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
-			File rbacMutant = new File(testCnfFile.getParentFile(),in.getAttribute("name"));
-			out.addRbacMutant(rbacMutant);
+			if(in.hasAttribute("equiv") && in.getAttribute("equiv").equalsIgnoreCase("true")) continue;
+			File mutPolFile = new File(testCnfFile.getParentFile(),in.getAttribute("name"));
+			RbacPolicy mutPol = rbacUtils.LoadRbacPolicyFromXML(mutPolFile);
+			RbacAcut mutAcut = new RbacAcut(mutPol);
+			out.getRbacMutant().add(mutAcut);
 		}
 		
 		return out;
 	}
 
-	private Object loadSutSpecFromNode(Node sutSpecNode) {
-		// TODO Auto-generated method stub
-		return null;
+	private void loadSutSpecFromNode(RbacTestConfiguration out, Node sutSpecNode) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
+		String filename = ((Element)sutSpecNode).getAttribute("name");
+		out.setRbacSpecification(fsmUtils.LoadFsmFromXML(new File(out.getPath(),filename)));
 	}
 
-	private FsmTestSuite loadTestSuiteFromNode(Node testSuiteNode) {
-		// TODO Auto-generated method stub
-		return null;
+	private void loadTestSuiteFromNode(RbacTestConfiguration out, Node testSuiteNode) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
+		String filename = ((Element)testSuiteNode).getAttribute("name");
+		FsmTestSuite testSuite = null;
+		switch (((Element)testSuiteNode).getAttribute("type")) {
+		case "fsm":
+			testSuite = LoadFsmTestSuiteFromFile(new File(out.getPath(),filename));
+			out.setTestSuite(testSuite);
+			break;
+		case "kk":
+			testSuite = LoadFsmTestSuiteFromKK(out,new File(out.getPath(),filename));
+			out.setTestSuite(testSuite);
+			break;
+		default:
+			break;
+		}
+		out.setTestSuite(testSuite);
 	}
 	
+	private FsmTestSuite LoadFsmTestSuiteFromKK(RbacTestConfiguration out, File file) throws FileNotFoundException,IOException  {
+		FsmTestSuite ts = new FsmTestSuite(file.getName());
+		ts.setGeneratedBy(file.getName());
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		while (br.ready()) {
+			String line = br.readLine();
+			FsmTestCase tc = new FsmTestCase();
+			for (int i = 0; i <= line.length()-3; i+=3) {
+				String inStr = line.substring(i, i+3);
+				int inInt = Integer.valueOf(inStr);
+				FsmTransition transition = new FsmTransition();
+				transition.setInput(out.getRbacSpecification().getInputs().get(inInt));
+				tc.getPath().add(transition );
+			}
+			ts.getTestCases().add(tc);
+			
+		}
+		br.close();
+		return ts;
+	}
+
+
+
 	public FsmTestSuite stateCoverSet(FsmModel fsm){
 		FsmTestSuite tSuite = new FsmTestSuite(fsm.getName());
 		tSuite.setGeneratedBy("StateCoverSet");
