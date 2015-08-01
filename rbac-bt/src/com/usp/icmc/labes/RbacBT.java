@@ -59,25 +59,25 @@ public class RbacBT {
 	private static final String 	KISS_PARAMETER 			= "kiss";
 	private static final String 	DOT_PARAMETER 			= "dot";
 	private static final String 	KK_PARAMETER 			= "kk";
-	
-//	private static final String 	RUR		=	"rur";
-//	private static final String 	RURR	=	"rurr";
-//	private static final String 	RURU	=	"ruru";
-//	private static final String 	SUDE	=	"sude";
-//	private static final String 	SUIN	=	"suin";
-//	private static final String 	DUDE	=	"dude";
-//	private static final String 	DUIN	=	"duin";
-//	private static final String 	SRDE	=	"srde";
-//	private static final String 	SRIN	=	"srin";
-//	private static final String 	DRDE	=	"drde";
-//	private static final String 	DRIN	=	"drin";
-//	private static final String 	DSDE	=	"dsde";
-//	private static final String 	DSIN	=	"dsin";
-//	private static final String 	SSDE	=	"ssde";
-//	private static final String 	DSOD	=	"dsod";
-//	private static final String 	SSIN	=	"ssin";
-//	private static final String 	SSOD	=	"ssod";
-//	private static final String 	ALL_OPS	=	"allMut";
+
+	//	private static final String 	RUR		=	"rur";
+	//	private static final String 	RURR	=	"rurr";
+	//	private static final String 	RURU	=	"ruru";
+	//	private static final String 	SUDE	=	"sude";
+	//	private static final String 	SUIN	=	"suin";
+	//	private static final String 	DUDE	=	"dude";
+	//	private static final String 	DUIN	=	"duin";
+	//	private static final String 	SRDE	=	"srde";
+	//	private static final String 	SRIN	=	"srin";
+	//	private static final String 	DRDE	=	"drde";
+	//	private static final String 	DRIN	=	"drin";
+	//	private static final String 	DSDE	=	"dsde";
+	//	private static final String 	DSIN	=	"dsin";
+	//	private static final String 	SSDE	=	"ssde";
+	//	private static final String 	DSOD	=	"dsod";
+	//	private static final String 	SSIN	=	"ssin";
+	//	private static final String 	SSOD	=	"ssod";
+	//	private static final String 	ALL_OPS	=	"allMut";
 
 	private static final String HELP_PARAMETER = "help";
 	private static final String HELP_SHORT_PARAMETER = "h";
@@ -97,9 +97,9 @@ public class RbacBT {
 		chron.start();
 		String fsmStr = cmd.getOptionValue(FSMCONV_PARAMETER);
 		File fsmFile = new File(fsmStr);
-		
+
 		FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
-		
+
 		if(output == null) output = fsmFile.getParentFile();
 		output.mkdirs();
 
@@ -110,36 +110,36 @@ public class RbacBT {
 		else outFormat = "kiss";
 
 		String operation = "fsmConverter"+'('+outFormat+')';
-		
+
 		File newFsmFile = new File(output,fsm.getName()+"."+outFormat);
 		if(cmd.hasOption(KISS_PARAMETER)) fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
 		else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(fsm, newFsmFile);
 		else if(cmd.hasOption(KK_PARAMETER)) fsmUtils.WriteFsmAsKissSimple(fsm, newFsmFile);
 		else fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
 		chron.stop();
-		
+
 		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
 	}
 
 	private static List<MutantType> getMutationOperators(CommandLine cmd) {
 		List<MutantType> types = new ArrayList<MutantType>();
-//		if (cmd.hasOption(RUR)) types.add(MutantType.UR_REPLACE_UR);
-//		if(cmd.hasOption(RURR))	types.add(MutantType.UR_REPLACE_R); 
-//		if(cmd.hasOption(RURU))	types.add(MutantType.UR_REPLACE_U); 
-//		if(cmd.hasOption(SUDE))	types.add(MutantType.Su_DECREMENT);
-//		if(cmd.hasOption(SUIN))	types.add(MutantType.Su_INCREMENT); 
-//		if(cmd.hasOption(DUDE))	types.add(MutantType.Du_DECREMENT);
-//		if(cmd.hasOption(DUIN))	types.add(MutantType.Du_INCREMENT); 
-//		if(cmd.hasOption(SRDE))	types.add(MutantType.Sr_DECREMENT);
-//		if(cmd.hasOption(SRIN))	types.add(MutantType.Sr_INCREMENT); 
-//		if(cmd.hasOption(DRDE))	types.add(MutantType.Dr_DECREMENT);
-//		if(cmd.hasOption(DRIN))	types.add(MutantType.Dr_INCREMENT); 
-//		if(cmd.hasOption(DSDE))	types.add(MutantType.Ds_DECREMENT);
-//		if(cmd.hasOption(DSIN))	types.add(MutantType.Ds_INCREMENT); 
-//		if(cmd.hasOption(SSDE))	types.add(MutantType.Ss_DECREMENT);
-//		if(cmd.hasOption(SSIN))	types.add(MutantType.Ss_INCREMENT); 
-//		if(cmd.hasOption(DSOD))	types.add(MutantType.DSoD_REPLACE);
-//		if(cmd.hasOption(SSOD))	types.add(MutantType.SSoD_REPLACE);
+		//		if (cmd.hasOption(RUR)) types.add(MutantType.UR_REPLACE_UR);
+		//		if(cmd.hasOption(RURR))	types.add(MutantType.UR_REPLACE_R); 
+		//		if(cmd.hasOption(RURU))	types.add(MutantType.UR_REPLACE_U); 
+		//		if(cmd.hasOption(SUDE))	types.add(MutantType.Su_DECREMENT);
+		//		if(cmd.hasOption(SUIN))	types.add(MutantType.Su_INCREMENT); 
+		//		if(cmd.hasOption(DUDE))	types.add(MutantType.Du_DECREMENT);
+		//		if(cmd.hasOption(DUIN))	types.add(MutantType.Du_INCREMENT); 
+		//		if(cmd.hasOption(SRDE))	types.add(MutantType.Sr_DECREMENT);
+		//		if(cmd.hasOption(SRIN))	types.add(MutantType.Sr_INCREMENT); 
+		//		if(cmd.hasOption(DRDE))	types.add(MutantType.Dr_DECREMENT);
+		//		if(cmd.hasOption(DRIN))	types.add(MutantType.Dr_INCREMENT); 
+		//		if(cmd.hasOption(DSDE))	types.add(MutantType.Ds_DECREMENT);
+		//		if(cmd.hasOption(DSIN))	types.add(MutantType.Ds_INCREMENT); 
+		//		if(cmd.hasOption(SSDE))	types.add(MutantType.Ss_DECREMENT);
+		//		if(cmd.hasOption(SSIN))	types.add(MutantType.Ss_INCREMENT); 
+		//		if(cmd.hasOption(DSOD))	types.add(MutantType.DSoD_REPLACE);
+		//		if(cmd.hasOption(SSOD))	types.add(MutantType.SSoD_REPLACE);
 
 		if(types.isEmpty() /*|| cmd.hasOption(ALL_OPS)*/){
 			types.clear();
@@ -220,7 +220,7 @@ public class RbacBT {
 
 		chron.stop();
 		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
-		
+
 	}
 
 	private static void qSet(CommandLine cmd, File output) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
@@ -318,40 +318,48 @@ public class RbacBT {
 		try {
 			Map<RbacAcut,Map<FsmTestCase,Integer>> killed = new HashMap<RbacAcut,Map<FsmTestCase,Integer>>();
 			Set<RbacAcut> alive = new HashSet<RbacAcut>();
-			RbacTestConfiguration testCnf = testingUtils.loadRbacTestConfiguration(testCnfFile);
-			List<RbacAcut> mutants = testCnf.getRbacMutant();
-			FsmModel spec = testCnf.getRbacSpecification();
-			FsmSUT specSut = new FsmSUT(spec);
-			for (FsmTestCase tc : testCnf.getTestSuite().getTestCases()) {
-				for (int i = 0; i < tc.getPath().size(); i++) {
-					FsmTransition tr = tc.getPath().get(i);
-					String specOut = specSut.input(tr.getInput());
-					boolean specBool = specOut.equals("grant");
-					//System.out.println(specOut);
-					for (RbacAcut rbacAcut : mutants) {
-						//if(killed.containsKey(rbacAcut)) continue;
-						rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),rbacAcut));
-						boolean out = rbacAcut.request(rqMap.get(tr.getInput()));
-						//System.out.println(out);
-						if(out ^ specBool){
-							killed.putIfAbsent(rbacAcut, new HashMap<FsmTestCase,Integer>());
-							killed.get(rbacAcut).putIfAbsent(tc,i+1);
-						}
-					}
-				}
-				specSut.setCurrentState(spec.getInitialState());
-				for (RbacAcut rbacAcut : mutants)  rbacAcut.reset();
-			}
-			alive.addAll(mutants);
-			alive.removeAll(killed.keySet());
-			System.out.println(alive.size());
-//			Object [] aliveArray = alive.toArray();
-			System.out.println(killed.size());
-//			for (FsmTestCase tc : testCnf.getTestSuite().getTestCases()) {
-//				if(tcAcut.get(tc).size()>0) System.out.println(testCnf.getTestSuite().getTestCases().indexOf(tc)+":"+tcAcut.get(tc).size());
+			List<RbacTestConfiguration> testCfgs = testingUtils.loadRbacTestConfiguration(testCnfFile);
+			System.out.println(testCfgs.size());
+//			for (RbacTestConfiguration rbacTc: testCfgs) {
+// 				testingUtils.saveFsmStatistics(rbacTc,testCnfFile);
 //			}
-//			for (RbacAcut rbacAcut : mutants){
-//				if(acutTc.get(rbacAcut).size()>0) System.out.println(mutants.indexOf(rbacAcut)+":"+acutTc.get(rbacAcut).size());
+			testingUtils.saveStatistics(testCfgs,testCnfFile);
+//			for (RbacTestConfiguration testCfg : testCfgs) {
+//				List<RbacAcut> mutants = testCfg.getRbacMutants();
+//				FsmModel spec = testCfg.getRbacSpecification();
+//				FsmSUT specSut = new FsmSUT(spec);
+//
+//				for (FsmTestCase tc : testCfg.getTestSuites()().getTestCases()) {
+//					for (int i = 0; i < tc.getPath().size(); i++) {
+//						FsmTransition tr = tc.getPath().get(i);
+//						String specOut = specSut.input(tr.getInput());
+//						boolean specBool = specOut.equals("grant");
+//						//System.out.println(specOut);
+//						for (RbacAcut rbacAcut : mutants) {
+//							//if(killed.containsKey(rbacAcut)) continue;
+//							rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),rbacAcut));
+//							boolean out = rbacAcut.request(rqMap.get(tr.getInput()));
+//							//System.out.println(out);
+//							if(out ^ specBool){
+//								killed.putIfAbsent(rbacAcut, new HashMap<FsmTestCase,Integer>());
+//								killed.get(rbacAcut).putIfAbsent(tc,i+1);
+//							}
+//						}
+//					}
+//					specSut.setCurrentState(spec.getInitialState());
+//					for (RbacAcut rbacAcut : mutants)  rbacAcut.reset();
+//				}
+//				alive.addAll(mutants);
+//				alive.removeAll(killed.keySet());
+//				System.out.println(alive.size());
+//				//			Object [] aliveArray = alive.toArray();
+//				System.out.println(killed.size());
+//				//			for (FsmTestCase tc : testCnf.getTestSuite().getTestCases()) {
+//				//				if(tcAcut.get(tc).size()>0) System.out.println(testCnf.getTestSuite().getTestCases().indexOf(tc)+":"+tcAcut.get(tc).size());
+//				//			}
+//				//			for (RbacAcut rbacAcut : mutants){
+//				//				if(acutTc.get(rbacAcut).size()>0) System.out.println(mutants.indexOf(rbacAcut)+":"+acutTc.get(rbacAcut).size());
+//				//			}
 //			}
 
 		} catch (ParserConfigurationException e) {
@@ -370,6 +378,7 @@ public class RbacBT {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		chron.stop();
 	}
 
@@ -387,6 +396,7 @@ public class RbacBT {
 		Option pSetOption = new Option(P_SET_PARAMETER, true, "Generate P Set (Transition cover) given an fsm") ;
 		Option ttSetOption = new Option(TT_PARAMETER, true, "Generate Transition Tour given an fsm") ;
 		Option fsm2SetOption = new Option(FSMCONV_PARAMETER, true, "Convert FSM file to other formats (default: .kiss)") ;
+
 
 		grp.addOption(r2fOption);
 		grp.addOption(rbacMutOption);
@@ -408,33 +418,33 @@ public class RbacBT {
 
 		options.addOption(OUTPUT_PARAMETER, true, 		"Sets the file/directory destination.");
 
-//		options.addOption(new Option(RUR,"MUTATION OPERATOR: Replace User and Role from UR"));
-//
-//		options.addOption(new Option(RURR,"MUTATION OPERATOR: Replace Role from UR"));
-//		options.addOption(new Option(RURU,"MUTATION OPERATOR: Replace User from UR"));
-//
-//		options.addOption(new Option(SUIN,"MUTATION OPERATOR: Static User cardinality increment (Su++)"));
-//		options.addOption(new Option(SUDE,"MUTATION OPERATOR: Static User cardinality decrement (Su--)"));
-//
-//		options.addOption(new Option(DUIN,"MUTATION OPERATOR: Dynamic User cardinality increment (Du++)"));
-//		options.addOption(new Option(DUDE,"MUTATION OPERATOR: Dynamic User cardinality decrement (Du--) "));
-//
-//		options.addOption(new Option(SRIN,"MUTATION OPERATOR: Static Role cardinality increment (Sr++)"));
-//		options.addOption(new Option(SRDE,"MUTATION OPERATOR: Static Role cardinality decrement (Sr--)"));
-//
-//		options.addOption(new Option(DRIN,"MUTATION OPERATOR: Dynamic Role cardinality increment (Dr++)"));
-//		options.addOption(new Option(DRDE,"MUTATION OPERATOR: Dynamic Role cardinality decrement (Dr--)"));
-//
-//		options.addOption(new Option(SSDE,"MUTATION OPERATOR: SSoD set role replacement"));
-//		options.addOption(new Option(DSOD,"MUTATION OPERATOR: DSoD set role replacement"));
-//
-//		options.addOption(new Option(SSIN,"MUTATION OPERATOR: SSoD cardinality increment (SSoD++)"));
-//		options.addOption(new Option(SSOD,"MUTATION OPERATOR: SSoD cardinality decrement (SSoD--)"));
-//
-//		options.addOption(new Option(DSIN,"MUTATION OPERATOR: DSoD cardinality increment (DSoD++)"));
-//		options.addOption(new Option(DSDE,"MUTATION OPERATOR: DSoD cardinality decrement (DSoD--)"));
-//
-//		options.addOption(new Option(ALL_OPS,"ALL MUTATION OPERATORS WILL BE USED. (DEFAULT)"));
+		//		options.addOption(new Option(RUR,"MUTATION OPERATOR: Replace User and Role from UR"));
+		//
+		//		options.addOption(new Option(RURR,"MUTATION OPERATOR: Replace Role from UR"));
+		//		options.addOption(new Option(RURU,"MUTATION OPERATOR: Replace User from UR"));
+		//
+		//		options.addOption(new Option(SUIN,"MUTATION OPERATOR: Static User cardinality increment (Su++)"));
+		//		options.addOption(new Option(SUDE,"MUTATION OPERATOR: Static User cardinality decrement (Su--)"));
+		//
+		//		options.addOption(new Option(DUIN,"MUTATION OPERATOR: Dynamic User cardinality increment (Du++)"));
+		//		options.addOption(new Option(DUDE,"MUTATION OPERATOR: Dynamic User cardinality decrement (Du--) "));
+		//
+		//		options.addOption(new Option(SRIN,"MUTATION OPERATOR: Static Role cardinality increment (Sr++)"));
+		//		options.addOption(new Option(SRDE,"MUTATION OPERATOR: Static Role cardinality decrement (Sr--)"));
+		//
+		//		options.addOption(new Option(DRIN,"MUTATION OPERATOR: Dynamic Role cardinality increment (Dr++)"));
+		//		options.addOption(new Option(DRDE,"MUTATION OPERATOR: Dynamic Role cardinality decrement (Dr--)"));
+		//
+		//		options.addOption(new Option(SSDE,"MUTATION OPERATOR: SSoD set role replacement"));
+		//		options.addOption(new Option(DSOD,"MUTATION OPERATOR: DSoD set role replacement"));
+		//
+		//		options.addOption(new Option(SSIN,"MUTATION OPERATOR: SSoD cardinality increment (SSoD++)"));
+		//		options.addOption(new Option(SSOD,"MUTATION OPERATOR: SSoD cardinality decrement (SSoD--)"));
+		//
+		//		options.addOption(new Option(DSIN,"MUTATION OPERATOR: DSoD cardinality increment (DSoD++)"));
+		//		options.addOption(new Option(DSDE,"MUTATION OPERATOR: DSoD cardinality decrement (DSoD--)"));
+		//
+		//		options.addOption(new Option(ALL_OPS,"ALL MUTATION OPERATORS WILL BE USED. (DEFAULT)"));
 
 
 	}

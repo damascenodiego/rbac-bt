@@ -11,12 +11,13 @@ public class RbacTestConfiguration {
 
 	String name;
 	FsmModel rbacSpecification;
-	List<RbacAcut> rbacMutant;
+	List<RbacAcut> rbacMutants;
+	List<FsmTestSuite> testSuites;
 	File path;
-	FsmTestSuite testSuite;
 
 	public RbacTestConfiguration() {
-		rbacMutant = new ArrayList<RbacAcut>();
+		rbacMutants = new ArrayList<RbacAcut>();
+		testSuites = new ArrayList<FsmTestSuite>();
 	}
 	public String getName() {
 		return name;
@@ -30,23 +31,23 @@ public class RbacTestConfiguration {
 	public void setRbacSpecification(FsmModel rbacSpecification) {
 		this.rbacSpecification = rbacSpecification;
 	}
-	public List<RbacAcut> getRbacMutant() {
-		return rbacMutant;
-	}
-	public void setRbacMutant(List<RbacAcut> rbacMutant) {
-		this.rbacMutant = rbacMutant;
-	}
 	public File getPath() {
 		return path;
 	}
 	public void setPath(File path) {
 		this.path = path;
 	}
-	public FsmTestSuite getTestSuite() {
-		return testSuite;
+	public List<RbacAcut> getRbacMutants() {
+		return rbacMutants;
 	}
-	public void setTestSuite(FsmTestSuite testSuite) {
-		this.testSuite = testSuite;
+	public void setRbacMutants(List<RbacAcut> rbacMutants) {
+		this.rbacMutants = rbacMutants;
+	}
+	public List<FsmTestSuite> getTestSuites() {
+		return testSuites;
+	}
+	public void setTestSuites(List<FsmTestSuite> testSuites) {
+		this.testSuites = testSuites;
 	}
 	
 }
