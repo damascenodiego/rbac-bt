@@ -38,11 +38,13 @@ import org.xml.sax.SAXException;
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
+import com.usp.icmc.labes.fsm.testing.FsmSUT;
 import com.usp.icmc.labes.fsm.testing.FsmTestCase;
 import com.usp.icmc.labes.fsm.testing.FsmTestStatistics;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
+import com.usp.icmc.labes.rbac.acut.RbacRequest;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
@@ -56,8 +58,8 @@ public class FsmTestingUtils {
 	private static FsmUtils fsmUtils = FsmUtils.getInstance();
 	static FsmTestingUtils instance;
 
-	
-	
+
+
 	public static  FsmTestingUtils getInstance() {
 		if(instance ==null){
 			instance = new FsmTestingUtils();
@@ -109,7 +111,7 @@ public class FsmTestingUtils {
 
 	public List<RbacTestConfiguration> loadRbacTestConfiguration(File testCnfFile) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {
 		List<RbacTestConfiguration> cfgs = new ArrayList<RbacTestConfiguration>();
-	
+
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		Document doc = dBuilder.parse(testCnfFile);
@@ -119,24 +121,24 @@ public class FsmTestingUtils {
 		for (int i = 0; i < el.getLength(); i++) {
 			Element sutRbac = (Element)el.item(i);
 			if(sutRbac.hasAttribute("ignore") && sutRbac.getAttribute("ignore").equalsIgnoreCase("true")) continue;
-			
+
 			RbacTestConfiguration out = new RbacTestConfiguration();
 			out.setName(sutRbac.getAttribute("name"));
 			out.setPath(testCnfFile.getParentFile());
-			
+
 			Node sutSpecNode = sutRbac.getElementsByTagName("SUT_SPEC").item(0);
 			loadSutSpecFromNode(out,sutSpecNode);
-			
+
 			NodeList testsuites = sutRbac.getElementsByTagName("TESTSUITE");
 			for (int j = 0; j < testsuites.getLength(); j++) {
 				Element in = (Element)testsuites.item(j);
 				if(in.hasAttribute("ignore") && in.getAttribute("ignore").equalsIgnoreCase("true")) continue;
 				out.getTestSuites().add(loadTestSuiteFromNode(out,in));
 			}
-			
+
 			NodeList sutMutants = sutRbac.getElementsByTagName("SUT_MUTANT");
 			for (int j = 0; j < sutMutants.getLength(); j++) {
-				Element in = (Element) sutMutants.item(i);
+				Element in = (Element) sutMutants.item(j);
 				if(in.hasAttribute("equiv") && in.getAttribute("equiv").equalsIgnoreCase("true")) continue;
 				if(in.hasAttribute("ignore") && in.getAttribute("ignore").equalsIgnoreCase("true")) continue;
 				File mutPolFile = new File(testCnfFile.getParentFile(),in.getAttribute("name"));
@@ -176,7 +178,7 @@ public class FsmTestingUtils {
 
 		return result;
 	}
-	
+
 	private FsmTestSuite LoadFsmTestSuiteFromKK(RbacTestConfiguration out, File file) throws FileNotFoundException,IOException  {
 		FsmTestSuite ts = new FsmTestSuite(file.getName());
 		ts.setGeneratedBy(file.getName());
@@ -192,7 +194,7 @@ public class FsmTestingUtils {
 				tc.getPath().add(transition );
 			}
 			ts.getTestCases().add(tc);
-			
+
 		}
 		br.close();
 		return ts;
@@ -232,7 +234,7 @@ public class FsmTestingUtils {
 		tSuite.getTestCases().sort((o1, o2) -> Integer.compare(o1.getPath().size(), o2.getPath().size()) );
 		return tSuite;
 	}
-	
+
 	public FsmTestSuite transitionCoverSet(FsmModel fsm) {
 		FsmTestSuite qSet = stateCoverSet(fsm);
 		FsmTestSuite pSet = new FsmTestSuite(fsm.getName());
@@ -263,19 +265,19 @@ public class FsmTestingUtils {
 		FsmTestCase  testCase = new FsmTestCase();
 		testCase.getPath().addAll(cptPath);
 		tt.getTestCases().add(testCase);
-		
+
 		return tt;
 	}
 
 	public void WriteFsmTestSuite(FsmTestSuite suite, File fSuite) throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document doc = docBuilder.newDocument();
-	
+
 		Element rootElement = doc.createElement("FsmTestSuite");
-	
+
 		rootElement.setAttribute("name",suite.getName());
 		rootElement.setAttribute("generatedBy",suite.getGeneratedBy());
-		
+
 		int testSuiteLength = 0;
 		int noResets = 0;
 		int tcaseCount = 0;
@@ -301,26 +303,26 @@ public class FsmTestingUtils {
 		}
 		rootElement.setAttribute("_length", Integer.toString(testSuiteLength));
 		rootElement.setAttribute("_noResets", Integer.toString(noResets));
-	
+
 		doc.appendChild(rootElement);
-	
-	
+
+
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(fSuite);
-	
+
 		// Output to console for testing
 		// StreamResult result = new StreamResult(System.out);
-	
+
 		transformer.transform(source, result);
 	}
 
 	public void WriteFsmTestSuiteAsTxt(FsmTestSuite suite, File fSuiteTxt) throws IOException {
 		FileWriter result = new FileWriter(fSuiteTxt);
-		
+
 
 		result.write("#name: "+suite.getName()+"\n");
 		result.write("#generatedBy: "+suite.getGeneratedBy()+"\n");
@@ -339,65 +341,6 @@ public class FsmTestingUtils {
 
 	}
 
-	public void saveFsmStatistics(RbacTestConfiguration rbacTc, File testCnfFile) throws IOException {
-		File testResultsFile = new File(testCnfFile.getAbsolutePath()+".results");
-		File rDataFile = new File(testCnfFile.getParentFile(),rbacTc.getRbacSpecification().getName()+".r");
-		testResultsFile.getParentFile().mkdirs();
-		BufferedWriter testResults = new BufferedWriter(new FileWriter(testResultsFile,true));
-//		testResults.write("Test plan name:\t "+rbacTc.getName());
-//		testResults.write("\n");
-//		testResults.write("Path:\t "+rbacTc.getPath().getAbsolutePath());
-//		testResults.write("\n");
-//		testResults.write("RBAC mutants (total):\t "+rbacTc.getRbacMutants().size());
-//		testResults.write("\n");
-//		testResults.write("RBAC Specification (FSM):\t "+rbacTc.getRbacSpecification().getName());
-//		testResults.write("\n");
-		
-		double [][] testSuiteSizes = new double[rbacTc.getTestSuites().size()][];
-//		testResults.write("RBAC test statistics");
-//		testResults.write("\n");
-//		testResults.write("name\t");
-//		testResults.write("size(ts)\t");
-//		testResults.write("mean(tc)\t");
-//		testResults.write("median(tc)\t");
-//		testResults.write("stdDev(tc)\t");
-//		testResults.write("variance(tc)\t");
-//		testResults.write("\n");
-		for (int i = 0; i < testSuiteSizes.length; i++) {
-			testSuiteSizes[i] = new double[rbacTc.getTestSuites().get(i).getTestCases().size()];
-			for (int j = 0; j < testSuiteSizes[i].length; j++) {
-				testSuiteSizes[i][j] = rbacTc.getTestSuites().get(i).getTestCases().get(j).getPath().size();
-			}
-			Statistics stat = new Statistics(testSuiteSizes[i]);
-			testResults.write(rbacTc.getRbacSpecification().getName()+"_"+rbacTc.getTestSuites().get(i).getGeneratedBy());
-			testResults.write("\t");
-			testResults.write(Double.toString(stat.getSize()));
-			testResults.write("\t");
-			testResults.write(Double.toString(stat.getMean()));
-			testResults.write("\t");
-			testResults.write(Double.toString(stat.getMedian()));
-			testResults.write("\t");
-			testResults.write(Double.toString(stat.getStdDev()));
-			testResults.write("\t");
-			testResults.write(Double.toString(stat.getVariance()));
-			testResults.write("\t");
-			testResults.write("\n");
-		}
-		testResults.close();
-		
-		BufferedWriter rData = new BufferedWriter(new FileWriter(rDataFile));
-		for (int i = 0; i < testSuiteSizes.length; i++) {
-			rData.write(rbacTc.getRbacSpecification().getName()+"_"+rbacTc.getTestSuites().get(i).getGeneratedBy());
-			rData.write(" <- ");
-			rData.write("c"+Arrays.toString(testSuiteSizes[i]).replace("[", "(").replace("]", ")"));
-			rData.write("\n");
-			
-		}
-		rData.close();
-	}
-
-
-
 	public void saveStatistics(List<RbacTestConfiguration> testCfgs, File testCnfFile) throws IOException {
 		List<String> testMethods = new ArrayList<String>();
 		Map<String,Map<String,FsmTestStatistics>> results = new HashMap<String,Map<String,FsmTestStatistics>>();
@@ -409,31 +352,31 @@ public class FsmTestingUtils {
 			}
 		}
 		System.out.println("yeah! :D");
-		File testResultsFile = new File(testCnfFile.getAbsolutePath()+".results");
-//		File rDataFile = new File(testCnfFile.getParentFile(),rbacTc.getRbacSpecification().getName()+".r");
+		File testResultsFile = new File(testCnfFile.getAbsolutePath()+".stat");
+		//		File rDataFile = new File(testCnfFile.getParentFile(),rbacTc.getRbacSpecification().getName()+".r");
 		testResultsFile.getParentFile().mkdirs();
 		BufferedWriter testResults = new BufferedWriter(new FileWriter(testResultsFile));
+		testMethods.remove("p");
+		testMethods.remove("tt");
+
+		if(testMethods.contains("spy")) testMethods.add(0, testMethods.remove(testMethods.indexOf("spy")));
+		if(testMethods.contains("p")) testMethods.add(0, testMethods.remove(testMethods.indexOf("p")));
+		if(testMethods.contains("hsi")) testMethods.add(0, testMethods.remove(testMethods.indexOf("hsi")));
+		if(testMethods.contains("w")) 	testMethods.add(0, testMethods.remove(testMethods.indexOf("w")));
+
+		System.out.println(testMethods);
 		testResults.write("ACUT");
 		testResults.write("\t");
 		for (String method : testMethods) {
-			testResults.write(method+"-noResets");
-			testResults.write("\t");
-			testResults.write(method+"-testSuiteLength");
-			testResults.write("\t");
-			testResults.write(method+"-testSuiteLengthNoResets");
-			testResults.write("\t");
-			testResults.write(method+"-minLength");
-			testResults.write("\t");
-			testResults.write(method+"-maxLength");
-			testResults.write("\t");
-			testResults.write(method+"-avgLength");
-			testResults.write("\t");
-			testResults.write(method+"-sdLength");
-			testResults.write("\t");
-			testResults.write(method+"-varLength");
-			testResults.write("\t");
-			testResults.write(method+"-medianLength");
-			testResults.write("\t");
+			testResults.write("noResets-"+method);testResults.write("\t");
+			testResults.write("testSuiteLength-"+method);testResults.write("\t");
+			testResults.write("testSuiteLengthNoRst-"+method);testResults.write("\t");
+			testResults.write("minLength-"+method);testResults.write("\t");
+			testResults.write("avgLength-"+method);testResults.write("\t");
+			testResults.write("maxLength-"+method);testResults.write("\t");
+			testResults.write("sdLength-"+method);testResults.write("\t");
+			testResults.write("varLength-"+method);testResults.write("\t");
+			testResults.write("medianLength-"+method);testResults.write("\t");
 		}
 		testResults.write("\n");
 		for (String spec: results.keySet()) {
@@ -444,112 +387,103 @@ public class FsmTestingUtils {
 					for (int i = 0; i < 9; i++) testResults.write("-\t");
 					continue;
 				}
-				testResults.write(Long.toString(results.get(spec).get(method).getNoResets()));
-				testResults.write("\t");
-				testResults.write(Long.toString(results.get(spec).get(method).getTestSuiteLength()));
-				testResults.write("\t");
-				testResults.write(Long.toString(results.get(spec).get(method).getTestSuiteLengthNoResets()));
-				testResults.write("\t");
-				testResults.write(Long.toString(results.get(spec).get(method).getMinLength()));
-				testResults.write("\t");
-				testResults.write(Long.toString(results.get(spec).get(method).getMaxLength()));
-				testResults.write("\t");
-				testResults.write(Double.toString(results.get(spec).get(method).getAvgLength()));
-				testResults.write("\t");
-				testResults.write(Double.toString(results.get(spec).get(method).getSdLength()));
-				testResults.write("\t");
-				testResults.write(Double.toString(results.get(spec).get(method).getVarLength()));
-				testResults.write("\t");
-				testResults.write(Double.toString(results.get(spec).get(method).getMedianLength()));
-				testResults.write("\t");	
+				testResults.write(Long.toString(	results.get(spec).get(method).getNoResets())); testResults.write("\t");
+				testResults.write(Long.toString(	results.get(spec).get(method).getTestSuiteLength())); testResults.write("\t");
+				testResults.write(Long.toString(	results.get(spec).get(method).getTestSuiteLengthNoResets())); testResults.write("\t");
+				testResults.write(Long.toString(	results.get(spec).get(method).getMinLength())); testResults.write("\t");
+				testResults.write(Double.toString(	results.get(spec).get(method).getAvgLength())); testResults.write("\t");
+				testResults.write(Long.toString(	results.get(spec).get(method).getMaxLength())); testResults.write("\t");
+				testResults.write(Double.toString(	results.get(spec).get(method).getSdLength())); testResults.write("\t");
+				testResults.write(Double.toString(	results.get(spec).get(method).getVarLength())); testResults.write("\t");
+				testResults.write(Double.toString(	results.get(spec).get(method).getMedianLength())); testResults.write("\t");
+
 			}
 			testResults.write("\n");
-		}
-//		testResults.write("Path:\t "+rbacTc.getPath().getAbsolutePath());
-//		testResults.write("\n");
-//		testResults.write("RBAC mutants (total):\t "+rbacTc.getRbacMutants().size());
-//		testResults.write("\n");
-//		testResults.write("RBAC Specification (FSM):\t "+rbacTc.getRbacSpecification().getName());
-//		testResults.write("\n");
-//		
-//		double [][] testSuiteSizes = new double[rbacTc.getTestSuites().size()][];
-//		testResults.write("RBAC test statistics");
-//		testResults.write("\n");
-//		testResults.write("name\t");
-//		testResults.write("size(ts)\t");
-//		testResults.write("mean(tc)\t");
-//		testResults.write("median(tc)\t");
-//		testResults.write("stdDev(tc)\t");
-//		testResults.write("variance(tc)\t");
-//		testResults.write("\n");
-//		for (int i = 0; i < testSuiteSizes.length; i++) {
-//			testSuiteSizes[i] = new double[rbacTc.getTestSuites().get(i).getTestCases().size()];
-//			for (int j = 0; j < testSuiteSizes[i].length; j++) {
-//				testSuiteSizes[i][j] = rbacTc.getTestSuites().get(i).getTestCases().get(j).getPath().size();
-//			}
-//			Statistics stat = new Statistics(testSuiteSizes[i]);
-//			testResults.write(rbacTc.getRbacSpecification().getName()+"_"+rbacTc.getTestSuites().get(i).getGeneratedBy());
-//			testResults.write("\t");
-//			testResults.write(Double.toString(stat.getSize()));
-//			testResults.write("\t");
-//			testResults.write(Double.toString(stat.getMean()));
-//			testResults.write("\t");
-//			testResults.write(Double.toString(stat.getMedian()));
-//			testResults.write("\t");
-//			testResults.write(Double.toString(stat.getStdDev()));
-//			testResults.write("\t");
-//			testResults.write(Double.toString(stat.getVariance()));
-//			testResults.write("\t");
-//			testResults.write("\n");
-//		}
+		}		
 		testResults.close();
-//		
-//		BufferedWriter rData = new BufferedWriter(new FileWriter(rDataFile));
-//		for (int i = 0; i < testSuiteSizes.length; i++) {
-//			rData.write(rbacTc.getRbacSpecification().getName()+"_"+rbacTc.getTestSuites().get(i).getGeneratedBy());
-//			rData.write(" <- ");
-//			rData.write("c"+Arrays.toString(testSuiteSizes[i]).replace("[", "(").replace("]", ")"));
-//			rData.write("\n");
-//			
-//		}
-//		rData.close();
-	}
-//		for (RbacTestConfiguration testCfg : testCfgs) {
-//		List<RbacAcut> mutants = testCfg.getRbacMutants();
-//		FsmModel spec = testCfg.getRbacSpecification();
-//		FsmSUT specSut = new FsmSUT(spec);
-//
-//		for (FsmTestCase tc : testCfg.getTestSuites()().getTestCases()) {
-//			for (int i = 0; i < tc.getPath().size(); i++) {
-//				FsmTransition tr = tc.getPath().get(i);
-//				String specOut = specSut.input(tr.getInput());
-//				boolean specBool = specOut.equals("grant");
-//				//System.out.println(specOut);
-//				for (RbacAcut rbacAcut : mutants) {
-//					//if(killed.containsKey(rbacAcut)) continue;
-//					rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),rbacAcut));
-//					boolean out = rbacAcut.request(rqMap.get(tr.getInput()));
-//					//System.out.println(out);
-//					if(out ^ specBool){
-//						killed.putIfAbsent(rbacAcut, new HashMap<FsmTestCase,Integer>());
-//						killed.get(rbacAcut).putIfAbsent(tc,i+1);
-//					}
-//				}
-//			}
-//			specSut.setCurrentState(spec.getInitialState());
-//			for (RbacAcut rbacAcut : mutants)  rbacAcut.reset();
-//		}
-//		alive.addAll(mutants);
-//		alive.removeAll(killed.keySet());
-//		System.out.println(alive.size());
-//		//			Object [] aliveArray = alive.toArray();
-//		System.out.println(killed.size());
-//		//			for (FsmTestCase tc : testCnf.getTestSuite().getTestCases()) {
-//		//				if(tcAcut.get(tc).size()>0) System.out.println(testCnf.getTestSuite().getTestCases().indexOf(tc)+":"+tcAcut.get(tc).size());
-//		//			}
-//		//			for (RbacAcut rbacAcut : mutants){
-//		//				if(acutTc.get(rbacAcut).size()>0) System.out.println(mutants.indexOf(rbacAcut)+":"+acutTc.get(rbacAcut).size());
-//		//			}
-//	}
+
+
+		Map<String, String> writeResults = new HashMap<String, String>();
+		testResultsFile = new File(testCnfFile.getAbsolutePath()+".results");
+		testResults = new BufferedWriter(new FileWriter(testResultsFile));
+
+		testResults.write("ACUT\t"
+				+ "totalMutants\t");
+		for (String method : testMethods) {
+			testResults.write(
+			method+"-alive\t"+
+			method+"-killed\t"+
+			method+"-score\t");
+		}
+		testResults.write("\n");
 		
+		String strAlivePolicies="";
+		for (RbacTestConfiguration testCfg : testCfgs) {
+			testResults.write(testCfg.getName()+"\t");
+
+			List<RbacAcut> mutants = testCfg.getRbacMutants();
+			int totMutants = mutants.size();
+			testResults.write(totMutants+"\t");
+
+			FsmModel spec = testCfg.getRbacSpecification();
+			FsmSUT specSut = new FsmSUT(spec);
+
+			for (FsmTestSuite ts : testCfg.getTestSuites()) {
+				List<RbacAcut> alive = new ArrayList<RbacAcut>();
+				Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
+				Map<RbacAcut, Map<FsmTestCase,Integer>> killed = new HashMap<RbacAcut, Map<FsmTestCase,Integer>>();
+
+				for (int i = 0; i < ts.getTestCases().size(); i++) {
+					FsmTestCase tc = ts.getTestCases().get(i);
+
+					for (int j = 0; j < tc.getPath().size(); j++) {
+						FsmTransition tr = tc.getPath().get(j);
+
+						String specOut = specSut.input(tr.getInput());
+						boolean specBool = specOut.equals("grant");
+
+						//System.out.println(specOut);
+						for (RbacAcut rbacAcut : mutants) {
+							if(killed.containsKey(rbacAcut)) continue;
+							rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),rbacAcut));
+							boolean out = rbacAcut.request(rqMap.get(tr.getInput()));
+							//System.out.println(out);
+							if(out ^ specBool){
+								killed.putIfAbsent(rbacAcut, new HashMap<FsmTestCase,Integer>());
+								killed.get(rbacAcut).putIfAbsent(tc,j+1);
+							}
+						}	
+					}
+					specSut.setCurrentState(spec.getInitialState());
+					for (RbacAcut rbacAcut : mutants)  rbacAcut.reset();
+				}
+				alive.addAll(mutants);
+				alive.removeAll(killed.keySet());
+				int totAlive = alive.size();
+				int totKilled = killed.size();
+				double score = ((double)totKilled)/(totAlive+totKilled);
+
+				writeResults.put(ts.getGeneratedBy(), 
+								Integer	.toString(totAlive)+"\t"+
+								Integer	.toString(totKilled)+"\t"+
+								Double	.toString(score)+"\t");
+				for (RbacAcut acut : alive) {
+					strAlivePolicies+=acut.getPolicy().getName()+"\n";
+				}
+				alive.clear();
+				killed.clear();
+
+			}
+			for (String method : testMethods) {
+				testResults.write(writeResults.get(method));
+			}
+			testResults.write("\n");
+			
+		}
+		testResults.write("\nalivePolicies\n");
+		testResults.write(strAlivePolicies);
+		testResults.close();
+
+	}
+
 }

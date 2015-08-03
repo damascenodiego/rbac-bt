@@ -216,7 +216,7 @@ public class RbacBT {
 		output.mkdirs();
 
 		File suiteFile = new File(output,fsmFile.getName().concat(".p.test"));
-		testingUtils.WriteFsmTestSuite(suite, suiteFile);
+		testingUtils.WriteFsmTestSuiteAsTxt(suite, suiteFile);
 
 		chron.stop();
 		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
