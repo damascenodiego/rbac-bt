@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -185,6 +187,7 @@ public class FsmTestingUtils {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		while (br.ready()) {
 			String line = br.readLine();
+			if(line.isEmpty()) continue;
 			FsmTestCase tc = new FsmTestCase();
 			for (int i = 0; i <= line.length()-3; i+=3) {
 				String inStr = line.substring(i, i+3);
@@ -192,6 +195,8 @@ public class FsmTestingUtils {
 				FsmTransition transition = new FsmTransition();
 				transition.setInput(out.getRbacSpecification().getInputs().get(inInt));
 				tc.getPath().add(transition );
+				if(!ts.getProperties().containsKey(out.getRbacSpecification().getInputs().get(inInt)))
+				ts.getProperties().put(out.getRbacSpecification().getInputs().get(inInt), Integer.toString(inInt));
 			}
 			ts.getTestCases().add(tc);
 
@@ -352,7 +357,7 @@ public class FsmTestingUtils {
 			}
 		}
 		System.out.println("yeah! :D");
-		File testResultsFile = new File(testCnfFile.getAbsolutePath()+".stat");
+		File testResultsFile = new File(testCnfFile.getAbsolutePath()+".results");
 		//		File rDataFile = new File(testCnfFile.getParentFile(),rbacTc.getRbacSpecification().getName()+".r");
 		testResultsFile.getParentFile().mkdirs();
 		BufferedWriter testResults = new BufferedWriter(new FileWriter(testResultsFile));
@@ -400,12 +405,11 @@ public class FsmTestingUtils {
 			}
 			testResults.write("\n");
 		}		
-		testResults.close();
+		testResults.write("\n");
+		testResults.write("\n");
 
 
 		Map<String, String> writeResults = new HashMap<String, String>();
-		testResultsFile = new File(testCnfFile.getAbsolutePath()+".results");
-		testResults = new BufferedWriter(new FileWriter(testResultsFile));
 
 		testResults.write("ACUT\t"
 				+ "totalMutants\t");
@@ -417,7 +421,7 @@ public class FsmTestingUtils {
 		}
 		testResults.write("\n");
 		
-		String strAlivePolicies="";
+		String strAlivePolicies = "";
 		for (RbacTestConfiguration testCfg : testCfgs) {
 			testResults.write(testCfg.getName()+"\t");
 
@@ -427,12 +431,13 @@ public class FsmTestingUtils {
 
 			FsmModel spec = testCfg.getRbacSpecification();
 			FsmSUT specSut = new FsmSUT(spec);
-
+			List<RbacAcut> alive = new ArrayList<RbacAcut>();
+			alive.addAll(mutants);
 			for (FsmTestSuite ts : testCfg.getTestSuites()) {
-				List<RbacAcut> alive = new ArrayList<RbacAcut>();
 				Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
 				Map<RbacAcut, Map<FsmTestCase,Integer>> killed = new HashMap<RbacAcut, Map<FsmTestCase,Integer>>();
 
+				
 				for (int i = 0; i < ts.getTestCases().size(); i++) {
 					FsmTestCase tc = ts.getTestCases().get(i);
 
@@ -444,20 +449,20 @@ public class FsmTestingUtils {
 
 						//System.out.println(specOut);
 						for (RbacAcut rbacAcut : mutants) {
-							if(killed.containsKey(rbacAcut)) continue;
+							if(killed.containsKey(rbacAcut) && killed.get(rbacAcut).containsKey(tc)) continue;
 							rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),rbacAcut));
 							boolean out = rbacAcut.request(rqMap.get(tr.getInput()));
 							//System.out.println(out);
 							if(out ^ specBool){
 								killed.putIfAbsent(rbacAcut, new HashMap<FsmTestCase,Integer>());
-								killed.get(rbacAcut).putIfAbsent(tc,j+1);
+								killed.get(rbacAcut).putIfAbsent(tc,j);
 							}
 						}	
 					}
 					specSut.setCurrentState(spec.getInitialState());
 					for (RbacAcut rbacAcut : mutants)  rbacAcut.reset();
 				}
-				alive.addAll(mutants);
+				
 				alive.removeAll(killed.keySet());
 				int totAlive = alive.size();
 				int totKilled = killed.size();
@@ -467,10 +472,6 @@ public class FsmTestingUtils {
 								Integer	.toString(totAlive)+"\t"+
 								Integer	.toString(totKilled)+"\t"+
 								Double	.toString(score)+"\t");
-				for (RbacAcut acut : alive) {
-					strAlivePolicies+=acut.getPolicy().getName()+"\n";
-				}
-				alive.clear();
 				killed.clear();
 
 			}
@@ -478,12 +479,32 @@ public class FsmTestingUtils {
 				testResults.write(writeResults.get(method));
 			}
 			testResults.write("\n");
+			for (RbacAcut acut : alive) {
+				strAlivePolicies+=acut.getPolicy().getName()+"\n";
+			}
 			
 		}
 		testResults.write("\nalivePolicies\n");
 		testResults.write(strAlivePolicies);
 		testResults.close();
 
+	}
+
+
+	DecimalFormat stateFormat = new DecimalFormat("000");
+
+	public void WriteFsmTestSuiteAsKK(FsmTestSuite tsuite, File f) throws FileNotFoundException {
+		PrintWriter pw = new PrintWriter(f);
+
+		for (FsmTestCase tc : tsuite.getTestCases()) {
+			for (FsmTransition tr : tc.getPath()) {
+				int in = Integer.valueOf((String) tsuite.getProperties().get(tr.getInput()));
+				pw.print(stateFormat.format(in));
+			}
+			pw.print("\n");
+		}
+		pw.close();
+		
 	}
 
 }

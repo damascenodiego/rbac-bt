@@ -314,53 +314,10 @@ public class RbacBT {
 		chron.start();
 		String testCnfStr = cmd.getOptionValue(RUNTEST_PARAMETER);
 		File testCnfFile = new File(testCnfStr);
-		Map<String,RbacRequest> rqMap = new HashMap<String,RbacRequest>();
 		try {
-			Map<RbacAcut,Map<FsmTestCase,Integer>> killed = new HashMap<RbacAcut,Map<FsmTestCase,Integer>>();
-			Set<RbacAcut> alive = new HashSet<RbacAcut>();
 			List<RbacTestConfiguration> testCfgs = testingUtils.loadRbacTestConfiguration(testCnfFile);
 			System.out.println(testCfgs.size());
-//			for (RbacTestConfiguration rbacTc: testCfgs) {
-// 				testingUtils.saveFsmStatistics(rbacTc,testCnfFile);
-//			}
 			testingUtils.saveStatistics(testCfgs,testCnfFile);
-//			for (RbacTestConfiguration testCfg : testCfgs) {
-//				List<RbacAcut> mutants = testCfg.getRbacMutants();
-//				FsmModel spec = testCfg.getRbacSpecification();
-//				FsmSUT specSut = new FsmSUT(spec);
-//
-//				for (FsmTestCase tc : testCfg.getTestSuites()().getTestCases()) {
-//					for (int i = 0; i < tc.getPath().size(); i++) {
-//						FsmTransition tr = tc.getPath().get(i);
-//						String specOut = specSut.input(tr.getInput());
-//						boolean specBool = specOut.equals("grant");
-//						//System.out.println(specOut);
-//						for (RbacAcut rbacAcut : mutants) {
-//							//if(killed.containsKey(rbacAcut)) continue;
-//							rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),rbacAcut));
-//							boolean out = rbacAcut.request(rqMap.get(tr.getInput()));
-//							//System.out.println(out);
-//							if(out ^ specBool){
-//								killed.putIfAbsent(rbacAcut, new HashMap<FsmTestCase,Integer>());
-//								killed.get(rbacAcut).putIfAbsent(tc,i+1);
-//							}
-//						}
-//					}
-//					specSut.setCurrentState(spec.getInitialState());
-//					for (RbacAcut rbacAcut : mutants)  rbacAcut.reset();
-//				}
-//				alive.addAll(mutants);
-//				alive.removeAll(killed.keySet());
-//				System.out.println(alive.size());
-//				//			Object [] aliveArray = alive.toArray();
-//				System.out.println(killed.size());
-//				//			for (FsmTestCase tc : testCnf.getTestSuite().getTestCases()) {
-//				//				if(tcAcut.get(tc).size()>0) System.out.println(testCnf.getTestSuite().getTestCases().indexOf(tc)+":"+tcAcut.get(tc).size());
-//				//			}
-//				//			for (RbacAcut rbacAcut : mutants){
-//				//				if(acutTc.get(rbacAcut).size()>0) System.out.println(mutants.indexOf(rbacAcut)+":"+acutTc.get(rbacAcut).size());
-//				//			}
-//			}
 
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
