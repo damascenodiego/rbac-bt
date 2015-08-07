@@ -55,7 +55,7 @@ public class FsmUtils {
 		}
 		return instance;
 	}
-	
+
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 
 	DecimalFormat stateFormat;
@@ -118,7 +118,7 @@ public class FsmUtils {
 		}
 		return null;
 	}
-	
+
 	public FsmModel LoadFsmFromXML(File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
 		FsmModel fsm = new FsmModel(); //(FsmModel) xstream.fromXML(fsmFile);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -493,7 +493,10 @@ public class FsmUtils {
 	public void WriteFsmAsKiss(FsmModel fsm, File f) throws FileNotFoundException{
 		PrintWriter pw = new PrintWriter(f);
 
-		List<FsmTransition> transit = fsm.getTransitions();
+		List<FsmTransition> transit = new ArrayList<FsmTransition>();
+		transit.addAll(fsm.getTransitions());
+		putInitialAsFirst(transit,fsm.getInitialState());
+		
 		for (FsmTransition tr : transit) {
 			//			if(tr.getOutput().equals("deny")) continue;
 			pw.println(tr.getFrom().getName()
@@ -512,7 +515,11 @@ public class FsmUtils {
 		int in;
 		int out;
 		int to;
-		List<FsmTransition> transit = fsm.getTransitions();
+		
+		List<FsmTransition> transit = new ArrayList<FsmTransition>();
+		transit.addAll(fsm.getTransitions());
+		putInitialAsFirst(transit,fsm.getInitialState());
+		
 		for (FsmTransition tr : transit) {
 			from = fsm.getStates().indexOf(tr.getFrom());
 			in = fsm.getInputs().indexOf(tr.getInput());
@@ -527,4 +534,16 @@ public class FsmUtils {
 		pw.close();
 	}
 
+	private void putInitialAsFirst(List<FsmTransition> transit, FsmState initial) {
+		List<FsmTransition> initStateTrs = new ArrayList<FsmTransition>();
+		for (int i = 0; i < transit.size(); i++) {
+			if(transit.get(i).getFrom().equals(initial)){
+				initStateTrs.add(transit.get(i));
+			}
+		}
+		for (FsmTransition tr : initStateTrs) {
+			transit.remove(tr);
+			transit.add(0,tr);
+		}
+	}
 }
