@@ -356,16 +356,15 @@ public class FsmTestingUtils {
 				results.get(rbacTestConfiguration.getRbacSpecification().getName()).put(testSuite.getGeneratedBy(), new FsmTestStatistics(testSuite));
 			}
 		}
-		System.out.println("yeah! :D");
 		File testResultsFile = new File(testCnfFile.getAbsolutePath()+".results");
 		//		File rDataFile = new File(testCnfFile.getParentFile(),rbacTc.getRbacSpecification().getName()+".r");
 		testResultsFile.getParentFile().mkdirs();
 		BufferedWriter testResults = new BufferedWriter(new FileWriter(testResultsFile));
-		testMethods.remove("p");
-		testMethods.remove("tt");
 
-		if(testMethods.contains("spy")) testMethods.add(0, testMethods.remove(testMethods.indexOf("spy")));
+		
 		if(testMethods.contains("p")) testMethods.add(0, testMethods.remove(testMethods.indexOf("p")));
+		if(testMethods.contains("spy")) testMethods.add(0, testMethods.remove(testMethods.indexOf("spy")));
+		if(testMethods.contains("h")) testMethods.add(0, testMethods.remove(testMethods.indexOf("h")));
 		if(testMethods.contains("hsi")) testMethods.add(0, testMethods.remove(testMethods.indexOf("hsi")));
 		if(testMethods.contains("w")) 	testMethods.add(0, testMethods.remove(testMethods.indexOf("w")));
 
