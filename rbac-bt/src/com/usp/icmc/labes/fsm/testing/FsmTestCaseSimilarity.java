@@ -21,11 +21,11 @@ import com.usp.icmc.labes.utils.RandomGenerator;
 
 public class FsmTestCaseSimilarity {
 
-	FsmTestCaseSimilarity instance;
+	private static FsmTestCaseSimilarity instance;
 
 	private FsmTestCaseSimilarity(){ }
 
-	public FsmTestCaseSimilarity getInstance() {
+	public static FsmTestCaseSimilarity getInstance() {
 		if(instance==null) instance = new FsmTestCaseSimilarity();
 		return instance;
 	}
@@ -75,6 +75,8 @@ public class FsmTestCaseSimilarity {
 			}
 			FsmTestCase tc_k = testList.get(s.get(greater_i));
 			FsmTestCase tc_k2 = testList.get(s.get(greater_j));
+			
+			
 			if(tc_k.getPath().size()>tc_k2.getPath().size()){
 				l.add(s.get(greater_j));
 				s.remove(greater_j);
@@ -88,14 +90,14 @@ public class FsmTestCaseSimilarity {
 				l.add(s.get(greater_j));
 				s.remove(greater_j); 
 			}
-			System.out.println(greaterDist);
+//			System.out.println(greaterDist);
 		}
 		testSuite.getTestCases().clear();
 		for (int i = l.size()-1; i >= 0; i--) {
 			int index = l.get(i);
 			testSuite.getTestCases().add(testList.get(index));
 		}
-		System.out.println(calcNit(testSuite.getTestCases().get(0), testSuite.getTestCases().get(1)));
+//		System.out.println(calcNit(testSuite.getTestCases().get(0), testSuite.getTestCases().get(1)));
 	}
 
 	private static double getDist(int i, int j, double[][] distMatrix) {
@@ -136,9 +138,10 @@ public class FsmTestCaseSimilarity {
 		try {
 			List<RbacTestConfiguration> testCfgs = testingUtils.loadRbacTestConfiguration(testCnfFile);
 			for (RbacTestConfiguration testconf : testCfgs) {
+				if(!testconf.getTestConfigurationType().equals(RbacTestConfiguration.ConfigurationType.TEST_EXECUTION)) continue;
 				for (FsmTestSuite tsuite : testconf.getTestSuites()) {
 					sortSimilarityCartaxo(testconf.getRbacSpecification(),tsuite);
-					testingUtils.WriteFsmTestSuiteAsKK(tsuite, new File("./test.txt"));
+					testingUtils.WriteFsmTestSuiteAsKK(tsuite, new File("./"+testconf.getRbacSpecification().getName()+"."+tsuite.getGeneratedBy()+".txt"));
 				}
 			}
 		} catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {

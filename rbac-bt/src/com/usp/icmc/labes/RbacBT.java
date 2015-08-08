@@ -27,6 +27,7 @@ import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.fsm.testing.FsmSUT;
 import com.usp.icmc.labes.fsm.testing.FsmTestCase;
+import com.usp.icmc.labes.fsm.testing.FsmTestCaseSimilarity;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
@@ -88,6 +89,7 @@ public class RbacBT {
 	private static final String FSMCONV_PARAMETER = "fsmConv";
 	private static final String RUNTEST_PARAMETER = "confTest";
 	private static final String RUNTEST_SHORT_PARAMETER = "ct";
+	private static final String TESTGEN_PARAMETER = "testgen";
 
 
 	private static Options options;
@@ -185,6 +187,7 @@ public class RbacBT {
 			else if	(cmd.hasOption(P_SET_PARAMETER)) 			pSet(cmd,output);
 			else if	(cmd.hasOption(TT_PARAMETER))				ttMethod(cmd,output); 
 			else if	(cmd.hasOption(FSMCONV_PARAMETER)) 			fsmConverter(cmd,output);
+			else if	(cmd.hasOption(TESTGEN_PARAMETER)) 			testGenTest(cmd,output);
 			else if	(cmd.hasOption(RUNTEST_PARAMETER) || cmd.hasOption(RUNTEST_SHORT_PARAMETER)) 			runTest(cmd,output);
 			else if	(cmd.hasOption(HELP_PARAMETER))  			formatter.printHelp( "rbacBt", options );
 			else 	formatter.printHelp( "rbacBt", options );
@@ -200,6 +203,53 @@ public class RbacBT {
 		}
 
 	}
+
+	private static void testGenTest(CommandLine cmd, File output) {
+		Chronometer chron = new Chronometer();
+		chron.start();
+		String testCnfStr = cmd.getOptionValue(TESTGEN_PARAMETER);
+		File testCnfFile = new File(testCnfStr);
+		try {
+			List<RbacTestConfiguration> testCfgs = testingUtils.loadRbacTestConfiguration(testCnfFile);
+			List<RbacTestConfiguration> toRemove = new ArrayList<RbacTestConfiguration>();
+			for (RbacTestConfiguration rbacTestConfiguration : testCfgs) {
+				if(!rbacTestConfiguration.getTestConfigurationType().equals(RbacTestConfiguration.ConfigurationType.TEST_GENERATOR))  toRemove.add(rbacTestConfiguration);
+			}
+			String testType = "NULL";
+			for (RbacTestConfiguration testconf : testCfgs) {
+				if(!testconf.getTestConfigurationType().equals(RbacTestConfiguration.ConfigurationType.TEST_EXECUTION)) continue;
+				for (FsmTestSuite tsuite : testconf.getTestSuites()) {
+					FsmTestCaseSimilarity.getInstance().sortSimilarityCartaxo(testconf.getRbacSpecification(),tsuite);
+					testType = "cartaxo";
+					File testResultsFile = new File(testCnfFile.getParentFile(),tsuite.getName()+"."+testType+".test");
+					testResultsFile.getParentFile().mkdirs();
+					testingUtils.WriteFsmTestSuiteAsKK(tsuite, testResultsFile);
+					System.out.println(testResultsFile.getName()+" generated.");
+				}
+			}
+
+
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformerConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		chron.stop();
+	}
+
+
 
 	private static void pSet(CommandLine cmd, File output) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
 		Chronometer chron = new Chronometer();
@@ -316,6 +366,11 @@ public class RbacBT {
 		File testCnfFile = new File(testCnfStr);
 		try {
 			List<RbacTestConfiguration> testCfgs = testingUtils.loadRbacTestConfiguration(testCnfFile);
+			List<RbacTestConfiguration> toRemove = new ArrayList<RbacTestConfiguration>();
+			for (RbacTestConfiguration rbacTestConfiguration : testCfgs) {
+				if(!rbacTestConfiguration.getTestConfigurationType().equals(RbacTestConfiguration.ConfigurationType.TEST_EXECUTION))  toRemove.add(rbacTestConfiguration);
+			}
+			testCfgs.removeAll(toRemove);
 			System.out.println(testCfgs.size());
 			testingUtils.saveStatistics(testCfgs,testCnfFile);
 
@@ -353,6 +408,7 @@ public class RbacBT {
 		Option pSetOption = new Option(P_SET_PARAMETER, true, "Generate P Set (Transition cover) given an fsm") ;
 		Option ttSetOption = new Option(TT_PARAMETER, true, "Generate Transition Tour given an fsm") ;
 		Option fsm2SetOption = new Option(FSMCONV_PARAMETER, true, "Convert FSM file to other formats (default: .kiss)") ;
+		Option testGenOption = new Option(TESTGEN_PARAMETER, true, "Generate test suites given a testgen file") ;
 
 
 		grp.addOption(r2fOption);
@@ -363,6 +419,8 @@ public class RbacBT {
 		grp.addOption(ttSetOption);
 		grp.addOption(fsm2SetOption);
 		grp.addOption(runTestOption);
+		grp.addOption(testGenOption);
+
 		grp.setRequired(true);
 		options.addOptionGroup(grp);
 

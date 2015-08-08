@@ -14,10 +14,23 @@ public class RbacTestConfiguration {
 	List<RbacAcut> rbacMutants;
 	List<FsmTestSuite> testSuites;
 	File path;
+	public static enum ConfigurationType{
+		TEST_EXECUTION,
+		TEST_GENERATOR,
+	}
+	
+	ConfigurationType testConfigurationType;
 
 	public RbacTestConfiguration() {
 		rbacMutants = new ArrayList<RbacAcut>();
 		testSuites = new ArrayList<FsmTestSuite>();
+		testConfigurationType = ConfigurationType.TEST_EXECUTION;
+	}
+	public void setTestConfigurationType(ConfigurationType testConfigurationType) {
+		this.testConfigurationType = testConfigurationType;
+	}
+	public ConfigurationType getTestConfigurationType() {
+		return testConfigurationType;
 	}
 	public String getName() {
 		return name;

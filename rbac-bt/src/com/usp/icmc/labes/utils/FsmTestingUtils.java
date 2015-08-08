@@ -127,6 +127,19 @@ public class FsmTestingUtils {
 			RbacTestConfiguration out = new RbacTestConfiguration();
 			out.setName(sutRbac.getAttribute("name"));
 			out.setPath(testCnfFile.getParentFile());
+			
+
+			if(sutRbac.hasAttribute("type")){
+				switch (sutRbac.getAttribute("type")) {
+				case "generator":
+					out.setTestConfigurationType(RbacTestConfiguration.ConfigurationType.TEST_GENERATOR);
+					break;
+				case "executor":
+				default:
+					out.setTestConfigurationType(RbacTestConfiguration.ConfigurationType.TEST_EXECUTION);
+					break;
+				}
+			}
 
 			Node sutSpecNode = sutRbac.getElementsByTagName("SUT_SPEC").item(0);
 			loadSutSpecFromNode(out,sutSpecNode);
@@ -408,8 +421,6 @@ public class FsmTestingUtils {
 		testResults.write("\n");
 
 
-		Map<String, String> writeResults = new HashMap<String, String>();
-
 		testResults.write("ACUT\t"
 				+ "totalMutants\t");
 		for (String method : testMethods) {
@@ -467,15 +478,11 @@ public class FsmTestingUtils {
 				int totKilled = killed.size();
 				double score = ((double)totKilled)/(totAlive+totKilled);
 
-				writeResults.put(ts.getGeneratedBy(), 
-								Integer	.toString(totAlive)+"\t"+
-								Integer	.toString(totKilled)+"\t"+
-								Double	.toString(score)+"\t");
+				testResults.write(Integer	.toString(totAlive)+"\t"+
+						Integer	.toString(totKilled)+"\t"+
+						Double	.toString(score)+"\t");
 				killed.clear();
 
-			}
-			for (String method : testMethods) {
-				testResults.write(writeResults.get(method));
 			}
 			testResults.write("\n");
 			for (RbacAcut acut : alive) {
