@@ -157,17 +157,9 @@ class PairTestSimilarity implements Comparable<PairTestSimilarity>{
 		if(tci.getPath().size()<tcj.getPath().size()){
 			this.test00 = tci;
 			this.test01 = tcj;
-		}else if(tci.getPath().size()>tcj.getPath().size()){
-			this.test00 = tcj;
-			this.test01 = tci;
-		}else if(RandomGenerator.getInstance().getRnd().nextBoolean()){
-			this.test00 = tci;
-			this.test01 = tcj;
-
 		}else{
 			this.test00 = tcj;
 			this.test01 = tci;
-
 		}
 	}
 	public FsmTestCase getTestShorter() {

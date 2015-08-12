@@ -370,7 +370,6 @@ public class FsmTestingUtils {
 			}
 		}
 		File testResultsFile = new File(testCnfFile.getAbsolutePath()+".results");
-		//		File rDataFile = new File(testCnfFile.getParentFile(),rbacTc.getRbacSpecification().getName()+".r");
 		testResultsFile.getParentFile().mkdirs();
 		BufferedWriter testResults = new BufferedWriter(new FileWriter(testResultsFile));
 
@@ -425,8 +424,8 @@ public class FsmTestingUtils {
 				+ "totalMutants\t");
 		for (String method : testMethods) {
 			testResults.write(
-			method+"-alive\t"+
-			method+"-killed\t"+
+//			method+"-alive\t"+
+//			method+"-killed\t"+
 			method+"-score\t");
 		}
 		testResults.write("\n");
@@ -478,8 +477,9 @@ public class FsmTestingUtils {
 				int totKilled = killed.size();
 				double score = ((double)totKilled)/(totAlive+totKilled);
 
-				testResults.write(Integer	.toString(totAlive)+"\t"+
-						Integer	.toString(totKilled)+"\t"+
+				testResults.write(
+//						Integer	.toString(totAlive)+"\t"+
+//						Integer	.toString(totKilled)+"\t"+
 						Double	.toString(score)+"\t");
 				killed.clear();
 
