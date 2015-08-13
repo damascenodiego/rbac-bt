@@ -81,6 +81,53 @@ public class FsmTestCaseSimilarity {
 		testSuite.getTestCases().addAll(l);
 	}
 
+	public void sortSimilarityDamasceno(FsmModel spec, FsmTestSuite testSuite) {
+		FsmSUT sut = new FsmSUT(spec);
+		FsmState initState = sut.getCurrentState();
+		List<FsmTestCase> testList = new ArrayList<>();
+		testList.addAll(testSuite.getTestCases());
+		for (FsmTestCase testCase : testList) {
+			for (FsmTransition tr: testCase.getPath()) {
+				FsmTransition specTr = sut.inputReturnsFsmTransition(tr.getInput());
+				tr.setFrom(specTr.getFrom());
+				tr.setTo(specTr.getTo());
+				tr.setOutput(specTr.getOutput());
+			}
+			sut.setCurrentState(initState);
+
+		}
+
+		//		List<PairTestSimilarity> distMatrix = generateDistMatrix(testList);
+		List<PairTestSimilarity> distMatrix = generateDistMatrix(testList);
+
+		List<FsmTestCase> s = new ArrayList<FsmTestCase>();
+		for (int k = 0; k < testList.size(); k++)  s.add(testList.get(k));
+		Collections.sort(distMatrix);
+		List<FsmTestCase> l = new ArrayList<FsmTestCase>();
+//		for (PairTestSimilarity gtSim : distMatrix) {
+
+//		}
+//
+		PairTestSimilarity gtSim = null;
+		while (!distMatrix.isEmpty()) {
+			gtSim = distMatrix.get(0);
+
+			FsmTestCase selTest = null;
+			if(gtSim.hasEqualSize()){
+				selTest = gtSim.getTestRandom();
+			}else selTest = gtSim.getTestLonger();
+			removePairsWithTestCase(distMatrix,selTest);
+			l.add(selTest);
+			distMatrix.remove(gtSim);
+			System.out.println(gtSim.getSimilarity());
+		}
+		if(!l.contains(gtSim.getTestLonger())) l.add(gtSim.getTestLonger());
+		if(!l.contains(gtSim.getTestShorter())) l.add(gtSim.getTestShorter());
+		
+		testSuite.getTestCases().clear();
+		testSuite.getTestCases().addAll(l);
+	}
+
 	private static void removePairsWithTestCase(List<PairTestSimilarity> distMatrix, FsmTestCase selTest) {
 		Set<PairTestSimilarity> toRemove = new HashSet<PairTestSimilarity>();
 		for (PairTestSimilarity pairTestSimilarity : distMatrix) {

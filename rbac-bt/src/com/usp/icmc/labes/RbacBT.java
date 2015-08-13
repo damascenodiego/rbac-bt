@@ -219,8 +219,10 @@ public class RbacBT {
 			for (RbacTestConfiguration testconf : testCfgs) {
 				if(!testconf.getTestConfigurationType().equals(RbacTestConfiguration.ConfigurationType.TEST_EXECUTION)) continue;
 				for (FsmTestSuite tsuite : testconf.getTestSuites()) {
-					FsmTestCaseSimilarity.getInstance().sortSimilarityCartaxo(testconf.getRbacSpecification(),tsuite);
-					testType = "cartaxo";
+//					FsmTestCaseSimilarity.getInstance().sortSimilarityCartaxo(testconf.getRbacSpecification(),tsuite);
+//					testType = "cartaxo";
+					FsmTestCaseSimilarity.getInstance().sortSimilarityDamasceno(testconf.getRbacSpecification(),tsuite);
+					testType = "damasceno";
 					File testResultsFile = new File(testCnfFile.getParentFile(),tsuite.getName()+"."+testType+".test");
 					testResultsFile.getParentFile().mkdirs();
 					testingUtils.WriteFsmTestSuiteAsKK(tsuite, testResultsFile);
