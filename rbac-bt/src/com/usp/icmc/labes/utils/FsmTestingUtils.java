@@ -359,7 +359,7 @@ public class FsmTestingUtils {
 
 	}
 
-	public void saveStatistics(List<RbacTestConfiguration> testCfgs, File testCnfFile) throws IOException {
+	public void saveStatistics(RbacTestConfiguration testCfgs, File testCnfFile) throws IOException {
 		List<String> testMethods = new ArrayList<String>();
 		Map<String,Map<String,FsmTestStatistics>> results = new HashMap<String,Map<String,FsmTestStatistics>>();
 		for (RbacTestConfiguration rbacTestConfiguration : testCfgs) {

@@ -1,4 +1,4 @@
-package com.usp.icmc.labes.fsm.testing;
+package com.usp.icmc.labes.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,17 +17,21 @@ import java.util.List;
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
-import com.usp.icmc.labes.utils.FsmTestingUtils;
-import com.usp.icmc.labes.utils.RandomGenerator;
+import com.usp.icmc.labes.fsm.testing.FsmSUT;
+import com.usp.icmc.labes.fsm.testing.FsmTestCase;
+import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
+import com.usp.icmc.labes.fsm.testing.PairTestSimilarity;
+import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
+import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration.ConfigurationType;
 
-public class FsmTestCaseSimilarity {
+public class FsmTestCaseSimilarityUtils {
 
-	private static FsmTestCaseSimilarity instance;
+	private static FsmTestCaseSimilarityUtils instance;
 
-	private FsmTestCaseSimilarity(){ }
+	private FsmTestCaseSimilarityUtils(){ }
 
-	public static FsmTestCaseSimilarity getInstance() {
-		if(instance==null) instance = new FsmTestCaseSimilarity();
+	public static FsmTestCaseSimilarityUtils getInstance() {
+		if(instance==null) instance = new FsmTestCaseSimilarityUtils();
 		return instance;
 	}
 
@@ -172,75 +176,4 @@ public class FsmTestCaseSimilarity {
 
 	private static FsmTestingUtils testingUtils 			= FsmTestingUtils.getInstance();
 
-	public static void main(String[] args) {
-		File testCnfFile = new File(args[0]);
-		try {
-			List<RbacTestConfiguration> testCfgs = testingUtils.loadRbacTestConfiguration(testCnfFile);
-			for (RbacTestConfiguration testconf : testCfgs) {
-				if(!testconf.getTestConfigurationType().equals(RbacTestConfiguration.ConfigurationType.TEST_EXECUTION)) continue;
-				for (FsmTestSuite tsuite : testconf.getTestSuites()) {
-					sortSimilarityCartaxo(testconf.getRbacSpecification(),tsuite);
-					testingUtils.WriteFsmTestSuiteAsKK(tsuite, new File("./"+testconf.getRbacSpecification().getName()+"."+tsuite.getGeneratedBy()+".txt"));
-				}
-			}
-		} catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-}
-
-class PairTestSimilarity implements Comparable<PairTestSimilarity>{
-
-	FsmTestCase test00;
-	FsmTestCase test01;
-	double similarity;
-
-	public PairTestSimilarity(FsmTestCase tci, FsmTestCase tcj) {
-		int nit = FsmTestCaseSimilarity.getInstance().calcNit(tci,tcj);
-		double avgij = (tci.getPath().size()+tcj.getPath().size())/2.0;
-		similarity = nit/avgij;
-		if(tci.getPath().size()<tcj.getPath().size()){
-			this.test00 = tci;
-			this.test01 = tcj;
-		}else{
-			this.test00 = tcj;
-			this.test01 = tci;
-		}
-	}
-	public FsmTestCase getTestShorter() {
-		return test00;
-	}
-
-	public FsmTestCase getTestLonger() {
-		return test01;
-	}
-
-	public boolean hasEqualSize() {
-		return test00.getPath().size()==test01.getPath().size();
-	}
-
-	public FsmTestCase getTestRandom() {
-		if(RandomGenerator.getInstance().getRnd().nextBoolean()){
-			return test00;
-		}
-		return test01;
-	}
-
-	public FsmTestCase getTest00() {
-		return test00;
-	}
-
-	public FsmTestCase getTest01() {
-		return test01;
-	}
-
-	public double getSimilarity() {
-		return similarity;
-	}
-	@Override
-	public int compareTo(PairTestSimilarity o) {
-		return Double.compare(o.similarity, this.similarity);
-	}
 }
