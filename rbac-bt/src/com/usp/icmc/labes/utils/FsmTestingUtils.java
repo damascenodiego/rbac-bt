@@ -445,7 +445,7 @@ public class FsmTestingUtils {
 		}
 		int totAlive  = alive.size();
 		int totKilled = killed.size();
-		double score = ((double)totKilled)/(totAlive+totKilled);
+		double score = ((double)totKilled)/(mutants.size());
 		
 		System.out.print(sutRbac.getName()+"\t");
 		System.out.print(mutants.size()+"\t");

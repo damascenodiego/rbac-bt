@@ -118,12 +118,15 @@ public class FsmTestCaseSimilarityUtils {
 					}
 				}	
 				Collections.sort(tmp);
+				if(tmp.isEmpty()){
+					continue;
+				}
 				PairTestSimilarity selPair = tmp.get(0);
 				FsmTestCase selTest = tmpMap.get(selPair);
 				if(!l.contains(selTest)){
 					l.add(selTest);
 					s.remove(selTest);
-				}
+				}else removePairsWithTestCase(distMatrix, selTest);
 				distMatrix.remove(selPair);
 	//			removePairsWithTestCase(distMatrix, selTest);
 				if(s.size() == 2 ){
