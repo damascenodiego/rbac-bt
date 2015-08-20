@@ -119,7 +119,7 @@ public class FsmUtils {
 		return null;
 	}
 
-	public FsmModel LoadFsmFromXML(File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
+	public FsmModel loadFsmFromXML(File fsmFile)  throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
 		FsmModel fsm = new FsmModel(); //(FsmModel) xstream.fromXML(fsmFile);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

@@ -31,7 +31,7 @@ public class TestFsmTesting {
 			File fsmFile = new File("/home/damascenodiego/git/rbac-bt/rbac-bt/policies_example"
 					+ "/Masood2009P1v2/Masood2009P1v2.fsm");
 					
-			FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
+			FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
 
 			long ini = System.currentTimeMillis();
 			CPP g = new CPP(fsm);

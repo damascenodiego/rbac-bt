@@ -38,6 +38,9 @@ public abstract class PairTestSimilarity  implements Comparable<PairTestSimilari
 		return test00.getPath().size()==test01.getPath().size();
 	}
 
+	public boolean hasTest(FsmTestCase tc){
+		return test00.equals(tc)||test01.equals(tc);
+	}
 	@Override
 	public int compareTo(PairTestSimilarity o) {
 		return Double.compare(o.similarity, this.similarity);

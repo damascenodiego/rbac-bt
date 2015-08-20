@@ -76,7 +76,7 @@ public class FsmTestingUtils {
 
 
 
-	public FsmTestSuite LoadFsmTestSuiteFromFile(File fSuite) throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
+	public FsmTestSuite loadFsmTestSuiteFromFile(File fSuite) throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
 
 		FsmTestSuite suite = new FsmTestSuite(); //(FsmModel) xstream.fromXML(fsmFile);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -111,90 +111,90 @@ public class FsmTestingUtils {
 		return suite;
 	}
 
-	public List<RbacTestConfiguration> loadRbacTestConfiguration(File testCnfFile) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {
-		List<RbacTestConfiguration> cfgs = new ArrayList<RbacTestConfiguration>();
+	//	public List<RbacTestConfiguration> loadRbacTestConfiguration(File testCnfFile) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {
+	//		List<RbacTestConfiguration> cfgs = new ArrayList<RbacTestConfiguration>();
+	//
+	//		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	//		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	//		Document doc = dBuilder.parse(testCnfFile);
+	//		doc.getDocumentElement().normalize();
+	//		Element fsmElement = doc.getDocumentElement();
+	//		NodeList el = ((Element)fsmElement).getElementsByTagName("SUT_RBAC");
+	//		for (int i = 0; i < el.getLength(); i++) {
+	//			Element sutRbac = (Element)el.item(i);
+	//			if(sutRbac.hasAttribute("ignore") && sutRbac.getAttribute("ignore").equalsIgnoreCase("true")) continue;
+	//
+	//			RbacTestConfiguration out = new RbacTestConfiguration();
+	//			out.setName(sutRbac.getAttribute("name"));
+	//			out.setPath(testCnfFile.getParentFile());
+	//			
+	//
+	//			if(sutRbac.hasAttribute("type")){
+	//				switch (sutRbac.getAttribute("type")) {
+	//				case "generator":
+	//					out.setTestConfigurationType(RbacTestConfiguration.ConfigurationType.TEST_GENERATOR);
+	//					break;
+	//				case "executor":
+	//				default:
+	//					out.setTestConfigurationType(RbacTestConfiguration.ConfigurationType.TEST_EXECUTION);
+	//					break;
+	//				}
+	//			}
+	//
+	//			Node sutSpecNode = sutRbac.getElementsByTagName("SUT_SPEC").item(0);
+	//			loadSutSpecFromNode(out,sutSpecNode);
+	//
+	//			NodeList testsuites = sutRbac.getElementsByTagName("TESTSUITE");
+	//			for (int j = 0; j < testsuites.getLength(); j++) {
+	//				Element in = (Element)testsuites.item(j);
+	//				if(in.hasAttribute("ignore") && in.getAttribute("ignore").equalsIgnoreCase("true")) continue;
+	//				out.getTestSuites().add(loadTestSuiteFromNode(out,in));
+	//			}
+	//
+	//			NodeList sutMutants = sutRbac.getElementsByTagName("SUT_MUTANT");
+	//			for (int j = 0; j < sutMutants.getLength(); j++) {
+	//				Element in = (Element) sutMutants.item(j);
+	//				if(in.hasAttribute("equiv") && in.getAttribute("equiv").equalsIgnoreCase("true")) continue;
+	//				if(in.hasAttribute("ignore") && in.getAttribute("ignore").equalsIgnoreCase("true")) continue;
+	//				File mutPolFile = new File(testCnfFile.getParentFile(),in.getAttribute("name"));
+	//				RbacPolicy mutPol = rbacUtils.loadRbacPolicyFromXML(mutPolFile);
+	//				RbacAcut mutAcut = new RbacAcut(mutPol);
+	//				out.getRbacMutants().add(mutAcut);
+	//			}
+	//			cfgs.add(out);
+	//		}
+	//		return cfgs;
+	//	}
+	////
+	////	private void loadSutSpecFromNode(RbacTestConfiguration out, Node sutSpecNode) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
+	////		String filename = ((Element)sutSpecNode).getAttribute("name");
+	////		out.setRbacSpecification(fsmUtils.LoadFsmFromXML(new File(out.getPath(),filename)));
+	////	}
+	//
+	//	private FsmTestSuite loadTestSuiteFromNode(RbacTestConfiguration tConf, Node testSuiteNode) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
+	//		String filename = ((Element)testSuiteNode).getAttribute("name");
+	//		FsmTestSuite result = null;
+	//		switch (((Element)testSuiteNode).getAttribute("format")) {
+	//		case "fsm":
+	//			result = LoadFsmTestSuiteFromFile(new File(tConf.getPath(),filename));
+	//			break;
+	//		case "kk":
+	//			result = LoadFsmTestSuiteFromKK(tConf,new File(tConf.getPath(),filename));
+	//			break;
+	//		default:
+	//			break;
+	//		}
+	//		if(result !=null && ((Element)testSuiteNode).hasAttribute("shortname")) {
+	//			result.setGeneratedBy(((Element)testSuiteNode).getAttribute("shortname"));
+	//		}
+	//		if(result !=null && ((Element)testSuiteNode).hasAttribute("generatedBy")) {
+	//			result.setGeneratedBy(((Element)testSuiteNode).getAttribute("generatedBy"));
+	//		}
+	//
+	//		return result;
+	//	}
 
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(testCnfFile);
-		doc.getDocumentElement().normalize();
-		Element fsmElement = doc.getDocumentElement();
-		NodeList el = ((Element)fsmElement).getElementsByTagName("SUT_RBAC");
-		for (int i = 0; i < el.getLength(); i++) {
-			Element sutRbac = (Element)el.item(i);
-			if(sutRbac.hasAttribute("ignore") && sutRbac.getAttribute("ignore").equalsIgnoreCase("true")) continue;
-
-			RbacTestConfiguration out = new RbacTestConfiguration();
-			out.setName(sutRbac.getAttribute("name"));
-			out.setPath(testCnfFile.getParentFile());
-			
-
-			if(sutRbac.hasAttribute("type")){
-				switch (sutRbac.getAttribute("type")) {
-				case "generator":
-					out.setTestConfigurationType(RbacTestConfiguration.ConfigurationType.TEST_GENERATOR);
-					break;
-				case "executor":
-				default:
-					out.setTestConfigurationType(RbacTestConfiguration.ConfigurationType.TEST_EXECUTION);
-					break;
-				}
-			}
-
-			Node sutSpecNode = sutRbac.getElementsByTagName("SUT_SPEC").item(0);
-			loadSutSpecFromNode(out,sutSpecNode);
-
-			NodeList testsuites = sutRbac.getElementsByTagName("TESTSUITE");
-			for (int j = 0; j < testsuites.getLength(); j++) {
-				Element in = (Element)testsuites.item(j);
-				if(in.hasAttribute("ignore") && in.getAttribute("ignore").equalsIgnoreCase("true")) continue;
-				out.getTestSuites().add(loadTestSuiteFromNode(out,in));
-			}
-
-			NodeList sutMutants = sutRbac.getElementsByTagName("SUT_MUTANT");
-			for (int j = 0; j < sutMutants.getLength(); j++) {
-				Element in = (Element) sutMutants.item(j);
-				if(in.hasAttribute("equiv") && in.getAttribute("equiv").equalsIgnoreCase("true")) continue;
-				if(in.hasAttribute("ignore") && in.getAttribute("ignore").equalsIgnoreCase("true")) continue;
-				File mutPolFile = new File(testCnfFile.getParentFile(),in.getAttribute("name"));
-				RbacPolicy mutPol = rbacUtils.LoadRbacPolicyFromXML(mutPolFile);
-				RbacAcut mutAcut = new RbacAcut(mutPol);
-				out.getRbacMutants().add(mutAcut);
-			}
-			cfgs.add(out);
-		}
-		return cfgs;
-	}
-
-	private void loadSutSpecFromNode(RbacTestConfiguration out, Node sutSpecNode) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
-		String filename = ((Element)sutSpecNode).getAttribute("name");
-		out.setRbacSpecification(fsmUtils.LoadFsmFromXML(new File(out.getPath(),filename)));
-	}
-
-	private FsmTestSuite loadTestSuiteFromNode(RbacTestConfiguration tConf, Node testSuiteNode) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
-		String filename = ((Element)testSuiteNode).getAttribute("name");
-		FsmTestSuite result = null;
-		switch (((Element)testSuiteNode).getAttribute("format")) {
-		case "fsm":
-			result = LoadFsmTestSuiteFromFile(new File(tConf.getPath(),filename));
-			break;
-		case "kk":
-			result = LoadFsmTestSuiteFromKK(tConf,new File(tConf.getPath(),filename));
-			break;
-		default:
-			break;
-		}
-		if(result !=null && ((Element)testSuiteNode).hasAttribute("shortname")) {
-			result.setGeneratedBy(((Element)testSuiteNode).getAttribute("shortname"));
-		}
-		if(result !=null && ((Element)testSuiteNode).hasAttribute("generatedBy")) {
-			result.setGeneratedBy(((Element)testSuiteNode).getAttribute("generatedBy"));
-		}
-
-		return result;
-	}
-
-	private FsmTestSuite LoadFsmTestSuiteFromKK(RbacTestConfiguration out, File file) throws FileNotFoundException,IOException  {
+	public FsmTestSuite loadFsmTestSuiteFromKK(FsmModel model, File file) throws FileNotFoundException,IOException  {
 		FsmTestSuite ts = new FsmTestSuite(file.getName());
 		ts.setGeneratedBy(file.getName());
 		BufferedReader br = new BufferedReader(new FileReader(file));
@@ -206,16 +206,38 @@ public class FsmTestingUtils {
 				String inStr = line.substring(i, i+3);
 				int inInt = Integer.valueOf(inStr);
 				FsmTransition transition = new FsmTransition();
-				transition.setInput(out.getRbacSpecification().getInputs().get(inInt));
+				transition.setInput(model.getInputs().get(inInt));
 				tc.getPath().add(transition );
-				if(!ts.getProperties().containsKey(out.getRbacSpecification().getInputs().get(inInt)))
-				ts.getProperties().put(out.getRbacSpecification().getInputs().get(inInt), Integer.toString(inInt));
+				if(!ts.getProperties().containsKey(model.getInputs().get(inInt)))
+					ts.getProperties().put(model.getInputs().get(inInt), Integer.toString(inInt));
 			}
 			ts.getTestCases().add(tc);
 
 		}
 		br.close();
 		return ts;
+	}
+
+
+
+	public FsmTestSuite randomTestSuite(FsmModel fsm, int resets, int length) {
+		FsmTestSuite tSuite = new FsmTestSuite(fsm.getName());
+		tSuite.setGeneratedBy("random."+resets+"."+length);
+		
+		for (int i = 0; i < resets; i++) {
+			FsmTestCase tc = new FsmTestCase();
+			for (int j = 0; j < length; j++) {
+				int rndInputIndex = RandomGenerator.getInstance().getRnd().nextInt(fsm.getInputs().size());
+				FsmTransition tr = new FsmTransition();
+				tr.setInput(fsm.getInputs().get(rndInputIndex));
+				tc.addTransition(tr);
+			}
+			tSuite.getTestCases().add(tc);
+		}
+
+		
+		return tSuite;
+		
 	}
 
 
@@ -359,143 +381,99 @@ public class FsmTestingUtils {
 
 	}
 
-	public void saveStatistics(RbacTestConfiguration testCfgs, File testCnfFile) throws IOException {
-		List<String> testMethods = new ArrayList<String>();
-		Map<String,Map<String,FsmTestStatistics>> results = new HashMap<String,Map<String,FsmTestStatistics>>();
-		for (RbacTestConfiguration rbacTestConfiguration : testCfgs) {
-			results.put(rbacTestConfiguration.getRbacSpecification().getName(), new HashMap<String,FsmTestStatistics>());
-			for (FsmTestSuite testSuite : rbacTestConfiguration.getTestSuites()) {
-				if(!testMethods.contains(testSuite.getGeneratedBy())) testMethods.add(testSuite.getGeneratedBy());
-				results.get(rbacTestConfiguration.getRbacSpecification().getName()).put(testSuite.getGeneratedBy(), new FsmTestStatistics(testSuite));
-			}
-		}
-		File testResultsFile = new File(testCnfFile.getAbsolutePath()+".results");
-		testResultsFile.getParentFile().mkdirs();
-		BufferedWriter testResults = new BufferedWriter(new FileWriter(testResultsFile));
+	public void printTestSuiteCharacteristics(FsmTestSuite testSuite) {
+		System.out.print("testSuite"+"\t");
+		System.out.print("noResets"+"\t");
+		System.out.print("testSuiteLength"+"\t");
+		System.out.print("testSuiteLengthNoRst"+"\t");
+		System.out.print("minLength"+"\t");
+		System.out.print("avgLength"+"\t");
+		System.out.print("maxLength"+"\t");
+		System.out.print("sdLength"+"\t");
+		System.out.print("varLength"+"\t");
+		System.out.print("medianLength"+"\n");
 
 		
-		if(testMethods.contains("p")) testMethods.add(0, testMethods.remove(testMethods.indexOf("p")));
-		if(testMethods.contains("spy")) testMethods.add(0, testMethods.remove(testMethods.indexOf("spy")));
-		if(testMethods.contains("h")) testMethods.add(0, testMethods.remove(testMethods.indexOf("h")));
-		if(testMethods.contains("hsi")) testMethods.add(0, testMethods.remove(testMethods.indexOf("hsi")));
-		if(testMethods.contains("w")) 	testMethods.add(0, testMethods.remove(testMethods.indexOf("w")));
+		FsmTestStatistics tStats = new FsmTestStatistics(testSuite);
+		System.out.print(testSuite.getName()+"\t");
+		System.out.print(Long.toString(	tStats.getNoResets					())+"\t");
+		System.out.print(Long.toString(	tStats.getTestSuiteLength			())+"\t");
+		System.out.print(Long.toString(	tStats.getTestSuiteLengthNoResets	())+"\t");
+		System.out.print(Long.toString(	tStats.getMinLength					())+"\t");
+		System.out.print(Double.toString(	tStats.getAvgLength				())+"\t");
+		System.out.print(Long.toString(	tStats.getMaxLength					())+"\t");
+		System.out.print(Double.toString(	tStats.getSdLength				())+"\t");
+		System.out.print(Double.toString(	tStats.getVarLength				())+"\t");
+		System.out.print(Double.toString(	tStats.getMedianLength			())+"\n");
 
-		System.out.println(testMethods);
-		testResults.write("ACUT");
-		testResults.write("\t");
-		for (String method : testMethods) {
-			testResults.write("noResets-"+method);testResults.write("\t");
-			testResults.write("testSuiteLength-"+method);testResults.write("\t");
-			testResults.write("testSuiteLengthNoRst-"+method);testResults.write("\t");
-			testResults.write("minLength-"+method);testResults.write("\t");
-			testResults.write("avgLength-"+method);testResults.write("\t");
-			testResults.write("maxLength-"+method);testResults.write("\t");
-			testResults.write("sdLength-"+method);testResults.write("\t");
-			testResults.write("varLength-"+method);testResults.write("\t");
-			testResults.write("medianLength-"+method);testResults.write("\t");
-		}
-		testResults.write("\n");
-		for (String spec: results.keySet()) {
-			testResults.write(spec);
-			testResults.write("\t");
-			for (String method : testMethods) {
-				if(!results.get(spec).containsKey(method)){
-					for (int i = 0; i < 9; i++) testResults.write("-\t");
-					continue;
-				}
-				testResults.write(Long.toString(	results.get(spec).get(method).getNoResets())); testResults.write("\t");
-				testResults.write(Long.toString(	results.get(spec).get(method).getTestSuiteLength())); testResults.write("\t");
-				testResults.write(Long.toString(	results.get(spec).get(method).getTestSuiteLengthNoResets())); testResults.write("\t");
-				testResults.write(Long.toString(	results.get(spec).get(method).getMinLength())); testResults.write("\t");
-				testResults.write(Double.toString(	results.get(spec).get(method).getAvgLength())); testResults.write("\t");
-				testResults.write(Long.toString(	results.get(spec).get(method).getMaxLength())); testResults.write("\t");
-				testResults.write(Double.toString(	results.get(spec).get(method).getSdLength())); testResults.write("\t");
-				testResults.write(Double.toString(	results.get(spec).get(method).getVarLength())); testResults.write("\t");
-				testResults.write(Double.toString(	results.get(spec).get(method).getMedianLength())); testResults.write("\t");
-
-			}
-			testResults.write("\n");
-		}		
-		testResults.write("\n");
-		testResults.write("\n");
-
-
-		testResults.write("ACUT\t"
-				+ "totalMutants\t");
-		for (String method : testMethods) {
-			testResults.write(
-//			method+"-alive\t"+
-//			method+"-killed\t"+
-			method+"-score\t");
-		}
-		testResults.write("\n");
 		
-		String strAlivePolicies = "";
-		for (RbacTestConfiguration testCfg : testCfgs) {
-			testResults.write(testCfg.getName()+"\t");
+	}
+	public void printConformanceTestingStatistics(RbacPolicy sutRbac, FsmModel sutSpec, FsmTestSuite testSuite, List<RbacPolicy> mutants) {
 
-			List<RbacAcut> mutants = testCfg.getRbacMutants();
-			int totMutants = mutants.size();
-			testResults.write(totMutants+"\t");
+		RbacAcut acutSut= createAcutFromRbacPolicy(sutRbac);
+		FsmSUT sutSpecFsm = new FsmSUT(sutSpec);
+		List<RbacAcut> acutMutant = createAcutFromRbacPolicy(mutants);
 
-			FsmModel spec = testCfg.getRbacSpecification();
-			FsmSUT specSut = new FsmSUT(spec);
-			List<RbacAcut> alive = new ArrayList<RbacAcut>();
-			alive.addAll(mutants);
-			for (FsmTestSuite ts : testCfg.getTestSuites()) {
-				Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
-				Map<RbacAcut, Map<FsmTestCase,Integer>> killed = new HashMap<RbacAcut, Map<FsmTestCase,Integer>>();
+		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
 
+		List<RbacPolicy> alive = new ArrayList<RbacPolicy>();
+		List<RbacPolicy> killed  = new ArrayList<RbacPolicy>();
+		alive.addAll(mutants);
+
+		
+		for (int i = 0; i < testSuite.getTestCases().size(); i++) {
+
+			FsmTestCase tc = testSuite.getTestCases().get(i);
+			for (int j = 0; j < tc.getPath().size(); j++) {
+				FsmTransition tr = tc.getPath().get(j);
 				
-				for (int i = 0; i < ts.getTestCases().size(); i++) {
-					FsmTestCase tc = ts.getTestCases().get(i);
-
-					for (int j = 0; j < tc.getPath().size(); j++) {
-						FsmTransition tr = tc.getPath().get(j);
-
-						String specOut = specSut.input(tr.getInput());
-						boolean specBool = specOut.equals("grant");
-
-						//System.out.println(specOut);
-						for (RbacAcut rbacAcut : mutants) {
-							if(killed.containsKey(rbacAcut) && killed.get(rbacAcut).containsKey(tc)) continue;
-							rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),rbacAcut));
-							boolean out = rbacAcut.request(rqMap.get(tr.getInput()));
-							//System.out.println(out);
-							if(out ^ specBool){
-								killed.putIfAbsent(rbacAcut, new HashMap<FsmTestCase,Integer>());
-								killed.get(rbacAcut).putIfAbsent(tc,j);
-							}
-						}	
+				String specOut = sutSpecFsm.input(tr.getInput());
+				boolean specBool = specOut.equals("grant");
+				
+				for (RbacAcut rbacAcut : acutMutant) {
+					if(killed.contains(rbacAcut.getPolicy())) continue;
+					rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acutSut));
+					boolean mutBool = rbacAcut.request(rqMap.get(tr.getInput()));
+					if(specBool ^ mutBool){
+						killed.add(rbacAcut.getPolicy());
 					}
-					specSut.setCurrentState(spec.getInitialState());
-					for (RbacAcut rbacAcut : mutants)  rbacAcut.reset();
+						
 				}
-				
-				alive.removeAll(killed.keySet());
-				int totAlive = alive.size();
-				int totKilled = killed.size();
-				double score = ((double)totKilled)/(totAlive+totKilled);
-
-				testResults.write(
-//						Integer	.toString(totAlive)+"\t"+
-//						Integer	.toString(totKilled)+"\t"+
-						Double	.toString(score)+"\t");
-				killed.clear();
-
 			}
-			testResults.write("\n");
-			for (RbacAcut acut : alive) {
-				strAlivePolicies+=acut.getPolicy().getName()+"\n";
+			sutSpecFsm.setCurrentState(sutSpec.getInitialState());
+			for (RbacAcut rbacAcut : acutMutant)  rbacAcut.reset();
+		}
+		int totAlive  = alive.size();
+		int totKilled = killed.size();
+		double score = ((double)totKilled)/(totAlive+totKilled);
+		
+		System.out.print(sutRbac.getName()+"\t");
+		System.out.print(mutants.size()+"\t");
+		System.out.print(testSuite.getName()+"\t");
+		System.out.print(score);
+		System.out.print("\n\n");
+		
+		for (RbacPolicy pol : alive) {
+			if (!killed.contains(pol)) {
+				System.out.println(pol.getName());
 			}
 			
 		}
-		testResults.write("\nalivePolicies\n");
-		testResults.write(strAlivePolicies);
-		testResults.close();
+		
 
 	}
 
+	private List<RbacAcut> createAcutFromRbacPolicy(List<RbacPolicy> mutants) {
+		List<RbacAcut> acuts = new ArrayList<>();
+		for (RbacPolicy mut : mutants)  acuts.add(new RbacAcut(mut));
+		return acuts;
+	}
+
+
+	private RbacAcut createAcutFromRbacPolicy(RbacPolicy sutRbac) {
+		RbacAcut acut = new RbacAcut(sutRbac);
+		return acut;
+	}
 
 	DecimalFormat stateFormat = new DecimalFormat("000");
 
@@ -504,13 +482,109 @@ public class FsmTestingUtils {
 
 		for (FsmTestCase tc : tsuite.getTestCases()) {
 			for (FsmTransition tr : tc.getPath()) {
+				if(tr.getInput() == null || tr.getInput().length()==0) continue;
 				int in = Integer.valueOf((String) tsuite.getProperties().get(tr.getInput()));
 				pw.print(stateFormat.format(in));
 			}
 			pw.print("\n");
 		}
 		pw.close();
-		
+
 	}
+
+
+
+	public void setupTestFsmProperties(FsmModel fsm, FsmTestSuite suite) {
+		for (String in : fsm.getInputs()) {
+			if(!suite.getProperties().containsKey(in))
+				suite.getProperties().put(in, Integer.toString(fsm.getInputs().indexOf(in)));
+		}
+	}
+
+
+
+	//	public List<RbacTestConfiguration> loadRbacTestConfiguration(File testCnfFile) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {
+	//		List<RbacTestConfiguration> cfgs = new ArrayList<RbacTestConfiguration>();
+	//
+	//		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	//		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	//		Document doc = dBuilder.parse(testCnfFile);
+	//		doc.getDocumentElement().normalize();
+	//		Element fsmElement = doc.getDocumentElement();
+	//		NodeList el = ((Element)fsmElement).getElementsByTagName("SUT_RBAC");
+	//		for (int i = 0; i < el.getLength(); i++) {
+	//			Element sutRbac = (Element)el.item(i);
+	//			if(sutRbac.hasAttribute("ignore") && sutRbac.getAttribute("ignore").equalsIgnoreCase("true")) continue;
+	//
+	//			RbacTestConfiguration out = new RbacTestConfiguration();
+	//			out.setName(sutRbac.getAttribute("name"));
+	//			out.setPath(testCnfFile.getParentFile());
+	//			
+	//
+	//			if(sutRbac.hasAttribute("type")){
+	//				switch (sutRbac.getAttribute("type")) {
+	//				case "generator":
+	//					out.setTestConfigurationType(RbacTestConfiguration.ConfigurationType.TEST_GENERATOR);
+	//					break;
+	//				case "executor":
+	//				default:
+	//					out.setTestConfigurationType(RbacTestConfiguration.ConfigurationType.TEST_EXECUTION);
+	//					break;
+	//				}
+	//			}
+	//
+	//			Node sutSpecNode = sutRbac.getElementsByTagName("SUT_SPEC").item(0);
+	//			loadSutSpecFromNode(out,sutSpecNode);
+	//
+	//			NodeList testsuites = sutRbac.getElementsByTagName("TESTSUITE");
+	//			for (int j = 0; j < testsuites.getLength(); j++) {
+	//				Element in = (Element)testsuites.item(j);
+	//				if(in.hasAttribute("ignore") && in.getAttribute("ignore").equalsIgnoreCase("true")) continue;
+	//				out.getTestSuites().add(loadTestSuiteFromNode(out,in));
+	//			}
+	//
+	//			NodeList sutMutants = sutRbac.getElementsByTagName("SUT_MUTANT");
+	//			for (int j = 0; j < sutMutants.getLength(); j++) {
+	//				Element in = (Element) sutMutants.item(j);
+	//				if(in.hasAttribute("equiv") && in.getAttribute("equiv").equalsIgnoreCase("true")) continue;
+	//				if(in.hasAttribute("ignore") && in.getAttribute("ignore").equalsIgnoreCase("true")) continue;
+	//				File mutPolFile = new File(testCnfFile.getParentFile(),in.getAttribute("name"));
+	//				RbacPolicy mutPol = rbacUtils.loadRbacPolicyFromXML(mutPolFile);
+	//				RbacAcut mutAcut = new RbacAcut(mutPol);
+	//				out.getRbacMutants().add(mutAcut);
+	//			}
+	//			cfgs.add(out);
+	//		}
+	//		return cfgs;
+	//	}
+	////
+	////	private void loadSutSpecFromNode(RbacTestConfiguration out, Node sutSpecNode) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
+	////		String filename = ((Element)sutSpecNode).getAttribute("name");
+	////		out.setRbacSpecification(fsmUtils.LoadFsmFromXML(new File(out.getPath(),filename)));
+	////	}
+	//
+	//	private FsmTestSuite loadTestSuiteFromNode(RbacTestConfiguration tConf, Node testSuiteNode) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
+	//		String filename = ((Element)testSuiteNode).getAttribute("name");
+	//		FsmTestSuite result = null;
+	//		switch (((Element)testSuiteNode).getAttribute("format")) {
+	//		case "fsm":
+	//			result = LoadFsmTestSuiteFromFile(new File(tConf.getPath(),filename));
+	//			break;
+	//		case "kk":
+	//			result = LoadFsmTestSuiteFromKK(tConf,new File(tConf.getPath(),filename));
+	//			break;
+	//		default:
+	//			break;
+	//		}
+	//		if(result !=null && ((Element)testSuiteNode).hasAttribute("shortname")) {
+	//			result.setGeneratedBy(((Element)testSuiteNode).getAttribute("shortname"));
+	//		}
+	//		if(result !=null && ((Element)testSuiteNode).hasAttribute("generatedBy")) {
+	//			result.setGeneratedBy(((Element)testSuiteNode).getAttribute("generatedBy"));
+	//		}
+	//
+	//		return result;
+	//	}
+
 
 }

@@ -233,8 +233,8 @@ public class TestRbacAdministrativeCommands {
 			rbacUtils.WriteRbacPolicyAsXML(policyModel, policyModelFile);
 			rbacUtils.WriteRbacPolicyAsXML(policyAdmin, policyAdminFile);
 			
-			assertEquals(policyModel, rbacUtils.LoadRbacPolicyFromXML(policyModelFile));
-			assertEquals(policyAdmin, rbacUtils.LoadRbacPolicyFromXML(policyAdminFile));
+			assertEquals(policyModel, rbacUtils.loadRbacPolicyFromXML(policyModelFile));
+			assertEquals(policyAdmin, rbacUtils.loadRbacPolicyFromXML(policyAdminFile));
 			
 //			policyAdminFile.delete();
 //			policyModelFile.delete();

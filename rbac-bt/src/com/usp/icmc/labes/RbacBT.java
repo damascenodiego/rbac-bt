@@ -1,13 +1,10 @@
 package com.usp.icmc.labes;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
@@ -52,6 +49,8 @@ public class RbacBT {
 	private static RbacMutationUtils rbacMut 				= RbacMutationUtils.getInstance();
 	private static FsmTestingUtils testingUtils 			= FsmTestingUtils.getInstance();
 	private static FsmUtils fsmUtils 						= FsmUtils.getInstance();
+	private static FsmTestingUtils fsmTestingutils			= FsmTestingUtils.getInstance();
+	private static FsmTestCaseSimilarityUtils testSimiliaryt= FsmTestCaseSimilarityUtils.getInstance(); 
 	private static PolicyUnderTestUtils putUtils 			= PolicyUnderTestUtils.getInstance();
 
 	private static final String 	RBAC2FSM_PARAMETER 		= "r2f";
@@ -68,20 +67,33 @@ public class RbacBT {
 	private static final String P_SET_PARAMETER = "pset";
 	private static final String TT_PARAMETER = "tt";
 	private static final String FSMCONV_PARAMETER = "fsmConv";
-	private static final String TESTGEN_PARAMETER = "testgen";
-	
+
 	private static final String CONFORMANCETEST_PARAMETER = "ct";
-	private static final String SUT_RBAC_CT_PARAMETER = "rbac";
 	private static final String SUT_SPEC_CT_PARAMETER = "spec";
 	private static final String SUT_MUTANTLIST_CT_PARAMETER = "mutants";
 	private static final String TESTSUITE_PARAMETER = "test";
 
+	private static final String TESTPRTZ_PARAMETER = "prtz";
+	private static final String RBACPOL_PARAMETER = "rbac";
+	
+	private static final String TEST_CHARACTERISTICS_PARAMETER = "testCharact";
+	
+	private static final String MODE_PARAMETER = "mode";
+	private static final String PRTZ_DAMASCENO_PARAMETER 	= "damasc";
+	private static final String PRTZ_RANDOM_PARAMETER 		= "random";
+	private static final String PRTZ_CARTAXO_PARAMETER 		= "cartax";
+	
+	private static final String RANDOMTEST_PARAMETER = "rnd";
+	private static final String RANDOMTEST_LENGTH_PARAMETER = "length";
+	private static final String RANDOMTEST_RESETS_PARAMETER = "resets";
 
 	private static Options options;
 
+	private static DefaultParser parser;
+
 	public static void main(String[] args) {
 		HelpFormatter formatter = new HelpFormatter();
-		CommandLineParser parser = new DefaultParser();
+		parser = new DefaultParser();
 		try {
 			setupCliOptions();
 			CommandLine cmd;
@@ -92,14 +104,16 @@ public class RbacBT {
 				String outputStr = cmd.getOptionValue(OUTPUT_PARAMETER);
 				output = new File(outputStr);
 			}
-			if		(cmd.hasOption(RBAC2FSM_PARAMETER)) 			rbac2fsm(cmd,output);
+			if		(cmd.hasOption(RBAC2FSM_PARAMETER)) 		rbac2fsm(cmd,output);
 			else if	(cmd.hasOption(RBAC_MUTATION_PARAMETER)) 	rbacMutation(cmd,output);
 			else if	(cmd.hasOption(Q_SET_PARAMETER)) 			qSet(cmd,output);
 			else if	(cmd.hasOption(P_SET_PARAMETER)) 			pSet(cmd,output);
-			else if	(cmd.hasOption(TT_PARAMETER))				ttMethod(cmd,output); 
+			else if	(cmd.hasOption(TT_PARAMETER))				ttMethod(cmd,output);
+			else if	(cmd.hasOption(RANDOMTEST_PARAMETER))		randomMethod(cmd,output);
 			else if	(cmd.hasOption(FSMCONV_PARAMETER)) 			fsmConverter(cmd,output);
-			else if	(cmd.hasOption(TESTGEN_PARAMETER)) 			testGenTest(cmd,output);
-			else if	(cmd.hasOption(CONFORMANCETEST_PARAMETER)) 	runConformanceTest(cmd,output);
+			else if	(cmdIsValidForConfTest(cmd)) 				runConformanceTest(cmd,output);
+			else if	(cmdIsValidForTestPrtz(cmd)) 				testPrtz(cmd,output);
+			else if	(cmdIsValidForTestCharacts(cmd)) 			runPrintTestCharacteristics(cmd,output);
 			else if	(cmd.hasOption(HELP_PARAMETER))  			formatter.printHelp( "rbacBt", options );
 			else 	formatter.printHelp( "rbacBt", options );
 		} catch (ParseException e) {
@@ -111,16 +125,40 @@ public class RbacBT {
 			System.err.println("Error loading RBAC policy file!!!!");
 		} catch (TransformerException e) {
 			System.err.println("XML Parsing error!!!!");
+		} catch (Exception e) {
+			System.err.println("Unhandled Exception!!!!");
+			e.printStackTrace();
 		}
 
+	}
+
+	private static boolean cmdIsValidForTestCharacts(CommandLine cmd) throws ParseException {
+		return cmd.hasOption(SUT_SPEC_CT_PARAMETER)
+				&& cmd.hasOption(TESTSUITE_PARAMETER)
+				&& cmd.hasOption(TEST_CHARACTERISTICS_PARAMETER);
+	}
+
+	private static boolean cmdIsValidForTestPrtz(CommandLine cmd) throws ParseException {
+		return cmd.hasOption(TESTPRTZ_PARAMETER)
+				&& cmd.hasOption(RBACPOL_PARAMETER)
+				&& cmd.hasOption(SUT_SPEC_CT_PARAMETER)
+				;
+	}
+
+	private static boolean cmdIsValidForConfTest(CommandLine cmd) {
+		return cmd.hasOption(CONFORMANCETEST_PARAMETER)
+				&& cmd.hasOption(SUT_SPEC_CT_PARAMETER)
+				&& cmd.hasOption(SUT_MUTANTLIST_CT_PARAMETER)
+				&& cmd.hasOption(TESTSUITE_PARAMETER);
 	}
 
 	private static void setupCliOptions() {
 		// create Options object
 		options = new Options();
-	
+		
+
 		OptionGroup grp = new OptionGroup();
-	
+
 		Option r2fOption = new Option(RBAC2FSM_PARAMETER, true, 		"Run rbac2fsm over an RBAC policy passed as parameter.\n");
 		Option runTestOption = new Option(CONFORMANCETEST_PARAMETER, true, 		"Runs a conformance testing procedure of an FSM/RBAC specification against a set of RBAC policies using an .testcnf file.\n");
 		Option rbacMutOption = new Option(RBAC_MUTATION_PARAMETER, true, 	"Run rbac mutation over an RBAC policy passed as parameter.");
@@ -129,9 +167,12 @@ public class RbacBT {
 		Option pSetOption = new Option(P_SET_PARAMETER, true, "Generate P Set (Transition cover) given an fsm") ;
 		Option ttSetOption = new Option(TT_PARAMETER, true, "Generate Transition Tour given an fsm") ;
 		Option fsm2SetOption = new Option(FSMCONV_PARAMETER, true, "Convert FSM file to other formats (default: .kiss)") ;
-		Option testGenOption = new Option(TESTGEN_PARAMETER, true, "Generate test suites given a testgen file") ;
-	
-	
+		Option randomTestOption = new Option(RANDOMTEST_PARAMETER, true, "Generate a random test suite given an FSM") ;
+
+		Option testPrtzOption = new Option(TESTPRTZ_PARAMETER, true, "Prioritize a test suite") ;
+		
+		Option testCharactsOption = new Option(TEST_CHARACTERISTICS_PARAMETER, "Print the characteristics of a test suite") ;
+		
 		grp.addOption(r2fOption);
 		grp.addOption(rbacMutOption);
 		grp.addOption(helpOption);
@@ -140,49 +181,41 @@ public class RbacBT {
 		grp.addOption(ttSetOption);
 		grp.addOption(fsm2SetOption);
 		grp.addOption(runTestOption);
-		grp.addOption(testGenOption);
-	
+		grp.addOption(testPrtzOption);
+		grp.addOption(testCharactsOption);
+		grp.addOption(randomTestOption);
+		
 		grp.setRequired(true);
 		options.addOptionGroup(grp);
-	
+
 		OptionGroup grpFsmFormat = new OptionGroup();
 		grpFsmFormat.addOption(new Option(KISS_PARAMETER, 		"Writes fsm in .kiss format."));
 		grpFsmFormat.addOption(new Option(FSM_PARAMETER, 		"Writes fsm in .fsm format. (DEFAULT)"));
 		grpFsmFormat.addOption(new Option(DOT_PARAMETER, 		"Writes fsm in .dot format."));
 		grpFsmFormat.addOption(new Option(KK_PARAMETER, 		"Writes fsm in .kk format (Clean KISS format)."));
 		options.addOptionGroup(grpFsmFormat);
-	
+
 		options.addOption(OUTPUT_PARAMETER, true, 		"Sets the file/directory destination.");
-	
-		//		options.addOption(new Option(RUR,"MUTATION OPERATOR: Replace User and Role from UR"));
-		//
-		//		options.addOption(new Option(RURR,"MUTATION OPERATOR: Replace Role from UR"));
-		//		options.addOption(new Option(RURU,"MUTATION OPERATOR: Replace User from UR"));
-		//
-		//		options.addOption(new Option(SUIN,"MUTATION OPERATOR: Static User cardinality increment (Su++)"));
-		//		options.addOption(new Option(SUDE,"MUTATION OPERATOR: Static User cardinality decrement (Su--)"));
-		//
-		//		options.addOption(new Option(DUIN,"MUTATION OPERATOR: Dynamic User cardinality increment (Du++)"));
-		//		options.addOption(new Option(DUDE,"MUTATION OPERATOR: Dynamic User cardinality decrement (Du--) "));
-		//
-		//		options.addOption(new Option(SRIN,"MUTATION OPERATOR: Static Role cardinality increment (Sr++)"));
-		//		options.addOption(new Option(SRDE,"MUTATION OPERATOR: Static Role cardinality decrement (Sr--)"));
-		//
-		//		options.addOption(new Option(DRIN,"MUTATION OPERATOR: Dynamic Role cardinality increment (Dr++)"));
-		//		options.addOption(new Option(DRDE,"MUTATION OPERATOR: Dynamic Role cardinality decrement (Dr--)"));
-		//
-		//		options.addOption(new Option(SSDE,"MUTATION OPERATOR: SSoD set role replacement"));
-		//		options.addOption(new Option(DSOD,"MUTATION OPERATOR: DSoD set role replacement"));
-		//
-		//		options.addOption(new Option(SSIN,"MUTATION OPERATOR: SSoD cardinality increment (SSoD++)"));
-		//		options.addOption(new Option(SSOD,"MUTATION OPERATOR: SSoD cardinality decrement (SSoD--)"));
-		//
-		//		options.addOption(new Option(DSIN,"MUTATION OPERATOR: DSoD cardinality increment (DSoD++)"));
-		//		options.addOption(new Option(DSDE,"MUTATION OPERATOR: DSoD cardinality decrement (DSoD--)"));
-		//
-		//		options.addOption(new Option(ALL_OPS,"ALL MUTATION OPERATORS WILL BE USED. (DEFAULT)"));
-	
-	
+
+		Option sutSpec_ct = new Option(SUT_SPEC_CT_PARAMETER,true,"FSM generated from the RBAC policy under test");
+		Option testSuite = new Option(TESTSUITE_PARAMETER,true,"test suite");
+		Option mutLst = new Option(SUT_MUTANTLIST_CT_PARAMETER,true,"text file with the path for all the mutants generated from the RBAC policy under test");
+		Option rbac_acut = new Option(RBACPOL_PARAMETER,true,"RBAC policy under test");
+		Option prtz_mode= new Option(MODE_PARAMETER,true,"Defines the test prioritization mode");
+		
+		
+		options.addOption(mutLst);
+		options.addOption(sutSpec_ct);
+		options.addOption(testSuite);
+		options.addOption(rbac_acut);
+		options.addOption(prtz_mode);
+
+		Option randomTestLengthOption = new Option(RANDOMTEST_LENGTH_PARAMETER, true, "Defines the length of the random test cases") ;
+		Option randomTestResetsOption = new Option(RANDOMTEST_RESETS_PARAMETER, true, "Defines the length of the random test suite") ;
+
+		options.addOption(randomTestLengthOption);
+		options.addOption(randomTestResetsOption);
+		
 	}
 
 	private static void rbac2fsm(CommandLine cmd, File output) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {
@@ -191,25 +224,24 @@ public class RbacBT {
 		String operation = "rbac2fsm";
 		String rbacPolicyStr = cmd.getOptionValue(RBAC2FSM_PARAMETER);
 		File rbacFile = new File(rbacPolicyStr);
-		RbacPolicy rbacPolicy = rbacUtils.LoadRbacPolicyFromXML(rbacFile);
+		RbacPolicy rbacPolicy = rbacUtils.loadRbacPolicyFromXML(rbacFile);
 		FsmModel rbacFsm = fsmUtils.rbac2FsmConcurrent(rbacPolicy);
 		fsmUtils.sorting(rbacFsm);
-	
+
 		File rbacFsmFile = null;
-	
+
 		String outFormat = "fsm";
-	
+
 		if(cmd.hasOption(KISS_PARAMETER)) outFormat = "kiss";
 		else if(cmd.hasOption(DOT_PARAMETER)) outFormat = "dot";
 		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kk";
 		else outFormat = "fsm";
-	
+
 		if(output == null) output = rbacFile.getParentFile();
 		output.mkdirs();
-	
+
 		rbacFsmFile = new File(output,rbacPolicy.getName()+"."+outFormat);
-	
-		//TODO count time interval
+
 		if(cmd.hasOption(KISS_PARAMETER)) fsmUtils.WriteFsmAsKiss(rbacFsm, rbacFsmFile);
 		else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(rbacFsm, rbacFsmFile);
 		else if(cmd.hasOption(KK_PARAMETER)) fsmUtils.WriteFsmAsKissSimple(rbacFsm, rbacFsmFile);
@@ -220,7 +252,7 @@ public class RbacBT {
 
 	private static List<MutantType> getMutationOperators(CommandLine cmd) {
 		List<MutantType> types = new ArrayList<MutantType>();
-	
+
 		if(types.isEmpty() /*|| cmd.hasOption(ALL_OPS)*/){
 			types.clear();
 			types.add(MutantType.UR_REPLACE_UR);
@@ -240,9 +272,9 @@ public class RbacBT {
 			types.add(MutantType.DSoD_REPLACE);
 			types.add(MutantType.Ss_INCREMENT); 
 			types.add(MutantType.SSoD_REPLACE);
-	
+
 		}
-	
+
 		return types;
 	}
 
@@ -250,26 +282,26 @@ public class RbacBT {
 		Chronometer chron = new Chronometer();
 		chron.start();
 		String operation = "rbacMutation";
-	
+
 		String rbacPolicyStr = cmd.getOptionValue(RBAC_MUTATION_PARAMETER);
-	
-	
+
+
 		List<MutantType> types = getMutationOperators(cmd);
 		List<RbacMutant> mutants = new ArrayList<RbacMutant>();
-	
+
 		File rbacFile = new File(rbacPolicyStr);
-		RbacPolicy rbacPolicy = rbacUtils.LoadRbacPolicyFromXML(rbacFile);
-	
+		RbacPolicy rbacPolicy = rbacUtils.loadRbacPolicyFromXML(rbacFile);
+
 		for (MutantType mutantType : types) 
 			mutants.addAll(rbacMut.generateMutants(rbacPolicy , mutantType));
-	
+
 		if(output == null) output = rbacFile.getParentFile();
 		output.mkdirs();
-	
+
 		for (RbacMutant rbacMutant : mutants) {
 			File mutTypeDir = new File(output, rbacMutant.getType().name());
 			if(!mutTypeDir.exists()) mutTypeDir.mkdirs();
-	
+
 			File rbacFsmFile = new File(mutTypeDir,rbacMutant.getName()+".rbac");
 			rbacUtils.WriteRbacPolicyAsXML(rbacMutant, rbacFsmFile);
 		}
@@ -282,27 +314,27 @@ public class RbacBT {
 		chron.start();
 		String fsmStr = cmd.getOptionValue(FSMCONV_PARAMETER);
 		File fsmFile = new File(fsmStr);
-	
-		FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
-	
+
+		FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
+
 		if(output == null) output = fsmFile.getParentFile();
 		output.mkdirs();
-	
+
 		String outFormat = null;
 		if(cmd.hasOption(DOT_PARAMETER)) outFormat  = "dot";
 		else if(cmd.hasOption(KISS_PARAMETER)) outFormat = "kiss";
 		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kk";
 		else outFormat = "kiss";
-	
+
 		String operation = "fsmConverter"+'('+outFormat+')';
-	
+
 		File newFsmFile = new File(output,fsm.getName()+"."+outFormat);
 		if(cmd.hasOption(KISS_PARAMETER)) fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
 		else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(fsm, newFsmFile);
 		else if(cmd.hasOption(KK_PARAMETER)) fsmUtils.WriteFsmAsKissSimple(fsm, newFsmFile);
 		else fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
 		chron.stop();
-	
+
 		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
 	}
 
@@ -310,22 +342,23 @@ public class RbacBT {
 		Chronometer chron = new Chronometer();
 		chron.start();
 		String operation = "p set";
-	
+
 		String fsmStr = cmd.getOptionValue(P_SET_PARAMETER);
 		File fsmFile = new File(fsmStr);
-	
-		FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
+
+		FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
 		FsmTestSuite suite = testingUtils.transitionCoverSet(fsm);
-	
+		testingUtils.setupTestFsmProperties(fsm,suite);
+		
 		if(output == null) output = fsmFile.getParentFile();
 		output.mkdirs();
-	
+
 		File suiteFile = new File(output,fsmFile.getName().concat(".p.test"));
-		testingUtils.WriteFsmTestSuiteAsTxt(suite, suiteFile);
-	
+		testingUtils.WriteFsmTestSuiteAsKK(suite, suiteFile);
+
 		chron.stop();
 		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
-	
+
 	}
 
 	private static void qSet(CommandLine cmd, File output) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
@@ -336,7 +369,7 @@ public class RbacBT {
 		String fsmStr = cmd.getOptionValue(Q_SET_PARAMETER);
 		File fsmFile = new File(fsmStr);
 
-		FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
+		FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
 
 		if(output == null) output = fsmFile.getParentFile();
 		output.mkdirs();
@@ -344,7 +377,8 @@ public class RbacBT {
 		File suiteFile = new File(output,fsmFile.getName().concat(".q.test"));
 
 		FsmTestSuite suite = testingUtils.stateCoverSet(fsm);
-		testingUtils.WriteFsmTestSuite(suite, suiteFile);
+		testingUtils.setupTestFsmProperties(fsm,suite);
+		testingUtils.WriteFsmTestSuiteAsKK(suite, suiteFile);
 		chron.stop();
 		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
 
@@ -354,108 +388,132 @@ public class RbacBT {
 		Chronometer chron = new Chronometer();
 		chron.start();
 		String operation = "tt";
-	
+
 		String fsmStr = cmd.getOptionValue(TT_PARAMETER);
 		File fsmFile = new File(fsmStr);
-	
-		FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
+
+		FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
 		FsmTestSuite suite = testingUtils.transitionTour(fsm);
-	
+		testingUtils.setupTestFsmProperties(fsm,suite);
+
 		if(output == null) output = fsmFile.getParentFile();
 		output.mkdirs();
-	
+
 		File suiteFile = new File(output,fsmFile.getName().concat(".tt.test"));
-		testingUtils.WriteFsmTestSuite(suite, suiteFile);
-	
+		testingUtils.WriteFsmTestSuiteAsKK(suite, suiteFile);
+
 		chron.stop();
 		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");		
 	}
 
-	private static void runConformanceTest(CommandLine cmd, File output) {
+	private static void randomMethod(CommandLine cmd, File output) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
 		Chronometer chron = new Chronometer();
 		chron.start();
-		String sutRbacStr 		= cmd.getOptionValue(SUT_RBAC_CT_PARAMETER);
+		String operation = "random";
+
+		String fsmStr = cmd.getOptionValue(RANDOMTEST_PARAMETER);
+		int resets = 50;
+		int length = 10;
+		
+		if(cmd.hasOption(RANDOMTEST_RESETS_PARAMETER)) resets = Integer.valueOf(cmd.getOptionValue(RANDOMTEST_RESETS_PARAMETER));
+		if(cmd.hasOption(RANDOMTEST_LENGTH_PARAMETER)) length = Integer.valueOf(cmd.getOptionValue(RANDOMTEST_LENGTH_PARAMETER));
+		
+		File fsmFile = new File(fsmStr);
+
+		FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
+
+		if(output == null) output = fsmFile.getParentFile();
+		output.mkdirs();
+
+		File suiteFile = new File(output,fsmFile.getName().concat(".rnd."+resets+"."+length+".test"));
+
+		FsmTestSuite suite = testingUtils.randomTestSuite(fsm,resets,length);
+		testingUtils.setupTestFsmProperties(fsm,suite);
+		testingUtils.WriteFsmTestSuiteAsKK(suite, suiteFile);
+		chron.stop();
+		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
+
+		
+	}
+
+	private static void runConformanceTest(CommandLine cmd, File output) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {
+		Chronometer chron = new Chronometer();
+		chron.start();
+		String sutRbacStr 		= cmd.getOptionValue(CONFORMANCETEST_PARAMETER);
 		String sutSpecStr 		= cmd.getOptionValue(SUT_SPEC_CT_PARAMETER);
 		String sutMutantsStr 	= cmd.getOptionValue(SUT_MUTANTLIST_CT_PARAMETER);
 		String testSuiteStr 	= cmd.getOptionValue(TESTSUITE_PARAMETER);
-		
+
 		File sutRbacFile = new File(sutRbacStr);
 		File sutSpecFile = new File(sutSpecStr);
 		File testSuiteFile = new File(testSuiteStr);
-		
 		File sutMutantsFile = new File(sutMutantsStr);
-		
-		try {
-			List<RbacTestConfiguration> testCfgs = testingUtils.loadRbacTestConfiguration(testCnfFile);
-			List<RbacTestConfiguration> toRemove = new ArrayList<RbacTestConfiguration>();
-			System.out.println(testCfgs.size());
-			testingUtils.saveStatistics(testCfgs,testCnfFile);
+
+
+		RbacPolicy sutRbac 			= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
+		FsmModel sutSpec			= fsmUtils.loadFsmFromXML(sutSpecFile);
+		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutSpec, testSuiteFile);
+		List<RbacPolicy> mutants 	= rbacUtils.loadMutantsFromTxTFile(sutMutantsFile);
+
+		testingUtils.printConformanceTestingStatistics(sutRbac,sutSpec,testSuite,mutants);
+
+		chron.stop();
+	}
+
+	private static void runPrintTestCharacteristics(CommandLine cmd, File output) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {
+		Chronometer chron = new Chronometer();
+		chron.start();
+		String sutSpecStr 		= cmd.getOptionValue(SUT_SPEC_CT_PARAMETER);
+		String testSuiteStr 	= cmd.getOptionValue(TESTSUITE_PARAMETER);
 	
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		File sutSpecFile = new File(sutSpecStr);
+		File testSuiteFile = new File(testSuiteStr);
+	
+		FsmModel sutSpec			= fsmUtils.loadFsmFromXML(sutSpecFile);
+		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutSpec, testSuiteFile);
+	
+		testingUtils.printTestSuiteCharacteristics(testSuite);
 	
 		chron.stop();
 	}
 
-	private static void testGenTest(CommandLine cmd, File output) {
-			Chronometer chron = new Chronometer();
-			chron.start();
-			String testCnfStr = cmd.getOptionValue(TESTGEN_PARAMETER);
-			File testCnfFile = new File(testCnfStr);
-			try {
-				List<RbacTestConfiguration> testCfgs = testingUtils.loadRbacTestConfiguration(testCnfFile);
-				List<RbacTestConfiguration> toRemove = new ArrayList<RbacTestConfiguration>();
-				for (RbacTestConfiguration rbacTestConfiguration : testCfgs) {
-					if(!rbacTestConfiguration.getTestConfigurationType().equals(RbacTestConfiguration.ConfigurationType.TEST_GENERATOR))  toRemove.add(rbacTestConfiguration);
-				}
-				String testType = "NULL";
-				for (RbacTestConfiguration testconf : testCfgs) {
-					if(!testconf.getTestConfigurationType().equals(RbacTestConfiguration.ConfigurationType.TEST_EXECUTION)) continue;
-					for (FsmTestSuite tsuite : testconf.getTestSuites()) {
-	//					FsmTestCaseSimilarity.getInstance().sortSimilarityCartaxo(testconf.getRbacSpecification(),tsuite);
-	//					testType = "cartaxo";
-						FsmTestCaseSimilarityUtils.getInstance().sortSimilarityDamasceno(testconf.getRbacSpecification(),tsuite);
-						testType = "damasceno";
-						File testResultsFile = new File(testCnfFile.getParentFile(),tsuite.getName()+"."+testType+".test");
-						testResultsFile.getParentFile().mkdirs();
-						testingUtils.WriteFsmTestSuiteAsKK(tsuite, testResultsFile);
-						System.out.println(testResultsFile.getName()+" generated.");
-					}
-				}
-	
-	
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TransformerConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TransformerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	
-			chron.stop();
+	private static void testPrtz(CommandLine cmd, File output) throws FileNotFoundException, IOException, TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException {
+		Chronometer chron = new Chronometer();
+		chron.start();
+		String testSuiteStr = cmd.getOptionValue(TESTPRTZ_PARAMETER);
+		String sutRbacStr 	= cmd.getOptionValue(RBACPOL_PARAMETER);
+		String sutSpecStr 	= cmd.getOptionValue(SUT_SPEC_CT_PARAMETER);
+
+		File testSuiteFile = new File(testSuiteStr);
+		File sutRbacFile = new File(sutRbacStr);
+		File sutSpecFile = new File(sutSpecStr);
+
+		RbacPolicy sutRbac 			= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
+		FsmModel sutSpec 			= fsmUtils.loadFsmFromXML(sutSpecFile);
+		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutSpec, testSuiteFile);
+
+		String prtz_mode = null;
+		switch (cmd.getOptionValue(MODE_PARAMETER)) {
+		case PRTZ_DAMASCENO_PARAMETER:
+			testSimiliaryt.sortSimilarityDamasceno(sutRbac,sutSpec,testSuite);
+			prtz_mode = "damasc";
+			break;
+		case PRTZ_RANDOM_PARAMETER:
+			testSimiliaryt.sortSimilarityRandom(testSuite);
+			prtz_mode = "random";
+			break;
+		case PRTZ_CARTAXO_PARAMETER:
+		default:
+			testSimiliaryt.sortSimilarityCartaxo(sutSpec,testSuite);
+			prtz_mode = "cartax";
+			break;
 		}
+
+		File testResultsFile = new File(testSuiteFile.getParentFile(),testSuiteFile.getName()+"."+prtz_mode+".test");
+		testResultsFile.getParentFile().mkdirs();
+		testingUtils.WriteFsmTestSuiteAsKK(testSuite, testResultsFile);
+
+		chron.stop();
+	}
 
 }

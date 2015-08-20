@@ -1,6 +1,9 @@
 package com.usp.icmc.labes.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -368,7 +371,7 @@ public class RbacUtils {
 		return true;
 	}
 
-	public RbacPolicy LoadRbacPolicyFromXML(File xmlFile) throws ParserConfigurationException, SAXException, IOException{
+	public RbacPolicy loadRbacPolicyFromXML(File xmlFile) throws ParserConfigurationException, SAXException, IOException{
 		RbacPolicy result = new RbacPolicy(); //(RbacPolicy) xstream.fromXML(xmlFile);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -716,162 +719,16 @@ public class RbacUtils {
 		return null;
 	}
 
-	//	boolean assignUser(RbacTuple pol, User usr, Role rol){
-	//		boolean userExists = userExists(pol, usr);
-	//		boolean roleExists = roleExists(pol, rol); 
-	//		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
-	//		//		boolean commandIsValid = nextStateUserCardinality
-	//
-	//		if(		userExists &&
-	//				roleExists &&
-	//				!userRoleAssigned 
-	//				){
-	//			pol.getUserRoleAssignment().add(new UserRoleAssignment(usr,rol));
-	//			return true;
-	//		}
-	//		return false;
-	//	}
-	//
-	//	boolean deassignUser(RbacTuple pol, User usr, Role rol){
-	//		boolean userExists = userExists(pol, usr);
-	//		boolean roleExists = roleExists(pol, rol); 
-	//		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
-	//
-	//		if(		userExists &&
-	//				roleExists &&
-	//				userRoleAssigned 
-	//				){
-	//			UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
-	//			pol.getUserRoleAssignment().remove(ur);
-	//			return true;
-	//		}
-	//		return false;
-	//	}
-	//
+	public List<RbacPolicy> loadMutantsFromTxTFile(File sutMutantsFile) throws IOException, ParserConfigurationException, SAXException {
+		List<RbacPolicy> mutList = new ArrayList<>();
+		BufferedReader br = new BufferedReader(new FileReader(sutMutantsFile));
+		while (br.ready()) {
+			File mut = new File(sutMutantsFile.getParentFile(),br.readLine());
+			RbacPolicy mutPol = loadRbacPolicyFromXML(mut);
+			mutList.add(mutPol);
+		}
+		br.close();
+		return mutList;
+	}
 
-	//
-	//	boolean deactivateRole(RbacTuple pol, User usr, Role rol){
-	//		boolean userExists = userExists(pol, usr);
-	//		boolean roleExists = roleExists(pol, rol); 
-	//		boolean userRoleAssigned = userRoleAssignmentExists(pol,usr,rol);
-	//		boolean userRoleActive = userRoleActive(pol,usr,rol);
-	//
-	//		if(		userExists &&
-	//				roleExists &&
-	//				userRoleAssigned &&
-	//				userRoleActive
-	//				){
-	//			UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
-	//			ur.getActiveRoles().remove(usr);
-	//			return true;
-	//		}
-	//		return false;
-	//	}
-	//
-	//	public boolean userRoleActive(RbacTuple pol, User usr, Role rol) {
-	//		UserRoleAssignment ur = getUserRoleAssignment(pol, usr, rol);
-	//		if(
-	//				ur!=null && //TODO check with findbugs 
-	//				ur.getActiveRoles().contains(rol)){
-	//			return true;
-	//		}
-	//		return false;
-	//	}
-	//
-	//	public boolean grantPermission(RbacTuple pol, Permission pr, Role rol) {
-	//		boolean permissionExists = permissionExists(pol, pr);
-	//		boolean roleExists = roleExists(pol, rol);
-	//		boolean permissionRoleAssigned = permissionRoleAssignmentExists(pol,pr,rol);
-	//
-	//		if(		permissionExists &&
-	//				roleExists &&
-	//				!permissionRoleAssigned
-	//				){
-	//			pol.getPermissionRoleAssignment().add(new PermissionRoleAssignment(pr,rol));
-	//			return true;
-	//		}
-	//		return false;
-	//	}
-
-	//
-
-	//
-	//	public boolean afterAssignSsodIsValid(RbacTuple policy, User user,
-	//			Role role) {
-	//		// TODO Auto-generated method stub
-	//		return true;
-	//	}
-	//
-	//	public boolean afterAssignDsodIsValid(RbacTuple policy, User user,
-	//			Role role) {
-	//		// TODO Auto-generated method stub
-	//		return true;
-	//	}
-	//
-	//	public List<Role> getSeniorsActivation(RbacTuple policy, Role role) {
-	//		List<Role> toCheck = new ArrayList<Role>();
-	//		List<Role> sr = new ArrayList<Role>();
-	//		toCheck.add(role);
-	//		Role current = null;
-	//		while(!toCheck.isEmpty()){
-	//			current = toCheck.get(0);
-	//			for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
-	//				if(ah.getJunior().equals(current)){
-	//					toCheck.add(ah.getSenior());
-	//					sr.add(ah.getSenior());
-	//				}
-	//			}
-	//			toCheck.remove(current);
-	//		}
-	//		return sr;
-	//	}
-	//
-	//	public List<Role> getJuniorsActivation(RbacTuple policy, Role role) {
-	//		List<Role> toCheck = new ArrayList<Role>();
-	//		List<Role> jr = new ArrayList<Role>();
-	//		toCheck.add(role);
-	//		Role current = null;
-	//		while(!toCheck.isEmpty()){
-	//			current = toCheck.get(0);
-	//			for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
-	//				if(ah.getSenior().equals(current)){
-	//					toCheck.add(ah.getJunior());
-	//					jr.add(ah.getJunior());
-	//				}
-	//			}
-	//			toCheck.remove(current);
-	//		}
-	//		return jr;
-	//	}
-	//
-	//
-	//	public List<ActivationHierarchy> getActivationHierarchiesWithJunior(RbacTuple policy, Role role) {
-	//		List<ActivationHierarchy> result = new ArrayList<ActivationHierarchy>();
-	//		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
-	//			if(ah.getJunior().equals(role)){
-	//				result.add(ah);
-	//			}
-	//		}
-	//		return result;
-	//	}
-	//	
-	//	public List<ActivationHierarchy> getActivationHierarchyWithSenior(RbacTuple policy, Role role) {
-	//		List<ActivationHierarchy> result = new ArrayList<ActivationHierarchy>();
-	//		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
-	//			if(ah.getSenior().equals(role)){
-	//				result.add(ah);
-	//			}
-	//		}
-	//		return result;
-	//	}
-	//
-	//	public ActivationHierarchy getActivationHierarchy(RbacTuple policy,
-	//			Role senior, Role junior) {
-	//		for (ActivationHierarchy ah: policy.getActivationHierarchy()) {
-	//			if(ah.getSenior().equals(senior) && ah.getJunior().equals(junior)){
-	//				return ah;
-	//			}
-	//		}
-	//		return null;
-	//	}
 }

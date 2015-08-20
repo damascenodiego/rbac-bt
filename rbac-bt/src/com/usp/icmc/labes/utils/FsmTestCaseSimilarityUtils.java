@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 
 import java.util.List;
+import java.util.Map;
 
 import com.usp.icmc.labes.fsm.FsmModel;
 import com.usp.icmc.labes.fsm.FsmState;
@@ -20,9 +22,14 @@ import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.fsm.testing.FsmSUT;
 import com.usp.icmc.labes.fsm.testing.FsmTestCase;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
+import com.usp.icmc.labes.fsm.testing.PairTestRbacSimilarity;
 import com.usp.icmc.labes.fsm.testing.PairTestSimilarity;
+import com.usp.icmc.labes.fsm.testing.PairTestSimpleDissimilarity;
+import com.usp.icmc.labes.fsm.testing.PairTestSimpleSimilarity;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration.ConfigurationType;
+import com.usp.icmc.labes.rbac.acut.RbacAcut;
+import com.usp.icmc.labes.rbac.model.RbacPolicy;
 
 public class FsmTestCaseSimilarityUtils {
 
@@ -36,7 +43,7 @@ public class FsmTestCaseSimilarityUtils {
 	}
 
 
-	public static void sortSimilarityCartaxo(FsmModel spec, FsmTestSuite testSuite) {
+	public void sortSimilarityCartaxo(FsmModel spec, FsmTestSuite testSuite) {
 		FsmSUT sut = new FsmSUT(spec);
 		FsmState initState = sut.getCurrentState();
 		List<FsmTestCase> testList = new ArrayList<>();
@@ -52,40 +59,14 @@ public class FsmTestCaseSimilarityUtils {
 
 		}
 
-		//		List<PairTestSimilarity> distMatrix = generateDistMatrix(testList);
 		List<PairTestSimilarity> distMatrix = generateDistMatrix(testList);
 
-		double dist_ij = 0; 
-
-		List<FsmTestCase> s = new ArrayList<FsmTestCase>();
-		for (int k = 0; k < testList.size(); k++)  s.add(testList.get(k));
-		Collections.sort(distMatrix);
-		List<FsmTestCase> l = new ArrayList<FsmTestCase>();
-//		for (PairTestSimilarity gtSim : distMatrix) {
-
-//		}
-//
-		PairTestSimilarity gtSim = null;
-		while (!distMatrix.isEmpty()) {
-			gtSim = distMatrix.get(0);
-
-			FsmTestCase selTest = null;
-			if(gtSim.hasEqualSize()){
-				selTest = gtSim.getTestRandom();
-			}else selTest = gtSim.getTestLonger();
-			removePairsWithTestCase(distMatrix,selTest);
-			l.add(selTest);
-			distMatrix.remove(gtSim);
-			System.out.println(gtSim.getSimilarity());
-		}
-		if(!l.contains(gtSim.getTestLonger())) l.add(gtSim.getTestLonger());
-		if(!l.contains(gtSim.getTestShorter())) l.add(gtSim.getTestShorter());
-		
+		List<FsmTestCase> l = sortBertolinoAlgorithm(distMatrix,testList);
 		testSuite.getTestCases().clear();
 		testSuite.getTestCases().addAll(l);
 	}
 
-	public void sortSimilarityDamasceno(FsmModel spec, FsmTestSuite testSuite) {
+	public void sortSimilarityDamasceno(RbacPolicy pol, FsmModel spec, FsmTestSuite testSuite) {
 		FsmSUT sut = new FsmSUT(spec);
 		FsmState initState = sut.getCurrentState();
 		List<FsmTestCase> testList = new ArrayList<>();
@@ -101,36 +82,59 @@ public class FsmTestCaseSimilarityUtils {
 
 		}
 
-		//		List<PairTestSimilarity> distMatrix = generateDistMatrix(testList);
-		List<PairTestSimilarity> distMatrix = generateDistMatrix(testList);
+		List<PairTestSimilarity> distMatrix = generateDistMatrixDamasceno(pol,testList);
 
-		List<FsmTestCase> s = new ArrayList<FsmTestCase>();
-		for (int k = 0; k < testList.size(); k++)  s.add(testList.get(k));
-		Collections.sort(distMatrix);
-		List<FsmTestCase> l = new ArrayList<FsmTestCase>();
-//		for (PairTestSimilarity gtSim : distMatrix) {
-
-//		}
-//
-		PairTestSimilarity gtSim = null;
-		while (!distMatrix.isEmpty()) {
-			gtSim = distMatrix.get(0);
-
-			FsmTestCase selTest = null;
-			if(gtSim.hasEqualSize()){
-				selTest = gtSim.getTestRandom();
-			}else selTest = gtSim.getTestLonger();
-			removePairsWithTestCase(distMatrix,selTest);
-			l.add(selTest);
-			distMatrix.remove(gtSim);
-			System.out.println(gtSim.getSimilarity());
-		}
-		if(!l.contains(gtSim.getTestLonger())) l.add(gtSim.getTestLonger());
-		if(!l.contains(gtSim.getTestShorter())) l.add(gtSim.getTestShorter());
-		
+		List<FsmTestCase> l = sortBertolinoAlgorithm(distMatrix,testList);
 		testSuite.getTestCases().clear();
 		testSuite.getTestCases().addAll(l);
 	}
+
+	private List<FsmTestCase> sortBertolinoAlgorithm(List<PairTestSimilarity> distMatrix, List<FsmTestCase> testList) {
+			List<FsmTestCase> s = new ArrayList<FsmTestCase>();
+			for (int k = 0; k < testList.size(); k++)  s.add(testList.get(k));
+			Collections.sort(distMatrix);
+			List<FsmTestCase> l = new ArrayList<FsmTestCase>();
+			PairTestSimilarity gtSim = distMatrix.get(0);
+			if(!l.contains(gtSim.getTestLonger())) 	l.add(gtSim.getTestLonger());
+			if(!l.contains(gtSim.getTestShorter())) l.add(gtSim.getTestShorter());
+			s.remove(gtSim.getTestLonger());
+			s.remove(gtSim.getTestShorter());
+			distMatrix.remove(gtSim);
+			List<PairTestSimilarity> tmp = new ArrayList<PairTestSimilarity>();
+			Map<PairTestSimilarity,FsmTestCase> tmpMap = new HashMap<PairTestSimilarity,FsmTestCase>();
+			while (!s.isEmpty()) {
+				tmp.clear();
+				for (FsmTestCase tcL : l) {
+					for (FsmTestCase tcS : s) {
+						for (PairTestSimilarity pair : distMatrix) {
+							if(pair.hasTest(tcL) && pair.hasTest(tcS)){
+								if(!tmp.contains(pair)){
+									tmp.add(pair);
+									tmpMap.put(pair, tcS);
+								}
+								break;
+							}
+						}
+					}
+				}	
+				Collections.sort(tmp);
+				PairTestSimilarity selPair = tmp.get(0);
+				FsmTestCase selTest = tmpMap.get(selPair);
+				if(!l.contains(selTest)){
+					l.add(selTest);
+					s.remove(selTest);
+				}
+				distMatrix.remove(selPair);
+	//			removePairsWithTestCase(distMatrix, selTest);
+				if(s.size() == 2 ){
+					l.add(s.get(0));
+					l.add(s.get(1));
+					s.remove(0);
+					s.remove(0);
+				}
+			}
+			return l;
+		}
 
 	private static void removePairsWithTestCase(List<PairTestSimilarity> distMatrix, FsmTestCase selTest) {
 		Set<PairTestSimilarity> toRemove = new HashSet<PairTestSimilarity>();
@@ -147,21 +151,27 @@ public class FsmTestCaseSimilarityUtils {
 		return distMatrix[real_i][real_j];
 	}
 
-	//	private static double[][] generateDistMatrix(List<FsmTestCase> testList) {
 	private static List<PairTestSimilarity> generateDistMatrix(List<FsmTestCase> testList) {
-		//		double [][] distMatrix = new double[testList.size()-1][];
 		List<PairTestSimilarity> pairsTest = new ArrayList<PairTestSimilarity>();
 
 		for (int i = 0; i < testList.size()-1; i++) {
 			FsmTestCase tci = testList.get(i);
-			//			distMatrix[i] = new double[testList.size()-i-1];
 			for (int j = i+1; j < testList.size(); j++) {
 				FsmTestCase tcj = testList.get(j);
-				//				int nit = calcNit(tci,tcj);
-				//				double avgij = (tci.getPath().size()+tcj.getPath().size())/2.0;
-				//				double similarityij = nit/avgij;
-				//				distMatrix[i][j-i-1] = similarityij;
-				pairsTest.add(new PairTestSimilarity(tci, tcj));
+				pairsTest.add(new PairTestSimpleDissimilarity(tci, tcj));
+			}
+		}
+		return pairsTest;
+	}
+
+	private List<PairTestSimilarity> generateDistMatrixDamasceno(RbacPolicy pol, List<FsmTestCase> testList) {
+		List<PairTestSimilarity> pairsTest = new ArrayList<PairTestSimilarity>();
+		RbacAcut acut = new RbacAcut(pol);
+		for (int i = 0; i < testList.size()-1; i++) {
+			FsmTestCase tci = testList.get(i);
+			for (int j = i+1; j < testList.size(); j++) {
+				FsmTestCase tcj = testList.get(j);
+				pairsTest.add(new PairTestRbacSimilarity(tci, tcj, acut));
 			}
 		}
 		return pairsTest;
@@ -174,6 +184,22 @@ public class FsmTestCaseSimilarityUtils {
 		return tcNit.size();
 	}
 
+	public int calcNdt(FsmTestCase tci, FsmTestCase tcj) {
+		Set<FsmTransition> it = new HashSet<FsmTransition>();
+		it.addAll(tci.getPath());
+		it.retainAll(tcj.getPath());
+
+		Set<FsmTransition> dt = new HashSet<FsmTransition>();
+		dt.addAll(tci.getPath());
+		dt.addAll(tcj.getPath());
+		dt.removeAll(it);
+		return dt.size();
+	}
+
 	private static FsmTestingUtils testingUtils 			= FsmTestingUtils.getInstance();
+
+	public void sortSimilarityRandom(FsmTestSuite testSuite) {
+		Collections.shuffle(testSuite.getTestCases(),RandomGenerator.getInstance().getRnd());
+	}
 
 }

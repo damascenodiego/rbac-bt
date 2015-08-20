@@ -164,7 +164,7 @@ public class MainTest {
 
 		try {
 			rbacUtils.WriteRbacPolicyAsXML(rbac, new File("policies/Masood2010Example1.rbac"));
-			rbac = rbacUtils.LoadRbacPolicyFromXML(new File("policies/Masood2010Example1.rbac"));
+			rbac = rbacUtils.loadRbacPolicyFromXML(new File("policies/Masood2010Example1.rbac"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -185,7 +185,7 @@ public class MainTest {
 
 			fsmUtils.WriteFsm(fsmGenerated, fsmFile);
 
-			FsmModel fsm = fsmUtils.LoadFsmFromXML(fsmFile);
+			FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
 
 			assertEquals(fsmGenerated,fsm);
 
@@ -194,7 +194,7 @@ public class MainTest {
 			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_qSet.test");
 			testingUtils.WriteFsmTestSuite(qSet, testSet);
 
-			assertEquals(qSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
+			assertEquals(qSet,testingUtils.loadFsmTestSuiteFromFile(testSet));
 			assertEquals(qSet.getTestCases().size(),fsm.getStates().size());
 
 			FsmTestSuite pSet = testingUtils.transitionCoverSet(fsm);
@@ -202,7 +202,7 @@ public class MainTest {
 			testSet = new File(fsmFile.getParentFile(),fsm.getName()+"_pSet.test");
 			testingUtils.WriteFsmTestSuite(pSet, testSet);
 
-			assertEquals(pSet,testingUtils.LoadFsmTestSuiteFromFile(testSet));
+			assertEquals(pSet,testingUtils.loadFsmTestSuiteFromFile(testSet));
 			assertEquals(pSet.getTestCases().size(),fsm.getStates().size()*fsm.getInputs().size());			
 
 
