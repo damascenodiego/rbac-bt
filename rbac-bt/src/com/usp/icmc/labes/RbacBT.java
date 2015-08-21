@@ -133,7 +133,7 @@ public class RbacBT {
 	}
 
 	private static boolean cmdIsValidForTestCharacts(CommandLine cmd) throws ParseException {
-		return cmd.hasOption(SUT_SPEC_CT_PARAMETER)
+		return cmd.hasOption(RBACPOL_PARAMETER)
 				&& cmd.hasOption(TESTSUITE_PARAMETER)
 				&& cmd.hasOption(TEST_CHARACTERISTICS_PARAMETER);
 	}
@@ -141,13 +141,11 @@ public class RbacBT {
 	private static boolean cmdIsValidForTestPrtz(CommandLine cmd) throws ParseException {
 		return cmd.hasOption(TESTPRTZ_PARAMETER)
 				&& cmd.hasOption(RBACPOL_PARAMETER)
-				&& cmd.hasOption(SUT_SPEC_CT_PARAMETER)
 				;
 	}
 
 	private static boolean cmdIsValidForConfTest(CommandLine cmd) {
 		return cmd.hasOption(CONFORMANCETEST_PARAMETER)
-				&& cmd.hasOption(SUT_SPEC_CT_PARAMETER)
 				&& cmd.hasOption(SUT_MUTANTLIST_CT_PARAMETER)
 				&& cmd.hasOption(TESTSUITE_PARAMETER);
 	}
@@ -411,27 +409,25 @@ public class RbacBT {
 		chron.start();
 		String operation = "random";
 
-		String fsmStr = cmd.getOptionValue(RANDOMTEST_PARAMETER);
+		String sutRbacStr = cmd.getOptionValue(RANDOMTEST_PARAMETER);
 		int resets = 50;
 		int length = 10;
 		
 		if(cmd.hasOption(RANDOMTEST_RESETS_PARAMETER)) resets = Integer.valueOf(cmd.getOptionValue(RANDOMTEST_RESETS_PARAMETER));
 		if(cmd.hasOption(RANDOMTEST_LENGTH_PARAMETER)) length = Integer.valueOf(cmd.getOptionValue(RANDOMTEST_LENGTH_PARAMETER));
 		
-		File fsmFile = new File(fsmStr);
-
-		FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
-
-		if(output == null) output = fsmFile.getParentFile();
+		File sutRbacFile 	= new File(sutRbacStr);
+		RbacPolicy sutRbac 	= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
+		
+		if(output == null) output = sutRbacFile.getParentFile();
 		output.mkdirs();
 
-		File suiteFile = new File(output,fsmFile.getName().concat(".rnd."+resets+"."+length+".test"));
+		File suiteFile = new File(output,sutRbac.getName().concat(".rnd."+resets+"."+length+".test"));
 
-		FsmTestSuite suite = testingUtils.randomTestSuite(fsm,resets,length);
-		testingUtils.setupTestFsmProperties(fsm,suite);
+		FsmTestSuite suite = testingUtils.randomTestSuite(sutRbac,resets,length);
 		testingUtils.WriteFsmTestSuiteAsKK(suite, suiteFile);
 		chron.stop();
-		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
+		System.out.println("%"+operation+" | "+sutRbac.getName()+" | "+chron.getInSeconds()+" seconds");
 
 		
 	}
@@ -440,22 +436,19 @@ public class RbacBT {
 		Chronometer chron = new Chronometer();
 		chron.start();
 		String sutRbacStr 		= cmd.getOptionValue(CONFORMANCETEST_PARAMETER);
-		String sutSpecStr 		= cmd.getOptionValue(SUT_SPEC_CT_PARAMETER);
 		String sutMutantsStr 	= cmd.getOptionValue(SUT_MUTANTLIST_CT_PARAMETER);
 		String testSuiteStr 	= cmd.getOptionValue(TESTSUITE_PARAMETER);
 
 		File sutRbacFile = new File(sutRbacStr);
-		File sutSpecFile = new File(sutSpecStr);
 		File testSuiteFile = new File(testSuiteStr);
 		File sutMutantsFile = new File(sutMutantsStr);
 
 
 		RbacPolicy sutRbac 			= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
-		FsmModel sutSpec			= fsmUtils.loadFsmFromXML(sutSpecFile);
-		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutSpec, testSuiteFile);
+		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
 		List<RbacPolicy> mutants 	= rbacUtils.loadMutantsFromTxTFile(sutMutantsFile);
 
-		testingUtils.printConformanceTestingStatistics(sutRbac,sutSpec,testSuite,mutants);
+		testingUtils.printConformanceTestingStatistics(sutRbac,testSuite,mutants);
 
 		chron.stop();
 	}
@@ -463,14 +456,15 @@ public class RbacBT {
 	private static void runPrintTestCharacteristics(CommandLine cmd, File output) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {
 		Chronometer chron = new Chronometer();
 		chron.start();
-		String sutSpecStr 		= cmd.getOptionValue(SUT_SPEC_CT_PARAMETER);
-		String testSuiteStr 	= cmd.getOptionValue(TESTSUITE_PARAMETER);
-	
-		File sutSpecFile = new File(sutSpecStr);
-		File testSuiteFile = new File(testSuiteStr);
-	
-		FsmModel sutSpec			= fsmUtils.loadFsmFromXML(sutSpecFile);
-		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutSpec, testSuiteFile);
+		
+		String sutRbacStr 	= cmd.getOptionValue(RBACPOL_PARAMETER);
+		File sutRbacFile 	= new File(sutRbacStr);
+		RbacPolicy sutRbac 	= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
+
+		
+		String testSuiteStr 		= cmd.getOptionValue(TESTSUITE_PARAMETER);
+		File testSuiteFile 			= new File(testSuiteStr);
+		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
 	
 		testingUtils.printTestSuiteCharacteristics(testSuite);
 	
@@ -482,30 +476,25 @@ public class RbacBT {
 		chron.start();
 		String testSuiteStr = cmd.getOptionValue(TESTPRTZ_PARAMETER);
 		String sutRbacStr 	= cmd.getOptionValue(RBACPOL_PARAMETER);
-		String sutSpecStr 	= cmd.getOptionValue(SUT_SPEC_CT_PARAMETER);
 
 		File testSuiteFile = new File(testSuiteStr);
 		File sutRbacFile = new File(sutRbacStr);
-		File sutSpecFile = new File(sutSpecStr);
 
 		RbacPolicy sutRbac 			= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
-		FsmModel sutSpec 			= fsmUtils.loadFsmFromXML(sutSpecFile);
-		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutSpec, testSuiteFile);
+		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
 
-		String prtz_mode = null;
-		switch (cmd.getOptionValue(MODE_PARAMETER)) {
+		String prtz_mode = cmd.getOptionValue(MODE_PARAMETER);
+		if(prtz_mode==null) prtz_mode = "";
+		switch (prtz_mode) {
 		case PRTZ_DAMASCENO_PARAMETER:
-			testSimiliaryt.sortSimilarityDamasceno(sutRbac,sutSpec,testSuite);
-			prtz_mode = "damasc";
+			testSimiliaryt.sortSimilarityDamasceno(sutRbac,testSuite);
 			break;
 		case PRTZ_RANDOM_PARAMETER:
 			testSimiliaryt.sortSimilarityRandom(testSuite);
-			prtz_mode = "random";
 			break;
 		case PRTZ_CARTAXO_PARAMETER:
 		default:
-			testSimiliaryt.sortSimilarityCartaxo(sutSpec,testSuite);
-			prtz_mode = "cartax";
+			testSimiliaryt.sortSimilarityCartaxo(sutRbac,testSuite);
 			break;
 		}
 

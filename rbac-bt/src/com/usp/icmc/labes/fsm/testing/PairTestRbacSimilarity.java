@@ -30,9 +30,9 @@ import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 public class PairTestRbacSimilarity extends PairTestSimilarity {
 
 	public PairTestRbacSimilarity(FsmTestCase tci, FsmTestCase tcj, RbacAcut acut) {
-		int nit = FsmTestCaseSimilarityUtils.getInstance().calcNit(tci,tcj);
+		int ndt = FsmTestCaseSimilarityUtils.getInstance().calcNdt(tci,tcj);
 		double avgij = (tci.getPath().size()+tcj.getPath().size())/2.0;
-		double dss = nit/avgij;
+		double dss = ndt/avgij;
 		if(tci.getPath().size()<tcj.getPath().size()){
 			this.test00 = tci;
 			this.test01 = tcj;
@@ -43,16 +43,16 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 		if(!(dss==0)){
 			double[] ra_i = calcRA(acut,tci,avgij);
 			double[] ra_j = calcRA(acut,tcj,avgij);
-			
+
 			double appValue = 0;
 			for (double d : ra_i) appValue += d;
 			for (double d : ra_j) appValue += d;
-			
+
 			double priorityValue = 0;
 			if (ra_i[0] == ra_j[0] && ra_i[0] == 1) priorityValue = 3;
 			else if ((ra_i[0] == 1 ^ ra_j[0] == 1)) priorityValue = 2;
 			else if ((0 < ra_i[0] && ra_i[0] < 1) && (0 < ra_j[0] && ra_j[0] < 1)) priorityValue = 1;
-			
+
 			similarity = dss + appValue + priorityValue;
 		}else{
 			similarity = 0;
@@ -88,7 +88,7 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 		acut.reset();
 
 		int totalNotMatching = notMatch.size();
-		
+
 		double pad = ((double)totalMutableElements-totalNotMatching)/totalMutableElements;
 		double as = 0;
 		as += ((double)urMatches)/avgij;
@@ -104,12 +104,12 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 		//TODO IhFailed	if(acut.getPolicy().getProperties().containsKey(RbacFaultType.AhFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.AhFailed.name())).size();
 		//TODO PRFailed	if(acut.getPolicy().getProperties().containsKey(RbacFaultType.AhFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.AhFailed.name())).size();
 
-//		System.err.println(pad+" "+as+" "+ac+" "+pr);
+		//		System.err.println(pad+" "+as+" "+ac+" "+pr);
 		acut.getPolicy().getProperties().clear();
-		
+
 		double [] ra = {pad, as, ac,pr};
 		return ra;
-			
+
 	}
 
 	private int calcMatchingUR(RbacRequest rq, RbacPolicy policy) {

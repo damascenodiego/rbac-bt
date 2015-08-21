@@ -47,9 +47,15 @@ import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.acut.RbacRequest;
+import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.User;
 
 public class FsmTestingUtils {
 
@@ -194,9 +200,27 @@ public class FsmTestingUtils {
 	//		return result;
 	//	}
 
-	public FsmTestSuite loadFsmTestSuiteFromKK(FsmModel model, File file) throws FileNotFoundException,IOException  {
-		FsmTestSuite ts = new FsmTestSuite(file.getName());
-		ts.setGeneratedBy(file.getName());
+	public FsmTestSuite loadFsmTestSuiteFromKK(RbacPolicy sutRbac, File file) throws FileNotFoundException,IOException  {
+		
+		RbacAcut acut = new RbacAcut(sutRbac);
+
+		List<RbacRequest> rqs = new ArrayList<RbacRequest>();
+		for (Role rol: sutRbac.getRole()) {
+			for (User usr: sutRbac.getUser()) {
+				rqs.add(new RbacRequestAssignUR(usr, rol));
+				rqs.add(new RbacRequestDeassignUR(usr, rol));
+				rqs.add(new RbacRequestActivateUR(usr, rol));
+				rqs.add(new RbacRequestDeactivateUR(usr, rol));
+			}
+			//			for (Permission prms: rbac.getPermission()) {
+			//				input.add(new RbacRequestAssignPR(prms, rol));
+			//				input.add(new RbacRequestDeassignPR(prms, rol));
+			//			}
+		}
+		rqs.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		
+		FsmTestSuite testSuite = new FsmTestSuite(file.getName());
+		testSuite.setGeneratedBy(file.getName());
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		while (br.ready()) {
 			String line = br.readLine();
@@ -206,30 +230,67 @@ public class FsmTestingUtils {
 				String inStr = line.substring(i, i+3);
 				int inInt = Integer.valueOf(inStr);
 				FsmTransition transition = new FsmTransition();
-				transition.setInput(model.getInputs().get(inInt));
+				transition.setInput(rqs.get(inInt).toString());
 				tc.getPath().add(transition );
-				if(!ts.getProperties().containsKey(model.getInputs().get(inInt)))
-					ts.getProperties().put(model.getInputs().get(inInt), Integer.toString(inInt));
 			}
-			ts.getTestCases().add(tc);
+			testSuite.getTestCases().add(tc);
 
 		}
 		br.close();
-		return ts;
+		
+
+		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
+		Map<String, FsmState> stateMap = new HashMap<String, FsmState>();
+
+		List<FsmTestCase> testList = new ArrayList<>();
+		testList.addAll(testSuite.getTestCases());
+		for (FsmTestCase testCase : testList) {
+			for (FsmTransition tr: testCase.getPath()) {
+				rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acut));
+
+				stateMap.putIfAbsent(acut.getCurrentState().toString(),new FsmState((acut.getCurrentState().toString())));
+				
+				tr.setFrom(stateMap.get(acut.getCurrentState().toString()));
+				boolean outBool = acut.request(rqMap.get(tr.getInput()));
+				tr.getProperties().put("input", rqs.indexOf(rqMap.get(tr.getInput())));
+				stateMap.putIfAbsent(acut.getCurrentState().toString(),new FsmState(acut.getCurrentState().toString()));
+				tr.setTo(stateMap.get(acut.getCurrentState().toString()));
+				tr.setOutput((outBool?"grant":"deny"));
+			}
+			acut.reset();
+		}
+		
+		return testSuite;
 	}
 
 
 
-	public FsmTestSuite randomTestSuite(FsmModel fsm, int resets, int length) {
-		FsmTestSuite tSuite = new FsmTestSuite(fsm.getName());
+	public FsmTestSuite randomTestSuite(RbacPolicy sutRbac, int resets, int length) {
+		List<String> rqs = new ArrayList<String>(); ;		
+		for (Role rol: sutRbac.getRole()) {
+			for (User usr: sutRbac.getUser()) {
+				rqs.add(new RbacRequestAssignUR(usr, rol).toString());
+				rqs.add(new RbacRequestDeassignUR(usr, rol).toString());
+				rqs.add(new RbacRequestActivateUR(usr, rol).toString());
+				rqs.add(new RbacRequestDeactivateUR(usr, rol).toString());
+			}
+			//			for (Permission prms: rbac.getPermission()) {
+			//				input.add(new RbacRequestAssignPR(prms, rol));
+			//				input.add(new RbacRequestDeassignPR(prms, rol));
+			//			}
+		}
+		rqs.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		
+		FsmTestSuite tSuite = new FsmTestSuite(sutRbac.getName());
 		tSuite.setGeneratedBy("random."+resets+"."+length);
 		
 		for (int i = 0; i < resets; i++) {
 			FsmTestCase tc = new FsmTestCase();
 			for (int j = 0; j < length; j++) {
-				int rndInputIndex = RandomGenerator.getInstance().getRnd().nextInt(fsm.getInputs().size());
+				int rndInputIndex = RandomGenerator.getInstance().getRnd().nextInt(rqs.size());
 				FsmTransition tr = new FsmTransition();
-				tr.setInput(fsm.getInputs().get(rndInputIndex));
+				tr.setInput(rqs.get(rndInputIndex));
+				tr.getProperties().put("input", rndInputIndex);
 				tc.addTransition(tr);
 			}
 			tSuite.getTestCases().add(tc);
@@ -408,10 +469,10 @@ public class FsmTestingUtils {
 
 		
 	}
-	public void printConformanceTestingStatistics(RbacPolicy sutRbac, FsmModel sutSpec, FsmTestSuite testSuite, List<RbacPolicy> mutants) {
+	public void printConformanceTestingStatistics(RbacPolicy sutRbac, FsmTestSuite testSuite, List<RbacPolicy> mutants) {
 
+		
 		RbacAcut acutSut= createAcutFromRbacPolicy(sutRbac);
-		FsmSUT sutSpecFsm = new FsmSUT(sutSpec);
 		List<RbacAcut> acutMutant = createAcutFromRbacPolicy(mutants);
 
 		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
@@ -426,13 +487,13 @@ public class FsmTestingUtils {
 			FsmTestCase tc = testSuite.getTestCases().get(i);
 			for (int j = 0; j < tc.getPath().size(); j++) {
 				FsmTransition tr = tc.getPath().get(j);
+
+				rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acutSut));
 				
-				String specOut = sutSpecFsm.input(tr.getInput());
-				boolean specBool = specOut.equals("grant");
+				boolean specBool = acutSut.request(rqMap.get(tr.getInput()));
 				
 				for (RbacAcut rbacAcut : acutMutant) {
 					if(killed.contains(rbacAcut.getPolicy())) continue;
-					rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acutSut));
 					boolean mutBool = rbacAcut.request(rqMap.get(tr.getInput()));
 					if(specBool ^ mutBool){
 						killed.add(rbacAcut.getPolicy());
@@ -440,7 +501,7 @@ public class FsmTestingUtils {
 						
 				}
 			}
-			sutSpecFsm.setCurrentState(sutSpec.getInitialState());
+			acutSut.reset();
 			for (RbacAcut rbacAcut : acutMutant)  rbacAcut.reset();
 		}
 		int totAlive  = alive.size();
@@ -483,7 +544,7 @@ public class FsmTestingUtils {
 		for (FsmTestCase tc : tsuite.getTestCases()) {
 			for (FsmTransition tr : tc.getPath()) {
 				if(tr.getInput() == null || tr.getInput().length()==0) continue;
-				int in = Integer.valueOf((String) tsuite.getProperties().get(tr.getInput()));
+				int in = (Integer)tr.getProperties().get("input");
 				pw.print(stateFormat.format(in));
 			}
 			pw.print("\n");

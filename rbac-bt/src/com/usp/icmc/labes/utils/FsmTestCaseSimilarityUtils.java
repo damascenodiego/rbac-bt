@@ -29,7 +29,14 @@ import com.usp.icmc.labes.fsm.testing.PairTestSimpleSimilarity;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration.ConfigurationType;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
+import com.usp.icmc.labes.rbac.acut.RbacRequest;
+import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
+import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.User;
 
 public class FsmTestCaseSimilarityUtils {
 
@@ -42,23 +49,13 @@ public class FsmTestCaseSimilarityUtils {
 		return instance;
 	}
 
+	private static RbacUtils rbacUtils = RbacUtils.getInstance();
 
-	public void sortSimilarityCartaxo(FsmModel spec, FsmTestSuite testSuite) {
-		FsmSUT sut = new FsmSUT(spec);
-		FsmState initState = sut.getCurrentState();
+	public void sortSimilarityCartaxo(RbacPolicy pol, FsmTestSuite testSuite) {
+		
 		List<FsmTestCase> testList = new ArrayList<>();
 		testList.addAll(testSuite.getTestCases());
-		for (FsmTestCase testCase : testList) {
-			for (FsmTransition tr: testCase.getPath()) {
-				FsmTransition specTr = sut.inputReturnsFsmTransition(tr.getInput());
-				tr.setFrom(specTr.getFrom());
-				tr.setTo(specTr.getTo());
-				tr.setOutput(specTr.getOutput());
-			}
-			sut.setCurrentState(initState);
-
-		}
-
+		
 		List<PairTestSimilarity> distMatrix = generateDistMatrix(testList);
 
 		List<FsmTestCase> l = sortBertolinoAlgorithm(distMatrix,testList);
@@ -66,21 +63,10 @@ public class FsmTestCaseSimilarityUtils {
 		testSuite.getTestCases().addAll(l);
 	}
 
-	public void sortSimilarityDamasceno(RbacPolicy pol, FsmModel spec, FsmTestSuite testSuite) {
-		FsmSUT sut = new FsmSUT(spec);
-		FsmState initState = sut.getCurrentState();
+	public void sortSimilarityDamasceno(RbacPolicy pol, FsmTestSuite testSuite) {
+		
 		List<FsmTestCase> testList = new ArrayList<>();
 		testList.addAll(testSuite.getTestCases());
-		for (FsmTestCase testCase : testList) {
-			for (FsmTransition tr: testCase.getPath()) {
-				FsmTransition specTr = sut.inputReturnsFsmTransition(tr.getInput());
-				tr.setFrom(specTr.getFrom());
-				tr.setTo(specTr.getTo());
-				tr.setOutput(specTr.getOutput());
-			}
-			sut.setCurrentState(initState);
-
-		}
 
 		List<PairTestSimilarity> distMatrix = generateDistMatrixDamasceno(pol,testList);
 
