@@ -85,36 +85,23 @@ public class FsmTestCaseSimilarityUtils {
 			if(!l.contains(gtSim.getTestShorter())) l.add(gtSim.getTestShorter());
 			s.remove(gtSim.getTestLonger());
 			s.remove(gtSim.getTestShorter());
-			distMatrix.remove(gtSim);
-			List<PairTestSimilarity> tmp = new ArrayList<PairTestSimilarity>();
-			Map<PairTestSimilarity,FsmTestCase> tmpMap = new HashMap<PairTestSimilarity,FsmTestCase>();
+//			distMatrix.remove(gtSim);
+			Map<FsmTestCase,Double> tmpMap = new HashMap<FsmTestCase,Double>();
 			while (!s.isEmpty()) {
-				tmp.clear();
-				for (FsmTestCase tcL : l) {
-					for (FsmTestCase tcS : s) {
+				tmpMap.clear();
+				for (FsmTestCase tcS : s) {
+					tmpMap.put(tcS, 0.0);
+					for (FsmTestCase tcL : l) {
 						for (PairTestSimilarity pair : distMatrix) {
 							if(pair.hasTest(tcL) && pair.hasTest(tcS)){
-								if(!tmp.contains(pair)){
-									tmp.add(pair);
-									tmpMap.put(pair, tcS);
-								}
-								break;
+								tmpMap.put(tcS, tmpMap.get(tcS)+pair.getSimilarity());
 							}
 						}
 					}
 				}	
-				Collections.sort(tmp);
-				if(tmp.isEmpty()){
-					continue;
-				}
-				PairTestSimilarity selPair = tmp.get(0);
-				FsmTestCase selTest = tmpMap.get(selPair);
-				if(!l.contains(selTest)){
-					l.add(selTest);
-					s.remove(selTest);
-				}else removePairsWithTestCase(distMatrix, selTest);
-				distMatrix.remove(selPair);
-	//			removePairsWithTestCase(distMatrix, selTest);
+				FsmTestCase selTest = getMaxDist(tmpMap,s);
+				l.add(selTest);
+				s.remove(selTest);
 				if(s.size() == 2 ){
 					l.add(s.get(0));
 					l.add(s.get(1));
@@ -124,6 +111,18 @@ public class FsmTestCaseSimilarityUtils {
 			}
 			return l;
 		}
+
+	private FsmTestCase getMaxDist(Map<FsmTestCase, Double> tmpMap, List<FsmTestCase> s) {
+		double greater = 0.0;
+		FsmTestCase greaterTc = s.get(s.size()-1);
+		for (int i = s.size()-1; i >= 0; i--) {
+			if (greater<=tmpMap.get(s.get(i))) {
+				greater = tmpMap.get(s.get(i));
+				greaterTc = s.get(i);
+			}
+		}
+		return greaterTc;
+	}
 
 	private static void removePairsWithTestCase(List<PairTestSimilarity> distMatrix, FsmTestCase selTest) {
 		Set<PairTestSimilarity> toRemove = new HashSet<PairTestSimilarity>();
