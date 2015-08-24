@@ -65,8 +65,8 @@ public class PrintRbacPolicy {
 		}
 		for (int i = 1; i < dsoDConstraint.size(); i++) {
 			roleList.clear();
-			roleList.addAll(dsoDConstraint.get(0).getSodSet());
-			out += ",("+roleListToString(roleList)+","+dsoDConstraint.get(0).getCardinality()+")";
+			roleList.addAll(dsoDConstraint.get(i).getSodSet());
+			out += ",("+roleListToString(roleList)+","+dsoDConstraint.get(i).getCardinality()+")";
 		}
 		out += "}";
 		return out;
@@ -81,8 +81,8 @@ public class PrintRbacPolicy {
 		}
 		for (int i = 1; i < ssoDConstraint.size(); i++) {
 			roleList.clear();
-			roleList.addAll(ssoDConstraint.get(0).getSodSet());
-			out += ",("+roleListToString(roleList)+","+ssoDConstraint.get(0).getCardinality()+")";
+			roleList.addAll(ssoDConstraint.get(i).getSodSet());
+			out += ",("+roleListToString(roleList)+","+ssoDConstraint.get(i).getCardinality()+")";
 		}
 		out += "}";
 		return out;
