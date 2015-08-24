@@ -3,6 +3,7 @@ package com.usp.icmc.labes.fsm.testing;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import com.usp.icmc.labes.fsm.FsmTransition;
@@ -78,10 +79,19 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 		int urMatches = 0;
 		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
 
+		Properties acutProps = new Properties();
+		
 		for (FsmTransition tr: tci.getPath()) {
 			rqMap.putIfAbsent(tr.getInput(), RbacUtils.getInstance().createRbacRequest(tr.getInput(),acut));
 			RbacRequest rq = rqMap.get(tr.getInput());
 			acut.request(rqMap.get(tr.getInput()));
+			for (Object obj: acut.getPolicy().getProperties().keySet()) {
+				tr.getProperties().putIfAbsent(obj, acut.getPolicy().getProperties().get(obj));
+				((Set) tr.getProperties().get(obj)).addAll((Set) tr.getProperties().get(obj));
+
+				acutProps.putIfAbsent(obj, acut.getPolicy().getProperties().get(obj));
+				((Set) acutProps.get(obj)).addAll((Set) acut.getPolicy().getProperties().get(obj));
+			}
 			removeMatching(notMatch,rq);
 			urMatches+=calcMatchingUR(rq,acut.getPolicy());
 		}
@@ -92,17 +102,17 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 		double pad = ((double)totalMutableElements-totalNotMatching)/totalMutableElements;
 		double as = 0;
 		as += ((double)urMatches)/avgij;
-		if(acut.getPolicy().getProperties().containsKey(RbacFaultType.SuFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.SuFailed.name())).size();
-		if(acut.getPolicy().getProperties().containsKey(RbacFaultType.SrFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.SrFailed.name())).size();
-		if(acut.getPolicy().getProperties().containsKey(RbacFaultType.SsodFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.SsodFailed.name())).size();
+		if(acutProps.containsKey(RbacFaultType.SuFailed.name())) as += ((Set) acutProps.get(RbacFaultType.SuFailed.name())).size();
+		if(acutProps.containsKey(RbacFaultType.SrFailed.name())) as += ((Set) acutProps.get(RbacFaultType.SrFailed.name())).size();
+		if(acutProps.containsKey(RbacFaultType.SsodFailed.name())) as += ((Set) acutProps.get(RbacFaultType.SsodFailed.name())).size();
 		double ac = 0;
-		if(acut.getPolicy().getProperties().containsKey(RbacFaultType.DuFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.DuFailed.name())).size();
-		if(acut.getPolicy().getProperties().containsKey(RbacFaultType.DrFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.DrFailed.name())).size();
-		if(acut.getPolicy().getProperties().containsKey(RbacFaultType.DsodFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.DsodFailed.name())).size();
-		//TODO AhFailed	if(acut.getPolicy().getProperties().containsKey(RbacFaultType.AhFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.AhFailed.name())).size();
+		if(acutProps.containsKey(RbacFaultType.DuFailed.name())) ac += ((Set) acutProps.get(RbacFaultType.DuFailed.name())).size();
+		if(acutProps.containsKey(RbacFaultType.DrFailed.name())) ac += ((Set) acutProps.get(RbacFaultType.DrFailed.name())).size();
+		if(acutProps.containsKey(RbacFaultType.DsodFailed.name())) ac += ((Set) acutProps.get(RbacFaultType.DsodFailed.name())).size();
+		//TODO AhFailed	if(acutProps.containsKey(RbacFaultType.AhFailed.name())) as += ((Set) acutProps.get(RbacFaultType.AhFailed.name())).size();
 		double pr = 0;
-		//TODO IhFailed	if(acut.getPolicy().getProperties().containsKey(RbacFaultType.AhFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.AhFailed.name())).size();
-		//TODO PRFailed	if(acut.getPolicy().getProperties().containsKey(RbacFaultType.AhFailed.name())) as += ((Set) acut.getPolicy().getProperties().get(RbacFaultType.AhFailed.name())).size();
+		//TODO IhFailed	if(acutProps.containsKey(RbacFaultType.AhFailed.name())) as += ((Set) acutProps.get(RbacFaultType.AhFailed.name())).size();
+		//TODO PRFailed	if(acutProps.containsKey(RbacFaultType.AhFailed.name())) as += ((Set) .get(RbacFaultType.AhFailed.name())).size();
 
 		//		System.err.println(pad+" "+as+" "+ac+" "+pr);
 		acut.getPolicy().getProperties().clear();
