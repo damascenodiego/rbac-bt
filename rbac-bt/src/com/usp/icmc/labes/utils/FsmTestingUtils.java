@@ -201,7 +201,7 @@ public class FsmTestingUtils {
 	//	}
 
 	public FsmTestSuite loadFsmTestSuiteFromKK(RbacPolicy sutRbac, File file) throws FileNotFoundException,IOException  {
-		
+
 		RbacAcut acut = new RbacAcut(sutRbac);
 
 		List<RbacRequest> rqs = new ArrayList<RbacRequest>();
@@ -218,7 +218,7 @@ public class FsmTestingUtils {
 			//			}
 		}
 		rqs.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-		
+
 		FsmTestSuite testSuite = new FsmTestSuite(file.getName());
 		testSuite.setGeneratedBy(file.getName());
 		BufferedReader br = new BufferedReader(new FileReader(file));
@@ -237,7 +237,7 @@ public class FsmTestingUtils {
 
 		}
 		br.close();
-		
+
 
 		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
 		Map<String, FsmState> stateMap = new HashMap<String, FsmState>();
@@ -249,7 +249,7 @@ public class FsmTestingUtils {
 				rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acut));
 
 				stateMap.putIfAbsent(acut.getCurrentState().toString(),new FsmState((acut.getCurrentState().toString())));
-				
+
 				tr.setFrom(stateMap.get(acut.getCurrentState().toString()));
 				boolean outBool = acut.request(rqMap.get(tr.getInput()));
 				tr.getProperties().put("input", rqs.indexOf(rqMap.get(tr.getInput())));
@@ -259,7 +259,7 @@ public class FsmTestingUtils {
 			}
 			acut.reset();
 		}
-		
+
 		return testSuite;
 	}
 
@@ -280,10 +280,10 @@ public class FsmTestingUtils {
 			//			}
 		}
 		rqs.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-		
+
 		FsmTestSuite tSuite = new FsmTestSuite(sutRbac.getName());
 		tSuite.setGeneratedBy("random."+resets+"."+length);
-		
+
 		for (int i = 0; i < resets; i++) {
 			FsmTestCase tc = new FsmTestCase();
 			for (int j = 0; j < length; j++) {
@@ -296,9 +296,9 @@ public class FsmTestingUtils {
 			tSuite.getTestCases().add(tc);
 		}
 
-		
+
 		return tSuite;
-		
+
 	}
 
 
@@ -454,7 +454,7 @@ public class FsmTestingUtils {
 		System.out.print("varLength"+"\t");
 		System.out.print("medianLength"+"\n");
 
-		
+
 		FsmTestStatistics tStats = new FsmTestStatistics(testSuite);
 		System.out.print(testSuite.getName()+"\t");
 		System.out.print(Long.toString(	tStats.getNoResets					())+"\t");
@@ -467,21 +467,18 @@ public class FsmTestingUtils {
 		System.out.print(Double.toString(	tStats.getVarLength				())+"\t");
 		System.out.print(Double.toString(	tStats.getMedianLength			())+"\n");
 
-		
+
 	}
 	public void printConformanceTestingStatistics(RbacPolicy sutRbac, FsmTestSuite testSuite, List<RbacPolicy> mutants) {
 
-		
+
 		RbacAcut acutSut= createAcutFromRbacPolicy(sutRbac);
 		List<RbacAcut> acutMutant = createAcutFromRbacPolicy(mutants);
 
 		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
 
-		List<RbacPolicy> alive = new ArrayList<RbacPolicy>();
 		List<RbacPolicy> killed  = new ArrayList<RbacPolicy>();
-		alive.addAll(mutants);
 
-		
 		for (int i = 0; i < testSuite.getTestCases().size(); i++) {
 
 			FsmTestCase tc = testSuite.getTestCases().get(i);
@@ -489,39 +486,41 @@ public class FsmTestingUtils {
 				FsmTransition tr = tc.getPath().get(j);
 
 				rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acutSut));
-				
+
 				boolean specBool = acutSut.request(rqMap.get(tr.getInput()));
-				
+
 				for (RbacAcut rbacAcut : acutMutant) {
 					if(killed.contains(rbacAcut.getPolicy())) continue;
 					boolean mutBool = rbacAcut.request(rqMap.get(tr.getInput()));
 					if(specBool ^ mutBool){
 						killed.add(rbacAcut.getPolicy());
 					}
-						
+
 				}
 			}
 			acutSut.reset();
 			for (RbacAcut rbacAcut : acutMutant)  rbacAcut.reset();
 		}
-		int totAlive  = alive.size();
+
 		int totKilled = killed.size();
 		double score = ((double)totKilled)/(mutants.size());
-		
+
 		System.out.print(sutRbac.getName()+"\t");
 		System.out.print(mutants.size()+"\t");
 		System.out.print(testSuite.getName()+"\t");
 		System.out.print(score);
 		System.out.print("\n\n");
-		
-		for (RbacPolicy pol : alive) {
-			if (!killed.contains(pol)) {
-				System.out.println(pol.getName());
-			}
-			
-		}
-		
 
+		Set<String> alivePolNames = new HashSet<String>();
+		for (RbacPolicy pol : mutants) alivePolNames.add(pol.getName());
+
+		Set<String> killedPolNames = new HashSet<String>();
+		for (RbacPolicy pol : killed) killedPolNames.add(pol.getName());
+
+		alivePolNames.removeAll(killedPolNames);
+		for (String polName : alivePolNames) {
+			System.out.println(polName);
+		}
 	}
 
 	private List<RbacAcut> createAcutFromRbacPolicy(List<RbacPolicy> mutants) {

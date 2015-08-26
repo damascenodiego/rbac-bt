@@ -352,6 +352,7 @@ public class RbacUtils {
 			if (dynamicUser[userIndex]>i.getCardinality()) return false;
 		}
 		for (SSoDConstraint i : mutPol.getSSoDConstraint()) {
+			if(i.getCardinality()<=0) return false;
 			for (User u : urAssignment.keySet()) {
 				Set<Role> set = new HashSet<Role>();
 				set.addAll(i.getSodSet());
@@ -360,6 +361,7 @@ public class RbacUtils {
 			}
 		}
 		for (DSoDConstraint i : mutPol.getDSoDConstraint()) {
+			if(i.getCardinality()<=0) return false;
 			for (User u : urActivation.keySet()) {
 				Set<Role> set = new HashSet<Role>();
 				set.addAll(i.getSodSet());
