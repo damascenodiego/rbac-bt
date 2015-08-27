@@ -131,7 +131,7 @@ public class RbacUtils {
 
 	public List<DSoDConstraint> getDSoD(RbacTuple pol, Role rol) {
 		List<DSoDConstraint> result = new ArrayList<DSoDConstraint>();
-		for (DSoDConstraint set : result) {
+		for (DSoDConstraint set : pol.getDSoDConstraint()) {
 			if(set.getSodSet().contains(rol)) result.add(set);
 		}
 		return result;
