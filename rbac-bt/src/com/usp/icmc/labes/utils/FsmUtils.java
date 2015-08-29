@@ -44,6 +44,7 @@ import com.usp.icmc.labes.rbac.acut.RbacState;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class FsmUtils {
 
@@ -330,14 +331,15 @@ public class FsmUtils {
 		for (FsmTransition t: fsm.getTransitions()) {
 
 			if(!t.getProperties().isEmpty()) {
-				Enumeration<Object> keys = t.getProperties().keys();
-				while (keys.hasMoreElements()) {
-					String k = (String) keys.nextElement();
-					Set<String> fEls = (Set<String>) t.getProperties().get(k);
+				//				Enumeration<Object> keys = t.getProperties().keys();
+				//				while (keys.hasMoreElements()) {
+				for (RbacFaultType faultType: RbacFaultType.values()) {
+//					String k = (String) keys.nextElement();
+					Set<String> fEls = (Set<String>) t.getProperties().get(faultType);
 					for (String el : fEls) {
 						Element failure = doc.createElement("failure");
 						failure.setAttribute("transition", t.toString());
-						failure.setAttribute("type", k);
+						failure.setAttribute("type", faultType.name());
 						failure.setAttribute("constraint", el);
 						failures.appendChild(failure);
 					}
