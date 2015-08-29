@@ -46,7 +46,7 @@ public class CalcStatistics {
 	private static RbacUtils rbacUtils = RbacUtils.getInstance();
 
 	public static void main(String[] args) {
-		File outList = new File("/home/damasceno/Dropbox/run2015-08-24_23-23-03/outList.txt");
+		File outList = new File(args[0]);
 		File statSummary = new File(outList.getParentFile(),"statSummary.txt");
 		Mean mean = new Mean();
 		Median median= new Median();
