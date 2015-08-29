@@ -443,8 +443,8 @@ public class RbacBT {
 		int resets = 50;
 		int length = 10;
 		
-		if(cmd.hasOption(RANDOMTEST_RESETS_PARAMETER)) resets = Integer.valueOf(cmd.getOptionValue(RANDOMTEST_RESETS_PARAMETER));
-		if(cmd.hasOption(RANDOMTEST_LENGTH_PARAMETER)) length = Integer.valueOf(cmd.getOptionValue(RANDOMTEST_LENGTH_PARAMETER));
+		if(cmd.hasOption(RANDOMTEST_RESETS_PARAMETER)) resets = Math.round(Float.valueOf(cmd.getOptionValue(RANDOMTEST_RESETS_PARAMETER)));
+		if(cmd.hasOption(RANDOMTEST_LENGTH_PARAMETER)) length = Math.round(Float.valueOf(cmd.getOptionValue(RANDOMTEST_LENGTH_PARAMETER)));
 		
 		File sutRbacFile 	= new File(sutRbacStr);
 		RbacPolicy sutRbac 	= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
