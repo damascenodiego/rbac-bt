@@ -56,6 +56,7 @@ import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class FsmTestingUtils {
 
@@ -256,6 +257,13 @@ public class FsmTestingUtils {
 				stateMap.putIfAbsent(acut.getCurrentState().toString(),new FsmState(acut.getCurrentState().toString()));
 				tr.setTo(stateMap.get(acut.getCurrentState().toString()));
 				tr.setOutput((outBool?"grant":"deny"));
+				
+				for (RbacFaultType faultType: RbacFaultType.values()) {
+					tr.getProperties().putIfAbsent(faultType, new HashSet<>());
+					if(!acut.getPolicy().getProperties().containsKey(faultType)) continue;
+					((Set) tr.getProperties().get(faultType)).addAll((Set) acut.getPolicy().getProperties().get(faultType));
+				}
+//				System.out.println(tr);
 			}
 			acut.reset();
 		}
@@ -559,6 +567,18 @@ public class FsmTestingUtils {
 			if(!suite.getProperties().containsKey(in))
 				suite.getProperties().put(in, Integer.toString(fsm.getInputs().indexOf(in)));
 		}
+	}
+
+
+
+	public FsmTestSuite selectSubset(FsmTestSuite testSuite, int i) {
+		FsmTestSuite subset = new FsmTestSuite();
+		subset.setName(testSuite.getName());
+		for (int j = 0; j < testSuite.getTestCases().size(); j++) {
+			if(subset.getTestCases().size()==i) break;
+			subset.getTestCases().add(testSuite.getTestCases().get(j));
+		}
+		return subset;
 	}
 
 
