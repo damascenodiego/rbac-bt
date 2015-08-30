@@ -114,8 +114,8 @@ public class RbacUtils {
 
 	public void failedDueTo(RbacPolicy p, RbacFaultType faultType, RbacMutableElement reason) {
 		synchronized (p.getProperties()) {
-			p.getProperties().putIfAbsent(faultType, new HashSet<String>());
-			((Set)p.getProperties().get(faultType)).add(reason.toString());	
+			p.getProperties().putIfAbsent(faultType, new HashSet<RbacMutableElement>());
+			((Set)p.getProperties().get(faultType)).add(reason);	
 		}
 	}
 
