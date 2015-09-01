@@ -8,11 +8,12 @@ public class FsmState extends FsmElement{
 	private List<FsmTransition> in;
 	private List<FsmTransition> out;
 	
-	public FsmState(String n) {
-		super(n);
+	public FsmState(int id_num) {
+		super(id_num);
 		in  = new ArrayList<FsmTransition>();
 		out = new ArrayList<FsmTransition>();
 	}
+	
 	
 	
 	public List<FsmTransition> getIn() {
@@ -25,7 +26,7 @@ public class FsmState extends FsmElement{
 
 	@Override
 	public String toString() {
-		return super.getName();
+		return Integer.toString(getId());
 	}
 
 }

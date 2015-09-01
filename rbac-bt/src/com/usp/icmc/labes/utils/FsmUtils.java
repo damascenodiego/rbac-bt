@@ -40,7 +40,6 @@ import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
-import com.usp.icmc.labes.rbac.acut.RbacState;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
@@ -64,46 +63,46 @@ public class FsmUtils {
 		stateFormat = new DecimalFormat("000");
 	}
 
-	public void fsmDiff(FsmModel f1, FsmModel f2, File fDiff) throws FileNotFoundException{
-		String edgeColor = "";
-		PrintWriter pw = new PrintWriter(fDiff);
-		pw.println("digraph rbac2Fsm {");
-		pw.println("  {");
-		pw.println("  node [style=filled]");
-		for (FsmState s : f1.getStates()) {
-			if(!f2.getStates().contains(s)){
-				pw.println("  "+s.getName()+" [color=red]");
-			}	
-		}
-		pw.println("  }");
-		Set<FsmTransition> allTransitions = new HashSet<FsmTransition>();
-		allTransitions.addAll(f1.getTransitions());
-		allTransitions.addAll(f2.getTransitions());
-		for (FsmTransition tr : allTransitions) {
-			if(tr.getOutput().equals("grant")){
-				if(f1.getTransitions().contains(tr) && f2.getTransitions().contains(tr)){
-					edgeColor = "";
-				}else if(f1.getTransitions().contains(tr)){
-					edgeColor = ", color=red";
-				}else if(f2.getTransitions().contains(tr)){
-					edgeColor = ", color=green";
-				}	
-				pw.println("  "+
-						tr.getFrom().getName()
-						+" -> "
-						+tr.getTo().getName()
-						+" [ label =\""+tr.getInput()+"/"+tr.getOutput()+"\""+edgeColor+"];");
-			}
-		}
-		pw.println("}");
-		pw.close();
+//	public void fsmDiff(FsmModel f1, FsmModel f2, File fDiff) throws FileNotFoundException{
+//		String edgeColor = "";
+//		PrintWriter pw = new PrintWriter(fDiff);
+//		pw.println("digraph rbac2Fsm {");
+//		pw.println("  {");
+//		pw.println("  node [style=filled]");
+//		for (FsmState s : f1.getStates()) {
+//			if(!f2.getStates().contains(s)){
+//				pw.println("  "+s.getName()+" [color=red]");
+//			}	
+//		}
+//		pw.println("  }");
+//		Set<FsmTransition> allTransitions = new HashSet<FsmTransition>();
+//		allTransitions.addAll(f1.getTransitions());
+//		allTransitions.addAll(f2.getTransitions());
+//		for (FsmTransition tr : allTransitions) {
+//			if(tr.getOutput().equals("grant")){
+//				if(f1.getTransitions().contains(tr) && f2.getTransitions().contains(tr)){
+//					edgeColor = "";
+//				}else if(f1.getTransitions().contains(tr)){
+//					edgeColor = ", color=red";
+//				}else if(f2.getTransitions().contains(tr)){
+//					edgeColor = ", color=green";
+//				}	
+//				pw.println("  "+
+//						tr.getFrom().getName()
+//						+" -> "
+//						+tr.getTo().getName()
+//						+" [ label =\""+tr.getInput()+"/"+tr.getOutput()+"\""+edgeColor+"];");
+//			}
+//		}
+//		pw.println("}");
+//		pw.close();
+//
+//	}
 
-	}
 
-
-	public FsmState getState(Collection<FsmState> states2, String s){
+	public FsmState getState(Collection<FsmState> states2, int id){
 		for (FsmState fsmState : states2) {
-			if(fsmState.getName().equals(s)){
+			if(fsmState.getId() == id){
 				return fsmState;
 			}
 		}
@@ -146,18 +145,18 @@ public class FsmUtils {
 		el = ((Element)node).getElementsByTagName("state");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
-			fsm.getStates().add(new FsmState(in.getAttribute("name")));
+			fsm.getStates().add(new FsmState(Integer.valueOf(in.getAttribute("name"))));
 		}
 
-		fsm.setInitialState(fsm.getState(fsmElement.getAttribute("initialState")));
+		fsm.setInitialState(fsm.getState(Integer.valueOf(fsmElement.getAttribute("initialState"))));
 		node = fsmElement.getElementsByTagName("transitions").item(0);
 		el = ((Element)node).getElementsByTagName("transition");
 		for (int i = 0; i < el.getLength(); i++) {
 			Element in = (Element) el.item(i);
-			FsmState f = fsm.getState(in.getAttribute("from"));
+			FsmState f = fsm.getState(Integer.valueOf(in.getAttribute("from")));
 			String input = in.getAttribute("in");
 			String output = in.getAttribute("out");
-			FsmState t = fsm.getState(in.getAttribute("to"));
+			FsmState t = fsm.getState(Integer.valueOf(in.getAttribute("to")));
 			fsm.addTransition(new FsmTransition(f, input, output, t));
 		}
 
@@ -177,75 +176,7 @@ public class FsmUtils {
 		return fsm;
 	}
 
-	public FsmModel rbac2Fsm(RbacPolicy rbac) throws Exception {
-		//		rbac.getUserRoleAssignment().clear();
-		List<RbacRequest> input = new ArrayList<RbacRequest>();
-		for (Role rol: rbac.getRole()) {
-			for (User usr: rbac.getUser()) {
-				input.add(new RbacRequestAssignUR(usr, rol));
-				input.add(new RbacRequestDeassignUR(usr, rol));
-				input.add(new RbacRequestActivateUR(usr, rol));
-				input.add(new RbacRequestDeactivateUR(usr, rol));
-			}
-			//			for (Permission prms: rbac.getPermission()) {
-			//				input.add(new RbacRequestAssignPR(prms, rol));
-			//				input.add(new RbacRequestDeassignPR(prms, rol));
-			//			}
-		}
-
-		RbacAcut acut = new RbacAcut(rbac);
-
-		RbacState 	origin 			= null;
-		boolean 	out 			= false;
-		RbacState	 destination 	= null;
-
-		FsmModel rbac2fsm = new FsmModel(rbac.getName());
-
-		String initialStateName = acut.getCurrentState().getName();
-		Queue<RbacState> toVisit = new LinkedList<RbacState>();
-		toVisit.add((RbacState) acut.getCurrentState().clone());
-
-		List<RbacState> visited = new ArrayList<RbacState>();
-
-		while (!toVisit.isEmpty()) {
-			origin = toVisit.remove();
-			acut.reset(origin);
-			if(!visited.contains(origin)){
-				visited.add(origin);
-				rbac2fsm.addState(new FsmState(origin.getName()));
-				for (RbacRequest in : input) {
-					out = acut.request(in);
-					destination = ((RbacState) acut.getCurrentState().clone());
-					rbac2fsm.addState(new FsmState(destination.getName()));
-					rbac2fsm.addTransition(new FsmTransition(rbac2fsm.getState(origin.getName()), in.toString(), (out? "grant" : "deny"), rbac2fsm.getState(destination.getName())));
-					if(!visited.contains(destination)) 
-						toVisit.add(destination);
-					else{
-						toVisit.remove(destination);
-					}
-					acut.reset(origin);
-				}
-			}
-		}
-		rbac2fsm.setInitialState(getState(rbac2fsm.getStates(),initialStateName));
-		return rbac2fsm;
-	}
-
 	public FsmModel rbac2FsmConcurrent(RbacPolicy rbac) {
-		List<RbacRequest> input = new ArrayList<RbacRequest>();
-		for (Role rol: rbac.getRole()) {
-			for (User usr: rbac.getUser()) {
-				input.add(new RbacRequestAssignUR(usr, rol));
-				input.add(new RbacRequestDeassignUR(usr, rol));
-				input.add(new RbacRequestActivateUR(usr, rol));
-				input.add(new RbacRequestDeactivateUR(usr, rol));
-			}
-			//			for (Permission prms: rbac.getPermission()) {
-			//				input.add(new RbacRequestAssignPR(prms, rol));
-			//				input.add(new RbacRequestDeassignPR(prms, rol));
-			//			}
-		}
-
 		RbacAcut acut = new RbacAcut(rbac);
 
 		int threadsNum = Runtime.getRuntime().availableProcessors();
@@ -270,8 +201,8 @@ public class FsmUtils {
 			s.getOut().clear();
 		}
 		for (FsmTransition tr : fsmModel.getTransitions()) {
-			FsmState fr = fsmModel.getState(tr.getFrom().getName());
-			FsmState to = fsmModel.getState(tr.getTo().getName());
+			FsmState fr = fsmModel.getState(tr.getFrom().getId());
+			FsmState to = fsmModel.getState(tr.getTo().getId());
 			tr.setFrom(fr);
 			tr.setTo(to);
 			if(!fr.getOut().contains(tr)) fr.getOut().add(tr);
@@ -287,7 +218,7 @@ public class FsmUtils {
 		Document doc = docBuilder.newDocument();
 
 		Element rootElement = doc.createElement("FSM");
-		rootElement.setAttribute("initialState",fsm.getInitialState().getName());
+		rootElement.setAttribute("initialState",Integer.toString(fsm.getInitialState().getId()));
 		rootElement.setAttribute("name",fsm.getName());
 
 		Element inputs = doc.createElement("inputs");
@@ -310,7 +241,7 @@ public class FsmUtils {
 		Element states = doc.createElement("states");
 		for (FsmState s: fsm.getStates()) {
 			Element child = doc.createElement("state");
-			child.setAttribute("name", s.getName());
+			child.setAttribute("name", Integer.toString(s.getId()));
 			states.appendChild(child);
 		}
 		rootElement.appendChild(states);
@@ -318,10 +249,10 @@ public class FsmUtils {
 		Element transitions = doc.createElement("transitions");
 		for (FsmTransition t: fsm.getTransitions()) {
 			Element transition = doc.createElement("transition");
-			transition.setAttribute("from", t.getFrom().getName());
+			transition.setAttribute("from", Integer.toString(t.getFrom().getId()));
 			transition.setAttribute("in", t.getInput());
 			transition.setAttribute("out", t.getOutput());
-			transition.setAttribute("to", t.getTo().getName());
+			transition.setAttribute("to", Integer.toString(t.getTo().getId()));
 			transitions.appendChild(transition);
 		}
 		rootElement.appendChild(transitions);
@@ -365,7 +296,7 @@ public class FsmUtils {
 		//		xstream.toXML(fsm, fos);
 
 	}
-
+	/*
 	public void WriteFsmAsCsv(FsmModel fsm, File f) throws FileNotFoundException {
 		PrintWriter pw = new PrintWriter(f);
 
@@ -374,10 +305,10 @@ public class FsmUtils {
 		for (FsmTransition tr : transit) {
 			//			if(tr.getOutput().equals("deny")) continue;
 			pw.println(
-					"\""+tr.getFrom().getName()+"\","
+					"\""+tr.getFrom().getId()+"\","
 							+"\""+tr.getInput()+"\","
 							+"\""+tr.getOutput()+"\","
-							+"\""+tr.getTo().getName()+"\",");
+							+"\""+tr.getTo().getId()+"\",");
 		}
 		pw.println("}");
 		pw.close();
@@ -496,7 +427,7 @@ public class FsmUtils {
 		List<FsmTransition> transit = new ArrayList<FsmTransition>();
 		transit.addAll(fsm.getTransitions());
 		putInitialAsFirst(transit,fsm.getInitialState());
-		
+
 		for (FsmTransition tr : transit) {
 			//			if(tr.getOutput().equals("deny")) continue;
 			pw.println(tr.getFrom().getName()
@@ -507,7 +438,7 @@ public class FsmUtils {
 		}
 		pw.close();
 	}
-
+	 */
 	public void WriteFsmAsKissSimple(FsmModel fsm, File f) throws FileNotFoundException{
 		PrintWriter pw = new PrintWriter(f);
 

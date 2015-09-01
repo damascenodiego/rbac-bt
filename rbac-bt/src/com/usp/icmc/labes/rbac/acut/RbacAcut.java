@@ -1,7 +1,10 @@
 package com.usp.icmc.labes.rbac.acut;
 
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
+import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
 import com.usp.icmc.labes.rbac.features.RbacAdvancedReviewFunctions;
 import com.usp.icmc.labes.rbac.features.RbacReviewFunctions;
@@ -28,11 +31,13 @@ public class RbacAcut implements RbacTuple{
 
 	private RbacPolicy policy;
 
-	private RbacState initialState;
-	private RbacState currentState;
+	private FsmState initialState;
+	private FsmState currentState;
 
-	private RbacResponse response;
-
+	private List<UserRoleAssignment> userRoleAssignment;
+	private List<UserRoleActivation> userRoleActivation;
+	private List<PermissionRoleAssignment> permissionRoleAssignment;
+	
 	private RbacUtils utils = RbacUtils.getInstance();
 
 	private RbacAdministrativeCommands admin = RbacAdministrativeCommands.getInstance();
@@ -44,16 +49,13 @@ public class RbacAcut implements RbacTuple{
 		this(acut2.getPolicy());
 	}
 
-	//	private void saveState(RbacPolicy p) {
-	//		currentState = new RbacState(p);
-	//	}
-
 	public RbacAcut(RbacPolicy p) { 
 		policy = p;
-		//		saveState(p);
-		initialState = new RbacState(p);
-		currentState = new RbacState(p);
-		response = new RbacResponse();
+		initialState = RbacUtils.getInstance().rbacToFsmState(p);
+		currentState = RbacUtils.getInstance().rbacToFsmState(p);
+		userRoleAssignment = new ArrayList<UserRoleAssignment>();
+		userRoleActivation= new ArrayList<UserRoleActivation>();
+		permissionRoleAssignment = new ArrayList<PermissionRoleAssignment>();
 	}
 
 	@Override
@@ -144,10 +146,6 @@ public class RbacAcut implements RbacTuple{
 		return policy.getActivationHierarchy();
 	}
 
-	public RbacState getCurrentState() {
-		return currentState;
-	}
-
 	@Override
 	public List<Dr> getDr() {
 		return policy.getDr();
@@ -168,10 +166,6 @@ public class RbacAcut implements RbacTuple{
 		return policy.getInheritanceHierarchy();
 	}
 
-	public String getName() {
-		return currentState.getName();
-	}
-
 	@Override
 	public List<Permission> getPermission() {
 		return policy.getPermission();
@@ -179,15 +173,11 @@ public class RbacAcut implements RbacTuple{
 
 	@Override
 	public List<PermissionRoleAssignment> getPermissionRoleAssignment() {
-		return getCurrentState().prAsCopy;
+		return permissionRoleAssignment;
 	}
 
 	public RbacPolicy getPolicy() {
 		return policy;
-	}
-
-	public RbacResponse getResponse() {
-		return response;
 	}
 
 	@Override
@@ -217,12 +207,12 @@ public class RbacAcut implements RbacTuple{
 
 	@Override
 	public List<UserRoleActivation> getUserRoleActivation() {
-		return getCurrentState().urAcCopy;
+		return userRoleActivation;
 	}
 
 	@Override
 	public List<UserRoleAssignment> getUserRoleAssignment() {
-		return getCurrentState().urAsCopy;
+		return userRoleAssignment;
 	}
 
 	public boolean request(RbacRequest rq) {
@@ -240,44 +230,76 @@ public class RbacAcut implements RbacTuple{
 		}else if(rq instanceof RbacRequestDeassignPR){
 			output = admin.revokePermission(this, rq.getPermission(), rq.getRole());
 		}
+		updateCurrentState();
 
-		//		saveState(policy);
-		//transition +="--"+rq.toString()+"/"+(output ? "granted": "denied")+"-->"+getCurrentState().toString();
-		//		transition +=" -> "+getCurrentState().toString()+"  [ label=\""+rq.toString()+"/"+(output ? "granted": "denied")+"\"];";
 		return output;
+	}
+
+	private void updateCurrentState() {
+
+		int totUser = policy.getUser().size();
+		int totRole = policy.getRole().size();
+		int totPrms = policy.getPermission().size();
+		
+		BitSet state = (BitSet) currentState.getProperties().get(BitSet.class);
+		
+		for (int ui = 0; ui < totUser; ui++) {
+			User usr = policy.getUser().get(ui);
+			for (int ri = 0; ri < totRole; ri++) {
+				Role rol = policy.getRole().get(ri);
+				int index = ui*2*totRole+2*ri;
+				if(RbacUtils.getInstance().userRoleAssignmentExists(policy, usr, rol)) state.set(index);
+				if(RbacUtils.getInstance().userRoleActivationExists(policy, usr, rol)) state.set(index+1);
+			}
+		}
+		for (int ri = 0; ri < totRole; ri++) {
+			Role rol = policy.getRole().get(ri);
+			for (int pi = 0; pi < totPrms; pi++) {
+				Permission pr = policy.getPermission().get(pi);
+				int index = 2*totUser*totRole+2*pi;
+				if(RbacUtils.getInstance().permissionRoleAssignmentExists(policy, pr, rol)) state.set(index);
+			}	
+		}
+
+		
 	}
 
 	public void reset() {
 		reset(initialState);
 	}
 
-	public void reset(RbacState state) {
+	public void reset(FsmState state) {
 		getUserRoleAssignment()		.clear();
 		getUserRoleActivation()		.clear();
 		getPermissionRoleAssignment().clear();
 
-		for (UserRoleAssignment el : state.urAsCopy)
-			getUserRoleAssignment()
-			.add(new UserRoleAssignment(el.getUser(), el.getRole()));
-		for (UserRoleActivation el : state.urAcCopy)
-			getUserRoleActivation()
-			.add(new UserRoleActivation(el.getUser(), el.getRole()));
-		for (PermissionRoleAssignment el : state.prAsCopy) 
-			getPermissionRoleAssignment()
-			.add(new PermissionRoleAssignment(el.getPermission(), el.getRole()));
-		//		saveState(this);
+		BitSet bits = (BitSet) state.getProperties().get(BitSet.class);
+		
+		int totUser = policy.getUser().size();
+		int totRole = policy.getRole().size();
+		int totPrms = policy.getPermission().size();
+		
+		for (int ui = 0; ui < totUser; ui++) {
+			User usr = policy.getUser().get(ui);
+			for (int ri = 0; ri < totRole; ri++) {
+				Role rol = policy.getRole().get(ri);
+				int index = ui*2*totRole+2*ri;
+				if(bits.get(index))   getUserRoleAssignment().add(new UserRoleAssignment(usr, rol));
+				if(bits.get(index+1)) getUserRoleActivation().add(new UserRoleActivation(usr, rol));
+			}
+		}
+		for (int ri = 0; ri < totRole; ri++) {
+			Role rol = policy.getRole().get(ri);
+			for (int pi = 0; pi < totPrms; pi++) {
+				Permission pr = policy.getPermission().get(pi);
+				int index = 2*totUser*totRole+2*pi;
+				if(bits.get(index))   getPermissionRoleAssignment().add(new PermissionRoleAssignment(pr, rol));
+			}	
+		}
 	}
 
 	public void setPolicy(RbacPolicy policy) {
 		this.policy = policy;
 	}
 	
-	public void setResponse(RbacResponse response) {
-		this.response = response;
-	}
-	
-	@Override
-	public String toString() {
-		return getName();
-	}
 }

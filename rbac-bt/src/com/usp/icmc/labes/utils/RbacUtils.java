@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,11 +31,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.acut.RbacRequest;
 import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestAssignPR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
+import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignPR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
 import com.usp.icmc.labes.rbac.model.DSoDConstraint;
 import com.usp.icmc.labes.rbac.model.Dr;
@@ -558,7 +562,7 @@ public class RbacUtils {
 		if(rbacPol instanceof RbacPolicy){
 			name = ((RbacPolicy) rbacPol).getName();
 		}else if( rbacPol instanceof RbacAcut){
-			name = ((RbacAcut) rbacPol).getName();
+			name = ((RbacAcut) rbacPol).getPolicy().getName();
 		}
 		rootElement.setAttribute("name",name);
 
@@ -729,6 +733,60 @@ public class RbacUtils {
 		}
 		br.close();
 		return mutList;
+	}
+
+	public List<RbacRequest> generateRequests(RbacTuple rbac) {
+		List<RbacRequest> input = new ArrayList<RbacRequest>();
+		for (Role rol: rbac.getRole()) {
+			for (User usr: rbac.getUser()) {
+				input.add(new RbacRequestAssignUR(usr, rol));
+				input.add(new RbacRequestDeassignUR(usr, rol));
+				input.add(new RbacRequestActivateUR(usr, rol));
+				input.add(new RbacRequestDeactivateUR(usr, rol));
+			}
+		}
+		return input;
+	}
+	
+	public List<RbacRequest> generateRequestsWithPrms(RbacPolicy rbac) {
+		List<RbacRequest> input = generateRequests(rbac);
+		for (Role rol: rbac.getRole()) {
+			for (Permission prms: rbac.getPermission()) {
+				input.add(new RbacRequestAssignPR(prms, rol));
+				input.add(new RbacRequestDeassignPR(prms, rol));
+			}
+		}
+		return input;
+	}
+
+	public FsmState rbacToFsmState(RbacTuple p) {
+		int totUser = p.getUser().size();
+		int totRole = p.getRole().size();
+		int totPrms = p.getPermission().size();
+		
+		BitSet state = new BitSet(2*(totUser*totRole+totRole*totPrms));
+		
+		for (int ui = 0; ui < totUser; ui++) {
+			User usr = p.getUser().get(ui);
+			for (int ri = 0; ri < totRole; ri++) {
+				Role rol = p.getRole().get(ri);
+				int index = ui*2*totRole+2*ri;
+				if(userRoleAssignmentExists(p, usr, rol)) state.set(index);
+				if(userRoleActivationExists(p, usr, rol)) state.set(index+1);
+			}
+		}
+		for (int ri = 0; ri < totRole; ri++) {
+			Role rol = p.getRole().get(ri);
+			for (int pi = 0; pi < totPrms; pi++) {
+				Permission pr = p.getPermission().get(pi);
+				int index = 2*totUser*totRole+2*pi;
+				if(permissionRoleAssignmentExists(p, pr, rol)) state.set(index);
+			}	
+		}
+		
+		FsmState fsmState= new FsmState(state.hashCode());
+		fsmState.getProperties().put(BitSet.class, state);
+		return fsmState;
 	}
 
 }

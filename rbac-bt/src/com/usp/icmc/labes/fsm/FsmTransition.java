@@ -14,7 +14,7 @@ public class FsmTransition extends FsmElement{
 	}
 	
 	public FsmTransition(FsmState f, String in, String out, FsmState t) {
-		super(f+" -- "+in+"/"+out+" -> "+t);
+		this();
 		from = f;
 		to = t;
 		input = in;

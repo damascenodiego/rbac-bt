@@ -5,6 +5,8 @@ import java.util.List;
 
 public class FsmModel extends FsmElement{
 
+	String name;
+	
 	List<FsmState> states;
 	FsmState initialState;
 	List<FsmTransition> transitions;
@@ -12,10 +14,14 @@ public class FsmModel extends FsmElement{
 	List<String> outputs;
 
 	public FsmModel() {
-		this("");
+		super();
+		this.states = new ArrayList<FsmState>();
+		this.transitions = new ArrayList<FsmTransition>();
+		this.inputs = new ArrayList<String>();
+		this.outputs = new ArrayList<String>();
 	}
 	public FsmModel(String n) {
-		super(n);
+		super(n.hashCode());
 		this.states = new ArrayList<FsmState>();
 		this.transitions = new ArrayList<FsmTransition>();
 		this.inputs = new ArrayList<String>();
@@ -94,9 +100,9 @@ public class FsmModel extends FsmElement{
 		return null;
 	}
 	
-	public FsmState getState(String name) {
+	public FsmState getState(int ident) {
 		for (FsmState fsmState : states) {
-			if(fsmState.getName().equals(name)) 
+			if(fsmState.getId() == ident)
 				return fsmState;
 		}
 		return null;
@@ -124,4 +130,12 @@ public class FsmModel extends FsmElement{
 		this.initialState = initialState;
 	}
 
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
 }

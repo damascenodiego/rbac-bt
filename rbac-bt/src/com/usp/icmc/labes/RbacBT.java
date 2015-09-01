@@ -110,7 +110,7 @@ public class RbacBT {
 			else if	(cmd.hasOption(P_SET_PARAMETER)) 			pSet(cmd,output);
 			else if	(cmd.hasOption(TT_PARAMETER))				ttMethod(cmd,output);
 			else if	(cmd.hasOption(RANDOMTEST_PARAMETER))		randomMethod(cmd,output);
-			else if	(cmd.hasOption(FSMCONV_PARAMETER)) 			fsmConverter(cmd,output);
+//			else if	(cmd.hasOption(FSMCONV_PARAMETER)) 			fsmConverter(cmd,output);
 			else if	(cmdIsValidForConfTest(cmd)) 				runConformanceTest(cmd,output);
 			else if	(cmdIsValidForTestPrtz(cmd)) 				testPrtz(cmd,output);
 			else if	(cmdIsValidForTestCharacts(cmd)) 			runPrintTestCharacteristics(cmd,output);
@@ -230,20 +230,17 @@ public class RbacBT {
 
 		String outFormat = "fsm";
 
-		if(cmd.hasOption(KISS_PARAMETER)) outFormat = "kiss";
-		else if(cmd.hasOption(DOT_PARAMETER)) outFormat = "dot";
-		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kk";
+		if(cmd.hasOption(KK_PARAMETER)) outFormat = "kk";
 		else outFormat = "fsm";
-
+		
 		if(output == null) output = rbacFile.getParentFile();
 		output.mkdirs();
 
 		rbacFsmFile = new File(output,rbacPolicy.getName()+"."+outFormat);
 
-		if(cmd.hasOption(KISS_PARAMETER)) fsmUtils.WriteFsmAsKiss(rbacFsm, rbacFsmFile);
-		else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(rbacFsm, rbacFsmFile);
-		else if(cmd.hasOption(KK_PARAMETER)) fsmUtils.WriteFsmAsKissSimple(rbacFsm, rbacFsmFile);
+		if(cmd.hasOption(KK_PARAMETER)) fsmUtils.WriteFsmAsKissSimple(rbacFsm, rbacFsmFile);
 		else fsmUtils.WriteFsm(rbacFsm, rbacFsmFile);
+
 		chron.stop();
 		System.out.println("%"+operation+" | "+rbacFile.getName()+" | "+rbacFsm.getStates().size()+" states | "+rbacFsm.getTransitions().size()+" transitions | "+chron.getInSeconds()+" seconds");
 	}
@@ -307,34 +304,36 @@ public class RbacBT {
 		System.out.println("%"+operation+" | "+rbacFile.getName()+" | "+mutants.size()+" mutants | "+chron.getInSeconds()+" seconds");		
 	}
 
-	private static void fsmConverter(CommandLine cmd, File output) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
-		Chronometer chron = new Chronometer();
-		chron.start();
-		String fsmStr = cmd.getOptionValue(FSMCONV_PARAMETER);
-		File fsmFile = new File(fsmStr);
-
-		FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
-
-		if(output == null) output = fsmFile.getParentFile();
-		output.mkdirs();
-
-		String outFormat = null;
-		if(cmd.hasOption(DOT_PARAMETER)) outFormat  = "dot";
-		else if(cmd.hasOption(KISS_PARAMETER)) outFormat = "kiss";
-		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kk";
-		else outFormat = "kiss";
-
-		String operation = "fsmConverter"+'('+outFormat+')';
-
-		File newFsmFile = new File(output,fsm.getName()+"."+outFormat);
-		if(cmd.hasOption(KISS_PARAMETER)) fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
-		else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(fsm, newFsmFile);
-		else if(cmd.hasOption(KK_PARAMETER)) fsmUtils.WriteFsmAsKissSimple(fsm, newFsmFile);
-		else fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
-		chron.stop();
-
-		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
-	}
+//	private static void fsmConverter(CommandLine cmd, File output) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
+//		Chronometer chron = new Chronometer();
+//		chron.start();
+//		String fsmStr = cmd.getOptionValue(FSMCONV_PARAMETER);
+//		File fsmFile = new File(fsmStr);
+//
+//		FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
+//
+//		if(output == null) output = fsmFile.getParentFile();
+//		output.mkdirs();
+//
+//		String outFormat = null;
+//		if(cmd.hasOption(DOT_PARAMETER)) outFormat  = "dot";
+//		else if(cmd.hasOption(KISS_PARAMETER)) outFormat = "kiss";
+//		else if(cmd.hasOption(KK_PARAMETER)) outFormat = "kk";
+//		else outFormat = "kiss";
+//
+//		String operation = "fsmConverter"+'('+outFormat+')';
+//
+//		File newFsmFile = new File(output,fsm.getName()+"."+outFormat);
+//		//TODO to fix it
+////		if(cmd.hasOption(KISS_PARAMETER)) fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
+////		else if(cmd.hasOption(DOT_PARAMETER)) fsmUtils.WriteFsmAsDot(fsm, newFsmFile);
+////		else if(cmd.hasOption(KK_PARAMETER)) fsmUtils.WriteFsmAsKissSimple(fsm, newFsmFile);
+////		else fsmUtils.WriteFsmAsKiss(fsm, newFsmFile);
+//		if(cmd.hasOption(KK_PARAMETER)) fsmUtils.WriteFsmAsKissSimple(fsm, newFsmFile);
+//		chron.stop();
+//
+//		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
+//	}
 
 	private static void pSet(CommandLine cmd, File output) throws TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException, IOException {
 		Chronometer chron = new Chronometer();
@@ -368,15 +367,15 @@ public class RbacBT {
 		File fsmFile = new File(fsmStr);
 
 		FsmModel fsm = fsmUtils.loadFsmFromXML(fsmFile);
+		FsmTestSuite suite = testingUtils.stateCoverSet(fsm);
+		testingUtils.setupTestFsmProperties(fsm,suite);
 
 		if(output == null) output = fsmFile.getParentFile();
 		output.mkdirs();
 
 		File suiteFile = new File(output,fsmFile.getName().concat(".q.test"));
-
-		FsmTestSuite suite = testingUtils.stateCoverSet(fsm);
-		testingUtils.setupTestFsmProperties(fsm,suite);
 		testingUtils.WriteFsmTestSuiteAsKK(suite, suiteFile);
+		
 		chron.stop();
 		System.out.println("%"+operation+" | "+fsmFile.getName()+" | "+chron.getInSeconds()+" seconds");
 
@@ -413,8 +412,8 @@ public class RbacBT {
 		int resets = 50;
 		int length = 10;
 		
-		if(cmd.hasOption(RANDOMTEST_RESETS_PARAMETER)) resets = Integer.valueOf(cmd.getOptionValue(RANDOMTEST_RESETS_PARAMETER));
-		if(cmd.hasOption(RANDOMTEST_LENGTH_PARAMETER)) length = Integer.valueOf(cmd.getOptionValue(RANDOMTEST_LENGTH_PARAMETER));
+		if(cmd.hasOption(RANDOMTEST_RESETS_PARAMETER)) resets = Math.round(Float.valueOf(cmd.getOptionValue(RANDOMTEST_RESETS_PARAMETER)));
+		if(cmd.hasOption(RANDOMTEST_LENGTH_PARAMETER)) length = Math.round(Float.valueOf(cmd.getOptionValue(RANDOMTEST_LENGTH_PARAMETER)));
 		
 		File sutRbacFile 	= new File(sutRbacStr);
 		RbacPolicy sutRbac 	= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
