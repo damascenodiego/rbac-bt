@@ -135,31 +135,6 @@ public class RbacBT {
 
 	}
 
-	private static void selectTestCases(CommandLine cmd, File output) throws FileNotFoundException, IOException, ParserConfigurationException, SAXException {
-		Chronometer chron = new Chronometer();
-		chron.start();
-		String testSuiteStr = cmd.getOptionValue(TESTSELECT_PARAMETER);
-		String sutRbacStr 	= cmd.getOptionValue(RBACPOL_PARAMETER);
-
-		File testSuiteFile = new File(testSuiteStr);
-		File sutRbacFile = new File(sutRbacStr);
-
-		RbacPolicy sutRbac 			= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
-		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
-
-		int resets = 100;
-		if(cmd.hasOption(RANDOMTEST_RESETS_PARAMETER)) resets = Integer.valueOf(cmd.getOptionValue(RANDOMTEST_RESETS_PARAMETER));
-
-		testSimiliaryt.sortSimilarityRandom(testSuite);
-		FsmTestSuite testSuiteSubset= testingUtils.selectSubset(testSuite,resets);
-		
-		File testResultsFile = new File(testSuiteFile.getParentFile(),testSuiteFile.getName()+".subset."+resets+".test");
-		testResultsFile.getParentFile().mkdirs();
-		testingUtils.WriteFsmTestSuiteAsKK(testSuiteSubset, testResultsFile);
-
-		chron.stop();
-	}
-
 	private static boolean cmdIsValidForTestCharacts(CommandLine cmd) throws ParseException {
 		return cmd.hasOption(RBACPOL_PARAMETER)
 				&& cmd.hasOption(TESTSUITE_PARAMETER)
@@ -531,6 +506,31 @@ public class RbacBT {
 		testResultsFile.getParentFile().mkdirs();
 		testingUtils.WriteFsmTestSuiteAsKK(testSuite, testResultsFile);
 
+		chron.stop();
+	}
+
+	private static void selectTestCases(CommandLine cmd, File output) throws FileNotFoundException, IOException, ParserConfigurationException, SAXException {
+		Chronometer chron = new Chronometer();
+		chron.start();
+		String testSuiteStr = cmd.getOptionValue(TESTSELECT_PARAMETER);
+		String sutRbacStr 	= cmd.getOptionValue(RBACPOL_PARAMETER);
+	
+		File testSuiteFile = new File(testSuiteStr);
+		File sutRbacFile = new File(sutRbacStr);
+	
+		RbacPolicy sutRbac 			= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
+		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
+	
+		int resets = 100;
+		if(cmd.hasOption(RANDOMTEST_RESETS_PARAMETER)) resets = Math.round(Float.valueOf(cmd.getOptionValue(RANDOMTEST_RESETS_PARAMETER)));
+	
+		testSimiliaryt.sortSimilarityRandom(testSuite);
+		FsmTestSuite testSuiteSubset= testingUtils.selectSubset(testSuite,resets);
+		
+		File testResultsFile = new File(testSuiteFile.getParentFile(),testSuiteFile.getName()+".subset."+resets+".test");
+		testResultsFile.getParentFile().mkdirs();
+		testingUtils.WriteFsmTestSuiteAsKK(testSuiteSubset, testResultsFile);
+	
 		chron.stop();
 	}
 
