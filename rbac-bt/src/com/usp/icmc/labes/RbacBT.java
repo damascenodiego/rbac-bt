@@ -519,17 +519,15 @@ public class RbacBT {
 		File sutRbacFile = new File(sutRbacStr);
 	
 		RbacPolicy sutRbac 			= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
-		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
 	
 		int resets = 100;
 		if(cmd.hasOption(RANDOMTEST_RESETS_PARAMETER)) resets = Math.round(Float.valueOf(cmd.getOptionValue(RANDOMTEST_RESETS_PARAMETER)));
-	
-		testSimiliaryt.sortSimilarityRandom(testSuite);
-		FsmTestSuite testSuiteSubset= testingUtils.selectSubset(testSuite,resets);
-		
+
+		FsmTestSuite testSuite 		= fsmTestingutils.loadRandomSubsetFsmTestSuiteFromKK(sutRbac, testSuiteFile,resets);
+
 		File testResultsFile = new File(testSuiteFile.getParentFile(),testSuiteFile.getName()+".subset."+resets+".test");
 		testResultsFile.getParentFile().mkdirs();
-		testingUtils.WriteFsmTestSuiteAsKK(testSuiteSubset, testResultsFile);
+		testingUtils.WriteFsmTestSuiteAsKK(testSuite, testResultsFile);
 	
 		chron.stop();
 	}

@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -225,6 +227,86 @@ public class FsmTestingUtils {
 			}
 			testSuite.getTestCases().add(tc);
 
+		}
+		br.close();
+
+
+		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
+		Map<Integer, FsmState> stateMap = new HashMap<Integer, FsmState>();
+
+		List<FsmTestCase> testList = new ArrayList<>();
+		testList.addAll(testSuite.getTestCases());
+		for (FsmTestCase testCase : testList) {
+			for (FsmTransition tr: testCase.getPath()) {
+				rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acut));
+
+				FsmState state = rbacUtils.rbacToFsmState(acut);
+				stateMap.putIfAbsent(state.getId(),state);
+				tr.setFrom(stateMap.get(state.getId()));
+				boolean outBool = acut.request(rqMap.get(tr.getInput()));
+				testSuite.getProperties().put(tr.getInput(),rqs.indexOf(rqMap.get(tr.getInput())));
+
+				state = rbacUtils.rbacToFsmState(acut);
+				stateMap.putIfAbsent(state.getId(),state);
+				tr.setTo(stateMap.get(state.getId()));
+				tr.setOutput((outBool?"grant":"deny"));
+				
+				for (RbacFaultType faultType: RbacFaultType.values()) {
+					tr.getProperties().putIfAbsent(faultType, new HashSet<>());
+					if(!acut.getPolicy().getProperties().containsKey(faultType)) continue;
+					((Set) tr.getProperties().get(faultType)).addAll((Set) acut.getPolicy().getProperties().get(faultType));
+				}
+//				System.out.println(tr);
+			}
+			acut.reset();
+		}
+
+		return testSuite;
+	}
+
+	
+	public FsmTestSuite loadRandomSubsetFsmTestSuiteFromKK(RbacPolicy sutRbac, File file, int limit) throws FileNotFoundException,IOException  {
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		int totTests = 0;
+		while (br.readLine()!=null) totTests++;
+		List<Integer> selectedTestIndex = new ArrayList<Integer>();
+		for (int i = 0; i < totTests; i++) {
+			selectedTestIndex.add(Integer.valueOf(i));
+		}
+		br.close();
+
+		Collections.shuffle(selectedTestIndex,RandomGenerator.getInstance().getRnd());
+		while (selectedTestIndex.size()!=limit) selectedTestIndex.remove(selectedTestIndex.size()-1);		
+		
+		RbacAcut acut = new RbacAcut(sutRbac);
+		
+
+		List<RbacRequest> rqs = rbacUtils.generateRequests(acut);
+		rqs.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+
+		FsmTestSuite testSuite = new FsmTestSuite(file.getName());
+		testSuite.setName(file.getName());
+		testSuite.setGeneratedBy(file.getName());
+		br = new BufferedReader(new FileReader(file));
+		int counter = 0;
+		while (br.ready()) {
+			if(testSuite.getTestCases().size()==selectedTestIndex.size()) break;
+			if(!selectedTestIndex.contains(counter)) {
+				counter++;
+				continue;
+			}
+			String line = br.readLine();
+			if(line.isEmpty()) continue;
+			FsmTestCase tc = new FsmTestCase();
+			for (int i = 0; i <= line.length()-3; i+=3) {
+				String inStr = line.substring(i, i+3);
+				int inInt = Integer.valueOf(inStr);
+				FsmTransition transition = new FsmTransition();
+				transition.setInput(rqs.get(inInt).toString());
+				tc.getPath().add(transition );
+			}
+			testSuite.getTestCases().add(tc);
+			counter++;
 		}
 		br.close();
 
