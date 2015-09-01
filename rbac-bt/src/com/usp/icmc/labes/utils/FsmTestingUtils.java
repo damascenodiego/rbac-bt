@@ -56,6 +56,7 @@ import com.usp.icmc.labes.rbac.features.RbacSupportingSystemFunctions;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class FsmTestingUtils {
 
@@ -201,13 +202,14 @@ public class FsmTestingUtils {
 	//	}
 
 	public FsmTestSuite loadFsmTestSuiteFromKK(RbacPolicy sutRbac, File file) throws FileNotFoundException,IOException  {
-		
+
 		RbacAcut acut = new RbacAcut(sutRbac);
 
 		List<RbacRequest> rqs = rbacUtils.generateRequests(acut);
 		rqs.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-		
+
 		FsmTestSuite testSuite = new FsmTestSuite(file.getName());
+		testSuite.setName(file.getName());
 		testSuite.setGeneratedBy(file.getName());
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		while (br.ready()) {
@@ -225,7 +227,7 @@ public class FsmTestingUtils {
 
 		}
 		br.close();
-		
+
 
 		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
 		Map<Integer, FsmState> stateMap = new HashMap<Integer, FsmState>();
@@ -246,10 +248,17 @@ public class FsmTestingUtils {
 				stateMap.putIfAbsent(state.getId(),state);
 				tr.setTo(stateMap.get(state.getId()));
 				tr.setOutput((outBool?"grant":"deny"));
+				
+				for (RbacFaultType faultType: RbacFaultType.values()) {
+					tr.getProperties().putIfAbsent(faultType, new HashSet<>());
+					if(!acut.getPolicy().getProperties().containsKey(faultType)) continue;
+					((Set) tr.getProperties().get(faultType)).addAll((Set) acut.getPolicy().getProperties().get(faultType));
+				}
+//				System.out.println(tr);
 			}
 			acut.reset();
 		}
-		
+
 		return testSuite;
 	}
 
@@ -258,10 +267,10 @@ public class FsmTestingUtils {
 	public FsmTestSuite randomTestSuite(RbacPolicy sutRbac, int resets, int length) {
 		List<RbacRequest> rqs = rbacUtils.generateRequests(sutRbac);
 		rqs.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-		
+
 		FsmTestSuite tSuite = new FsmTestSuite(sutRbac.getName());
 		tSuite.setGeneratedBy("random."+resets+"."+length);
-		
+
 		for (int i = 0; i < resets; i++) {
 			FsmTestCase tc = new FsmTestCase();
 			for (int j = 0; j < length; j++) {
@@ -274,9 +283,9 @@ public class FsmTestingUtils {
 			tSuite.getTestCases().add(tc);
 		}
 
-		
+
 		return tSuite;
-		
+
 	}
 
 
@@ -432,7 +441,7 @@ public class FsmTestingUtils {
 		System.out.print("varLength"+"\t");
 		System.out.print("medianLength"+"\n");
 
-		
+
 		FsmTestStatistics tStats = new FsmTestStatistics(testSuite);
 		System.out.print(testSuite.getName()+"\t");
 		System.out.print(Long.toString(	tStats.getNoResets					())+"\t");
@@ -445,21 +454,18 @@ public class FsmTestingUtils {
 		System.out.print(Double.toString(	tStats.getVarLength				())+"\t");
 		System.out.print(Double.toString(	tStats.getMedianLength			())+"\n");
 
-		
+
 	}
 	public void printConformanceTestingStatistics(RbacPolicy sutRbac, FsmTestSuite testSuite, List<RbacPolicy> mutants) {
 
-		
+
 		RbacAcut acutSut= createAcutFromRbacPolicy(sutRbac);
 		List<RbacAcut> acutMutant = createAcutFromRbacPolicy(mutants);
 
 		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
 
-		List<RbacPolicy> alive = new ArrayList<RbacPolicy>();
 		List<RbacPolicy> killed  = new ArrayList<RbacPolicy>();
-		alive.addAll(mutants);
 
-		
 		for (int i = 0; i < testSuite.getTestCases().size(); i++) {
 
 			FsmTestCase tc = testSuite.getTestCases().get(i);
@@ -467,39 +473,41 @@ public class FsmTestingUtils {
 				FsmTransition tr = tc.getPath().get(j);
 
 				rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acutSut));
-				
+
 				boolean specBool = acutSut.request(rqMap.get(tr.getInput()));
-				
+
 				for (RbacAcut rbacAcut : acutMutant) {
 					if(killed.contains(rbacAcut.getPolicy())) continue;
 					boolean mutBool = rbacAcut.request(rqMap.get(tr.getInput()));
 					if(specBool ^ mutBool){
 						killed.add(rbacAcut.getPolicy());
 					}
-						
+
 				}
 			}
 			acutSut.reset();
 			for (RbacAcut rbacAcut : acutMutant)  rbacAcut.reset();
 		}
-		int totAlive  = alive.size();
+
 		int totKilled = killed.size();
 		double score = ((double)totKilled)/(mutants.size());
-		
+
 		System.out.print(sutRbac.getName()+"\t");
 		System.out.print(mutants.size()+"\t");
 		System.out.print(testSuite.getGeneratedBy()+"\t");
 		System.out.print(score);
 		System.out.print("\n\n");
-		
-		for (RbacPolicy pol : alive) {
-			if (!killed.contains(pol)) {
-				System.out.println(pol.getName());
-			}
-			
-		}
-		
 
+		Set<String> alivePolNames = new HashSet<String>();
+		for (RbacPolicy pol : mutants) alivePolNames.add(pol.getName());
+
+		Set<String> killedPolNames = new HashSet<String>();
+		for (RbacPolicy pol : killed) killedPolNames.add(pol.getName());
+
+		alivePolNames.removeAll(killedPolNames);
+		for (String polName : alivePolNames) {
+			System.out.println(polName);
+		}
 	}
 
 	private List<RbacAcut> createAcutFromRbacPolicy(List<RbacPolicy> mutants) {
@@ -541,6 +549,21 @@ public class FsmTestingUtils {
 				suite.getProperties().put(in, Integer.valueOf(fsm.getInputs().indexOf(in)));
 		}
 	}
+
+
+	public FsmTestSuite selectSubset(FsmTestSuite testSuite, int i) {
+		FsmTestSuite subset = new FsmTestSuite();
+		subset.setName(testSuite.getName());
+		for (int j = 0; j < testSuite.getTestCases().size(); j++) {
+			if(subset.getTestCases().size()==i) break;
+			subset.getTestCases().add(testSuite.getTestCases().get(j));
+		}
+		for (Object key : testSuite.getProperties().keySet()) {
+			subset.getProperties().put(key,testSuite.getProperties().get(key));
+		}
+		return subset;
+	}
+
 
 
 	//	public List<RbacTestConfiguration> loadRbacTestConfiguration(File testCnfFile) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {

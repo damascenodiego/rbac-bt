@@ -40,9 +40,11 @@ import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
+import com.usp.icmc.labes.rbac.model.RbacMutableElement;
 import com.usp.icmc.labes.rbac.model.RbacPolicy;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class FsmUtils {
 
@@ -261,15 +263,17 @@ public class FsmUtils {
 		for (FsmTransition t: fsm.getTransitions()) {
 
 			if(!t.getProperties().isEmpty()) {
-				Enumeration<Object> keys = t.getProperties().keys();
-				while (keys.hasMoreElements()) {
-					String k = (String) keys.nextElement();
-					Set<String> fEls = (Set<String>) t.getProperties().get(k);
-					for (String el : fEls) {
+				//				Enumeration<Object> keys = t.getProperties().keys();
+				//				while (keys.hasMoreElements()) {
+				for (RbacFaultType faultType: RbacFaultType.values()) {
+//					String k = (String) keys.nextElement();
+					if(!t.getProperties().containsKey(faultType)) continue;
+					Set<RbacMutableElement> fEls = (Set<RbacMutableElement>) t.getProperties().get(faultType);
+					for (RbacMutableElement el : fEls) {
 						Element failure = doc.createElement("failure");
 						failure.setAttribute("transition", t.toString());
-						failure.setAttribute("type", k);
-						failure.setAttribute("constraint", el);
+						failure.setAttribute("type", faultType.name());
+						failure.setAttribute("constraint", el.toString());
 						failures.appendChild(failure);
 					}
 				}

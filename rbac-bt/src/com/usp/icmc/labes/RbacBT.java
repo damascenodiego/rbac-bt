@@ -87,6 +87,8 @@ public class RbacBT {
 	private static final String RANDOMTEST_LENGTH_PARAMETER = "length";
 	private static final String RANDOMTEST_RESETS_PARAMETER = "resets";
 
+	private static final String TESTSELECT_PARAMETER = "select";
+	
 	private static Options options;
 
 	private static DefaultParser parser;
@@ -111,6 +113,7 @@ public class RbacBT {
 			else if	(cmd.hasOption(TT_PARAMETER))				ttMethod(cmd,output);
 			else if	(cmd.hasOption(RANDOMTEST_PARAMETER))		randomMethod(cmd,output);
 //			else if	(cmd.hasOption(FSMCONV_PARAMETER)) 			fsmConverter(cmd,output);
+			else if	(cmd.hasOption(TESTSELECT_PARAMETER)) 		selectTestCases(cmd,output);
 			else if	(cmdIsValidForConfTest(cmd)) 				runConformanceTest(cmd,output);
 			else if	(cmdIsValidForTestPrtz(cmd)) 				testPrtz(cmd,output);
 			else if	(cmdIsValidForTestCharacts(cmd)) 			runPrintTestCharacteristics(cmd,output);
@@ -130,6 +133,31 @@ public class RbacBT {
 			e.printStackTrace();
 		}
 
+	}
+
+	private static void selectTestCases(CommandLine cmd, File output) throws FileNotFoundException, IOException, ParserConfigurationException, SAXException {
+		Chronometer chron = new Chronometer();
+		chron.start();
+		String testSuiteStr = cmd.getOptionValue(TESTSELECT_PARAMETER);
+		String sutRbacStr 	= cmd.getOptionValue(RBACPOL_PARAMETER);
+
+		File testSuiteFile = new File(testSuiteStr);
+		File sutRbacFile = new File(sutRbacStr);
+
+		RbacPolicy sutRbac 			= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
+		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
+
+		int resets = 100;
+		if(cmd.hasOption(RANDOMTEST_RESETS_PARAMETER)) resets = Integer.valueOf(cmd.getOptionValue(RANDOMTEST_RESETS_PARAMETER));
+
+		testSimiliaryt.sortSimilarityRandom(testSuite);
+		FsmTestSuite testSuiteSubset= testingUtils.selectSubset(testSuite,resets);
+		
+		File testResultsFile = new File(testSuiteFile.getParentFile(),testSuiteFile.getName()+".subset."+resets+".test");
+		testResultsFile.getParentFile().mkdirs();
+		testingUtils.WriteFsmTestSuiteAsKK(testSuiteSubset, testResultsFile);
+
+		chron.stop();
 	}
 
 	private static boolean cmdIsValidForTestCharacts(CommandLine cmd) throws ParseException {
@@ -168,6 +196,7 @@ public class RbacBT {
 		Option randomTestOption = new Option(RANDOMTEST_PARAMETER, true, "Generate a random test suite given an FSM") ;
 
 		Option testPrtzOption = new Option(TESTPRTZ_PARAMETER, true, "Prioritize a test suite") ;
+		Option testSelectOption = new Option(TESTSELECT_PARAMETER, true, "Select test cases from a test suite") ;
 		
 		Option testCharactsOption = new Option(TEST_CHARACTERISTICS_PARAMETER, "Print the characteristics of a test suite") ;
 		
@@ -182,6 +211,7 @@ public class RbacBT {
 		grp.addOption(testPrtzOption);
 		grp.addOption(testCharactsOption);
 		grp.addOption(randomTestOption);
+		grp.addOption(testSelectOption);
 		
 		grp.setRequired(true);
 		options.addOptionGroup(grp);
@@ -208,8 +238,8 @@ public class RbacBT {
 		options.addOption(rbac_acut);
 		options.addOption(prtz_mode);
 
-		Option randomTestLengthOption = new Option(RANDOMTEST_LENGTH_PARAMETER, true, "Defines the length of the random test cases") ;
-		Option randomTestResetsOption = new Option(RANDOMTEST_RESETS_PARAMETER, true, "Defines the length of the random test suite") ;
+		Option randomTestLengthOption = new Option(RANDOMTEST_LENGTH_PARAMETER, true, "Defines the length of the test cases") ;
+		Option randomTestResetsOption = new Option(RANDOMTEST_RESETS_PARAMETER, true, "Defines the length of the test suite") ;
 
 		options.addOption(randomTestLengthOption);
 		options.addOption(randomTestResetsOption);

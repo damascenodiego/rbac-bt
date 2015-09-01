@@ -118,8 +118,8 @@ public class RbacUtils {
 
 	public void failedDueTo(RbacPolicy p, RbacFaultType faultType, RbacMutableElement reason) {
 		synchronized (p.getProperties()) {
-			p.getProperties().putIfAbsent(faultType.name(), new HashSet<String>());
-			((Set)p.getProperties().get(faultType.name())).add(reason.toString());	
+			p.getProperties().putIfAbsent(faultType, new HashSet<RbacMutableElement>());
+			((Set)p.getProperties().get(faultType)).add(reason);	
 		}
 	}
 
@@ -356,6 +356,7 @@ public class RbacUtils {
 			if (dynamicUser[userIndex]>i.getCardinality()) return false;
 		}
 		for (SSoDConstraint i : mutPol.getSSoDConstraint()) {
+			if(i.getCardinality()<=0) return false;
 			for (User u : urAssignment.keySet()) {
 				Set<Role> set = new HashSet<Role>();
 				set.addAll(i.getSodSet());
@@ -364,6 +365,7 @@ public class RbacUtils {
 			}
 		}
 		for (DSoDConstraint i : mutPol.getDSoDConstraint()) {
+			if(i.getCardinality()<=0) return false;
 			for (User u : urActivation.keySet()) {
 				Set<Role> set = new HashSet<Role>();
 				set.addAll(i.getSodSet());
