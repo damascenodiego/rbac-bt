@@ -8,6 +8,7 @@ import com.usp.icmc.labes.fsm.FsmElement;
 public class FsmTestSuite extends FsmElement{
 	
 	List<FsmTestCase> testCases;
+	String name;
 	String generatedBy;
 	
 	public FsmTestSuite() {
@@ -17,9 +18,16 @@ public class FsmTestSuite extends FsmElement{
 	}
 	
 	public FsmTestSuite(String n) {
-		super(n);
-		testCases = new ArrayList<FsmTestCase>();
-		generatedBy = "NONE";
+		this();
+		generatedBy = n;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

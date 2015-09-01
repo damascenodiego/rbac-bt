@@ -8,10 +8,6 @@ public class FsmTestCase extends FsmPath{
 		super();
 	}
 
-	public FsmTestCase(String n) {
-		super(n);
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		return super.equals(obj);

@@ -103,10 +103,10 @@ public class FsmTestingUtils {
 			subEl = ((Element)el).getElementsByTagName("FsmTestStep");
 			FsmTestCase testCase = new FsmTestCase(); 
 			for (int j = 0; j < subEl.getLength(); j++) {
-				String from = 	((Element)((NodeList)subEl).item(j)).getAttribute("from");
+				Integer from = 	Integer.valueOf(((Element)((NodeList)subEl).item(j)).getAttribute("from"));
 				String in 	=	((Element)((NodeList)subEl).item(j)).getAttribute("in");
 				String out 	= 	((Element)((NodeList)subEl).item(j)).getAttribute("out");
-				String to 	= 	((Element)((NodeList)subEl).item(j)).getAttribute("to");
+				Integer to 	= 	Integer.valueOf(((Element)((NodeList)subEl).item(j)).getAttribute("to"));
 
 				FsmState f = states.getOrDefault(from, new FsmState(from));
 				FsmState t = states.getOrDefault(to, new FsmState(to));
@@ -205,22 +205,11 @@ public class FsmTestingUtils {
 
 		RbacAcut acut = new RbacAcut(sutRbac);
 
-		List<RbacRequest> rqs = new ArrayList<RbacRequest>();
-		for (Role rol: sutRbac.getRole()) {
-			for (User usr: sutRbac.getUser()) {
-				rqs.add(new RbacRequestAssignUR(usr, rol));
-				rqs.add(new RbacRequestDeassignUR(usr, rol));
-				rqs.add(new RbacRequestActivateUR(usr, rol));
-				rqs.add(new RbacRequestDeactivateUR(usr, rol));
-			}
-			//			for (Permission prms: rbac.getPermission()) {
-			//				input.add(new RbacRequestAssignPR(prms, rol));
-			//				input.add(new RbacRequestDeassignPR(prms, rol));
-			//			}
-		}
+		List<RbacRequest> rqs = rbacUtils.generateRequests(acut);
 		rqs.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
 
 		FsmTestSuite testSuite = new FsmTestSuite(file.getName());
+		testSuite.setName(file.getName());
 		testSuite.setGeneratedBy(file.getName());
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		while (br.ready()) {
@@ -241,7 +230,7 @@ public class FsmTestingUtils {
 
 
 		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
-		Map<String, FsmState> stateMap = new HashMap<String, FsmState>();
+		Map<Integer, FsmState> stateMap = new HashMap<Integer, FsmState>();
 
 		List<FsmTestCase> testList = new ArrayList<>();
 		testList.addAll(testSuite.getTestCases());
@@ -249,13 +238,15 @@ public class FsmTestingUtils {
 			for (FsmTransition tr: testCase.getPath()) {
 				rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acut));
 
-				stateMap.putIfAbsent(acut.getCurrentState().toString(),new FsmState((acut.getCurrentState().toString())));
-
-				tr.setFrom(stateMap.get(acut.getCurrentState().toString()));
+				FsmState state = rbacUtils.rbacToFsmState(acut);
+				stateMap.putIfAbsent(state.getId(),state);
+				tr.setFrom(stateMap.get(state.getId()));
 				boolean outBool = acut.request(rqMap.get(tr.getInput()));
-				tr.getProperties().put("input", rqs.indexOf(rqMap.get(tr.getInput())));
-				stateMap.putIfAbsent(acut.getCurrentState().toString(),new FsmState(acut.getCurrentState().toString()));
-				tr.setTo(stateMap.get(acut.getCurrentState().toString()));
+				testSuite.getProperties().put(tr.getInput(),rqs.indexOf(rqMap.get(tr.getInput())));
+
+				state = rbacUtils.rbacToFsmState(acut);
+				stateMap.putIfAbsent(state.getId(),state);
+				tr.setTo(stateMap.get(state.getId()));
 				tr.setOutput((outBool?"grant":"deny"));
 				
 				for (RbacFaultType faultType: RbacFaultType.values()) {
@@ -274,19 +265,7 @@ public class FsmTestingUtils {
 
 
 	public FsmTestSuite randomTestSuite(RbacPolicy sutRbac, int resets, int length) {
-		List<String> rqs = new ArrayList<String>(); ;		
-		for (Role rol: sutRbac.getRole()) {
-			for (User usr: sutRbac.getUser()) {
-				rqs.add(new RbacRequestAssignUR(usr, rol).toString());
-				rqs.add(new RbacRequestDeassignUR(usr, rol).toString());
-				rqs.add(new RbacRequestActivateUR(usr, rol).toString());
-				rqs.add(new RbacRequestDeactivateUR(usr, rol).toString());
-			}
-			//			for (Permission prms: rbac.getPermission()) {
-			//				input.add(new RbacRequestAssignPR(prms, rol));
-			//				input.add(new RbacRequestDeassignPR(prms, rol));
-			//			}
-		}
+		List<RbacRequest> rqs = rbacUtils.generateRequests(sutRbac);
 		rqs.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
 
 		FsmTestSuite tSuite = new FsmTestSuite(sutRbac.getName());
@@ -297,8 +276,8 @@ public class FsmTestingUtils {
 			for (int j = 0; j < length; j++) {
 				int rndInputIndex = RandomGenerator.getInstance().getRnd().nextInt(rqs.size());
 				FsmTransition tr = new FsmTransition();
-				tr.setInput(rqs.get(rndInputIndex));
-				tr.getProperties().put("input", rndInputIndex);
+				tr.setInput(rqs.get(rndInputIndex).toString());
+				tSuite.getProperties().put(rqs.get(rndInputIndex).toString(), rndInputIndex);
 				tc.addTransition(tr);
 			}
 			tSuite.getTestCases().add(tc);
@@ -332,7 +311,7 @@ public class FsmTestingUtils {
 					int indexFrom = fsm.getStates().indexOf(tr.getFrom());
 					if(qSets.get(indexFrom).getPath().size() > 1) qSets.get(indexTo).getPath().addAll(qSets.get(indexFrom).getPath().subList(1, qSets.get(indexFrom).getPath().size()-1));
 					qSets.get(indexTo).addTransition(tr);
-					if(qSets.get(indexTo).getInitialState().getName().equals(tr.getTo().getName())){
+					if(qSets.get(indexTo).getInitialState().getId() == (tr.getTo().getId())){
 						visited.add(tr.getTo());
 					}
 					toVisit.add(tr.getTo());
@@ -398,10 +377,10 @@ public class FsmTestingUtils {
 			for (FsmTransition trIn: in.getPath()) {
 				Element ts = doc.createElement("FsmTestStep");
 				ts.setAttribute("_id", Integer.toString(tcaseCount)+"."+Integer.toString(testCaseLength));
-				ts.setAttribute("from",trIn.getFrom().getName());
+				ts.setAttribute("from",Integer.toString(trIn.getFrom().getId()));
 				ts.setAttribute("in",trIn.getInput());
 				ts.setAttribute("out",trIn.getOutput());
-				ts.setAttribute("to",trIn.getTo().getName());
+				ts.setAttribute("to",Integer.toString(trIn.getTo().getId()));
 				tc.appendChild(ts);
 				testCaseLength++;
 			}
@@ -515,7 +494,7 @@ public class FsmTestingUtils {
 
 		System.out.print(sutRbac.getName()+"\t");
 		System.out.print(mutants.size()+"\t");
-		System.out.print(testSuite.getName()+"\t");
+		System.out.print(testSuite.getGeneratedBy()+"\t");
 		System.out.print(score);
 		System.out.print("\n\n");
 
@@ -549,26 +528,27 @@ public class FsmTestingUtils {
 		PrintWriter pw = new PrintWriter(f);
 
 		for (FsmTestCase tc : tsuite.getTestCases()) {
+			boolean printed = false;
 			for (FsmTransition tr : tc.getPath()) {
 				if(tr.getInput() == null || tr.getInput().length()==0) continue;
-				int in = (Integer)tr.getProperties().get("input");
-				pw.print(stateFormat.format(in));
+				int in = (Integer)tsuite.getProperties().get(tr.getInput());
+				String inStr = stateFormat.format(in);
+				pw.print(inStr);
+				printed=true;
 			}
-			pw.print("\n");
+			if(printed) pw.print("\n");
 		}
 		pw.close();
 
 	}
 
 
-
 	public void setupTestFsmProperties(FsmModel fsm, FsmTestSuite suite) {
 		for (String in : fsm.getInputs()) {
 			if(!suite.getProperties().containsKey(in))
-				suite.getProperties().put(in, Integer.toString(fsm.getInputs().indexOf(in)));
+				suite.getProperties().put(in, Integer.valueOf(fsm.getInputs().indexOf(in)));
 		}
 	}
-
 
 
 	public FsmTestSuite selectSubset(FsmTestSuite testSuite, int i) {
@@ -577,6 +557,9 @@ public class FsmTestingUtils {
 		for (int j = 0; j < testSuite.getTestCases().size(); j++) {
 			if(subset.getTestCases().size()==i) break;
 			subset.getTestCases().add(testSuite.getTestCases().get(j));
+		}
+		for (Object key : testSuite.getProperties().keySet()) {
+			subset.getProperties().put(key,testSuite.getProperties().get(key));
 		}
 		return subset;
 	}

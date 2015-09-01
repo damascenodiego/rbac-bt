@@ -1,6 +1,7 @@
 package com.usp.icmc.labes.utils;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +27,6 @@ import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
 import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
-import com.usp.icmc.labes.rbac.acut.RbacState;
 import com.usp.icmc.labes.rbac.model.Role;
 import com.usp.icmc.labes.rbac.model.User;
 
@@ -62,22 +62,20 @@ public class Rbac2FsmConcurrent_BFS {
 			try {
 				while (true) {
 					TimeUnit.MILLISECONDS.sleep(10);
-					RbacState u = curQ.poll();
-					if (u != null && used.putIfAbsent(u.getName(), true)) {
-						RbacAcut localAcut = new RbacAcut(u.getPolicy());
-						
-						Map<FsmTransition,RbacState> generatedTrs = new HashMap<FsmTransition,RbacState>();
+					FsmState u = curQ.poll();
+					if (u != null && used.putIfAbsent(u, true)) {
+						RbacAcut localAcut = new RbacAcut(acut);
+						localAcut.reset(u);
+						Map<FsmTransition,FsmState> generatedTrs = new HashMap<FsmTransition,FsmState>();
 						
 						for (RbacRequest in : rqs) {
 							localAcut.reset(u);
-							RbacState origin = u;
+							FsmState origin = u;
 							boolean out = localAcut.request(in);
-							RbacState destination = ((RbacState) localAcut.getCurrentState().clone());
+							FsmState destination = RbacUtils.getInstance().rbacToFsmState(localAcut);
 							
-							FsmState from = new FsmState(origin.getName());
-							FsmState to = new FsmState(destination.getName());
-							
-							FsmTransition transition = new FsmTransition(from, in.toString(), (out? "grant" : "deny"), to);
+							if(origin.equals(destination)) destination = origin;
+							FsmTransition transition = new FsmTransition(origin, in.toString(), (out? "grant" : "deny"), destination);
 							
 							if(!out) {
 								Properties trProp = (Properties) localAcut.getPolicy().getProperties().clone();
@@ -94,7 +92,7 @@ public class Rbac2FsmConcurrent_BFS {
 							if(!transitions.contains(tr)) transitions.add(tr);
 							if(!states.contains(tr.getTo())) states.add(tr.getTo());
 
-							if(used.putIfAbsent(tr.getTo().getName(), true) == null) {
+							if(used.putIfAbsent(tr.getTo(), true) == null) {
 								nextQ.add(generatedTrs.get(tr));
 								//if(nextQ.size()%100==0) System.out.println(nextQ.size());
 							}
@@ -107,7 +105,7 @@ public class Rbac2FsmConcurrent_BFS {
 						if(num == THREADS_NUM - 1) {
 							//broken barrier exception??
 							lvl = nextQ.isEmpty() ? MAX_DEPTH : lvl + 1;
-							LinkedBlockingQueue<RbacState> tmp = curQ;
+							LinkedBlockingQueue<FsmState> tmp = curQ;
 							curQ = nextQ;
 							nextQ = tmp; 
 							barrier.await();
@@ -121,7 +119,7 @@ public class Rbac2FsmConcurrent_BFS {
 						}
 					}
 				}
-			} catch (InterruptedException | BrokenBarrierException | CloneNotSupportedException e) {
+			} catch (InterruptedException | BrokenBarrierException e) {
 				e.printStackTrace();
 			} finally {
 				//System.out.println("[Thread # " + name + " finish execution]");
@@ -135,10 +133,10 @@ public class Rbac2FsmConcurrent_BFS {
 	private final int MAX_DEPTH;
 	private final CountDownLatch latch;
 	//	private final ConcurrentMap<RbacState, Integer> depth = new ConcurrentHashMap<RbacState, Integer>();
-	private final ConcurrentMap<String, Boolean> used = new ConcurrentHashMap<String, Boolean>();
-	private LinkedBlockingQueue<RbacState> curQ = new LinkedBlockingQueue<RbacState>();
+	private final ConcurrentMap<FsmState, Boolean> used = new ConcurrentHashMap<FsmState, Boolean>();
+	private LinkedBlockingQueue<FsmState> curQ = new LinkedBlockingQueue<FsmState>();
 
-	private LinkedBlockingQueue<RbacState> nextQ = new LinkedBlockingQueue<RbacState>();
+	private LinkedBlockingQueue<FsmState> nextQ = new LinkedBlockingQueue<FsmState>();
 	private volatile int lvl = 0; // really need this???
 	private CyclicBarrier barrier; 
 
@@ -163,18 +161,7 @@ public class Rbac2FsmConcurrent_BFS {
 		latch = new CountDownLatch(THREADS_NUM + 1);
 		barrier = new CyclicBarrier(THREADS_NUM);
 		rqs = new ArrayList<RbacRequest>();
-		for (Role rol: sut.getRole()) {
-			for (User usr: sut.getUser()) {
-				rqs.add(new RbacRequestAssignUR(usr, rol));
-				rqs.add(new RbacRequestDeassignUR(usr, rol));
-				rqs.add(new RbacRequestActivateUR(usr, rol));
-				rqs.add(new RbacRequestDeactivateUR(usr, rol));
-			}
-			//			for (Permission prms: rbac.getPermission()) {
-			//				input.add(new RbacRequestAssignPR(prms, rol));
-			//				input.add(new RbacRequestDeassignPR(prms, rol));
-			//			}
-		}
+		rqs.addAll(RbacUtils.getInstance().generateRequests(sut.getPolicy()));
 	}
 
 
@@ -185,11 +172,11 @@ public class Rbac2FsmConcurrent_BFS {
 
 	public void start() {
 		fsmModel = new FsmModel(acut.getPolicy().getName());
-		String initialStateName = acut.getName();
+		FsmState initial = RbacUtils.getInstance().rbacToFsmState(acut.getPolicy());
 		SearchTask[] tasks = new SearchTask[THREADS_NUM];
 		try {
-			curQ.add(acut.getCurrentState());
-			used.put(acut.getCurrentState().getName(), true);
+			curQ.add(initial);
+			used.put(initial, true);
 			for (int i = 0; i < THREADS_NUM; i++) {
 				SearchTask t = new SearchTask(i);
 				pool.execute(t);
@@ -216,7 +203,7 @@ public class Rbac2FsmConcurrent_BFS {
 		fsmModel.getTransitions()	.addAll(transitions);
 		fsmModel.getInputs()		.addAll(inputs);
 		fsmModel.getOutputs()		.addAll(outputs);
-		fsmModel.setInitialState(FsmUtils.getInstance().getState(states,initialStateName ));
+		fsmModel.setInitialState(initial);
 		FsmUtils.getInstance().updateElements(fsmModel);
 		FsmUtils.getInstance().sorting(fsmModel);
 	}

@@ -10,10 +10,6 @@ public class FsmPath extends FsmElement{
 	public FsmPath() {
 		this.paths = new ArrayList<FsmTransition>();
 	}
-	public FsmPath(String n) {
-		super(n);
-		this.paths = new ArrayList<FsmTransition>();
-	}
 
 	public void addTransition(FsmTransition t){
 		getPath().add(t);
@@ -62,7 +58,7 @@ public class FsmPath extends FsmElement{
 
 	@Override
 	public String toString() {
-		String out = getInitialState().getName();
+		String out = Integer.toString(getInitialState().getId());
 		FsmTransition tr;
 		for (int i = 0; i < paths.size(); i++) {
 			tr = paths.get(i);
