@@ -46,6 +46,7 @@ import com.usp.icmc.labes.fsm.testing.FsmSUT;
 import com.usp.icmc.labes.fsm.testing.FsmTestCase;
 import com.usp.icmc.labes.fsm.testing.FsmTestStatistics;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
+import com.usp.icmc.labes.fsm.testing.FsmTestSuiteIterator;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.acut.RbacRequest;
@@ -521,7 +522,7 @@ public class FsmTestingUtils {
 		System.out.print("maxLength"+"\t");
 		System.out.print("sdLength"+"\t");
 		System.out.print("varLength"+"\t");
-		System.out.print("medianLength"+"\n");
+		System.out.print("\n");
 
 
 		FsmTestStatistics tStats = new FsmTestStatistics(testSuite);
@@ -534,8 +535,33 @@ public class FsmTestingUtils {
 		System.out.print(Long.toString(	tStats.getMaxLength					())+"\t");
 		System.out.print(Double.toString(	tStats.getSdLength				())+"\t");
 		System.out.print(Double.toString(	tStats.getVarLength				())+"\t");
-		System.out.print(Double.toString(	tStats.getMedianLength			())+"\n");
+		System.out.print("\n");
 
+	}
+	
+	public void printTestSuiteCharacteristics(FsmTestSuiteIterator testSuite) {
+		System.out.print("testSuite"+"\t");
+		System.out.print("noResets"+"\t");
+		System.out.print("testSuiteLength"+"\t");
+		System.out.print("testSuiteLengthNoRst"+"\t");
+		System.out.print("minLength"+"\t");
+		System.out.print("avgLength"+"\t");
+		System.out.print("maxLength"+"\t");
+		System.out.print("sdLength"+"\t");
+		System.out.print("varLength"+"\t");
+		System.out.print("\n");
+
+		FsmTestStatistics tStats = new FsmTestStatistics(testSuite);
+		System.out.print(testSuite.getName()+"\t");
+		System.out.print(Long.toString(	tStats.getNoResets					())+"\t");
+		System.out.print(Long.toString(	tStats.getTestSuiteLength			())+"\t");
+		System.out.print(Long.toString(	tStats.getTestSuiteLengthNoResets	())+"\t");
+		System.out.print(Long.toString(	tStats.getMinLength					())+"\t");
+		System.out.print(Double.toString(	tStats.getAvgLength				())+"\t");
+		System.out.print(Long.toString(	tStats.getMaxLength					())+"\t");
+		System.out.print(Double.toString(	tStats.getSdLength				())+"\t");
+		System.out.print(Double.toString(	tStats.getVarLength				())+"\t");
+		System.out.print("\n");
 
 	}
 	public void printConformanceTestingStatistics(RbacPolicy sutRbac, FsmTestSuite testSuite, List<RbacPolicy> mutants) {
@@ -592,6 +618,62 @@ public class FsmTestingUtils {
 		}
 	}
 
+	public void printConformanceTestingStatistics(RbacPolicy sutRbac, FsmTestSuiteIterator testSuiteIter,
+			List<RbacPolicy> mutants) throws IOException {
+		RbacAcut acutSut= createAcutFromRbacPolicy(sutRbac);
+		List<RbacAcut> acutMutant = createAcutFromRbacPolicy(mutants);
+
+		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
+
+		List<RbacPolicy> killed  = new ArrayList<RbacPolicy>();
+
+		testSuiteIter.openFile();
+		while(testSuiteIter.hasNextTestCase()){
+			FsmTestCase tc = testSuiteIter.nextTestCase();
+			
+			for (FsmTransition tr: tc.getPath()) {
+
+				rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acutSut));
+
+				boolean specBool = acutSut.request(rqMap.get(tr.getInput()));
+
+				for (RbacAcut rbacAcut : acutMutant) {
+					if(killed.contains(rbacAcut.getPolicy())) continue;
+					boolean mutBool = rbacAcut.request(rqMap.get(tr.getInput()));
+					if(specBool ^ mutBool){
+						killed.add(rbacAcut.getPolicy());
+					}
+
+				}
+			}
+			acutSut.reset();
+			for (RbacAcut rbacAcut : acutMutant)  rbacAcut.reset();
+		}
+
+		long totKilled = killed.size();
+		double score = ((double)totKilled)/(mutants.size());
+
+		System.out.print(sutRbac.getName()+"\t");
+		System.out.print(mutants.size()+"\t");
+		System.out.print(testSuiteIter.getGeneratedBy()+"\t");
+		System.out.print(score);
+		System.out.print("\n\n");
+
+		Set<String> alivePolNames = new HashSet<String>();
+		for (RbacPolicy pol : mutants) alivePolNames.add(pol.getName());
+
+		Set<String> killedPolNames = new HashSet<String>();
+		for (RbacPolicy pol : killed) killedPolNames.add(pol.getName());
+
+		alivePolNames.removeAll(killedPolNames);
+		for (String polName : alivePolNames) {
+			System.out.println(polName);
+		}
+		testSuiteIter.close();
+	}
+
+
+
 	private List<RbacAcut> createAcutFromRbacPolicy(List<RbacPolicy> mutants) {
 		List<RbacAcut> acuts = new ArrayList<>();
 		for (RbacPolicy mut : mutants)  acuts.add(new RbacAcut(mut));
@@ -645,7 +727,6 @@ public class FsmTestingUtils {
 		}
 		return subset;
 	}
-
 
 
 	//	public List<RbacTestConfiguration> loadRbacTestConfiguration(File testCnfFile) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, TransformerException {

@@ -25,6 +25,7 @@ import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.fsm.testing.FsmSUT;
 import com.usp.icmc.labes.fsm.testing.FsmTestCase;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
+import com.usp.icmc.labes.fsm.testing.FsmTestSuiteIterator;
 import com.usp.icmc.labes.fsm.testing.RbacTestConfiguration;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.acut.RbacRequest;
@@ -449,10 +450,11 @@ public class RbacBT {
 
 
 		RbacPolicy sutRbac 			= rbacUtils.loadRbacPolicyFromXML(sutRbacFile);
-		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
+//		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
+		FsmTestSuiteIterator testSuiteIter 		= new FsmTestSuiteIterator(sutRbac, testSuiteFile);
 		List<RbacPolicy> mutants 	= rbacUtils.loadMutantsFromTxTFile(sutMutantsFile);
 
-		testingUtils.printConformanceTestingStatistics(sutRbac,testSuite,mutants);
+		testingUtils.printConformanceTestingStatistics(sutRbac,testSuiteIter,mutants);
 
 		chron.stop();
 	}
@@ -468,9 +470,10 @@ public class RbacBT {
 		
 		String testSuiteStr 		= cmd.getOptionValue(TESTSUITE_PARAMETER);
 		File testSuiteFile 			= new File(testSuiteStr);
-		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
-	
-		testingUtils.printTestSuiteCharacteristics(testSuite);
+//		FsmTestSuite testSuite 		= fsmTestingutils.loadFsmTestSuiteFromKK(sutRbac, testSuiteFile);
+		FsmTestSuiteIterator testSuiteIter 		= new FsmTestSuiteIterator(sutRbac, testSuiteFile);
+		testingUtils.printTestSuiteCharacteristics(testSuiteIter);
+		testSuiteIter.close();
 	
 		chron.stop();
 	}
