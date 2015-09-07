@@ -31,9 +31,8 @@ import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 public class PairTestRbacSimilarity extends PairTestSimilarity {
 
 	public PairTestRbacSimilarity(FsmTestCase tci, FsmTestCase tcj, RbacAcut acut) {
-		int ndt = FsmTestCaseSimilarityUtils.getInstance().calcNdt(tci,tcj);
 		double avgij = (tci.getPath().size()+tcj.getPath().size())/2.0;
-		double dss = ndt/avgij;
+		double dss = 1-FsmTestCaseSimilarityUtils.getInstance().calcJaccardSimilarity(tci,tcj);
 		if(tci.getPath().size()<tcj.getPath().size()){
 			this.test00 = tci;
 			this.test01 = tcj;

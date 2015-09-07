@@ -184,6 +184,17 @@ public class FsmTestCaseSimilarityUtils {
 		return dt.size();
 	}
 
+	public double calcJaccardSimilarity(FsmTestCase tci, FsmTestCase tcj) {
+		Set<FsmTransition> intersection = new HashSet<FsmTransition>();
+		intersection.addAll(tci.getPath());
+		intersection.retainAll(tcj.getPath());
+
+		Set<FsmTransition> union = new HashSet<FsmTransition>();
+		union.addAll(tci.getPath());
+		union.addAll(tcj.getPath());
+		return intersection.size()/(double)union.size();
+	}
+
 	private static FsmTestingUtils testingUtils 			= FsmTestingUtils.getInstance();
 
 	public void sortSimilarityRandom(FsmTestSuite testSuite) {

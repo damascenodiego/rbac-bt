@@ -277,7 +277,6 @@ public class FsmTestingUtils {
 		br.close();
 
 		Collections.shuffle(selectedTestIndex,RandomGenerator.getInstance().getRnd());
-		while (selectedTestIndex.size()!=limit) selectedTestIndex.remove(selectedTestIndex.size()-1);		
 		
 		RbacAcut acut = new RbacAcut(sutRbac);
 		
@@ -291,7 +290,7 @@ public class FsmTestingUtils {
 		br = new BufferedReader(new FileReader(file));
 		int counter = 0;
 		while (br.ready()) {
-			if(testSuite.getTestCases().size()==selectedTestIndex.size()) break;
+			if(testSuite.getTestCases().size()==limit) break;
 			if(!selectedTestIndex.contains(counter)) {
 				counter++;
 				continue;
