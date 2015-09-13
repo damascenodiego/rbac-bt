@@ -172,16 +172,16 @@ public class FsmTestCaseSimilarityUtils {
 		return tcNit.size();
 	}
 
-	public int calcNdt(FsmTestCase tci, FsmTestCase tcj) {
-		Set<FsmTransition> it = new HashSet<FsmTransition>();
-		it.addAll(tci.getPath());
-		it.retainAll(tcj.getPath());
+	public double calcNdt(FsmTestCase tci, FsmTestCase tcj) {
+		Set<FsmTransition> intersection = new HashSet<FsmTransition>();
+		intersection.addAll(tci.getPath());
+		intersection.retainAll(tcj.getPath());
 
-		Set<FsmTransition> dt = new HashSet<FsmTransition>();
-		dt.addAll(tci.getPath());
-		dt.addAll(tcj.getPath());
-		dt.removeAll(it);
-		return dt.size();
+		Set<FsmTransition> union = new HashSet<FsmTransition>();
+		union.addAll(tci.getPath());
+		union.addAll(tcj.getPath());
+		union.removeAll(intersection);
+		return union.size()/((tci.getPath().size()+tcj.getPath().size())/2.0);
 	}
 
 	public double calcJaccardSimilarity(FsmTestCase tci, FsmTestCase tcj) {
