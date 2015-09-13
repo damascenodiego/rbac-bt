@@ -32,7 +32,8 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 
 	public PairTestRbacSimilarity(FsmTestCase tci, FsmTestCase tcj, RbacAcut acut) {
 		double avgij = (tci.getPath().size()+tcj.getPath().size())/2.0;
-		double dss = 1-FsmTestCaseSimilarityUtils.getInstance().calcJaccardSimilarity(tci,tcj);
+		//		double dss = 1-FsmTestCaseSimilarityUtils.getInstance().calcJaccardSimilarity(tci,tcj);
+		double dss = FsmTestCaseSimilarityUtils.getInstance().calcNdtAvgLen(tci,tcj);
 		if(tci.getPath().size()<tcj.getPath().size()){
 			this.test00 = tci;
 			this.test01 = tcj;
