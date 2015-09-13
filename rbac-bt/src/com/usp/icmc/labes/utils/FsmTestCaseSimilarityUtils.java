@@ -22,6 +22,7 @@ import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.fsm.testing.FsmSUT;
 import com.usp.icmc.labes.fsm.testing.FsmTestCase;
 import com.usp.icmc.labes.fsm.testing.FsmTestSuite;
+import com.usp.icmc.labes.fsm.testing.PairTestDissimilarityNit;
 import com.usp.icmc.labes.fsm.testing.PairTestRbacSimilarity;
 import com.usp.icmc.labes.fsm.testing.PairTestSimilarity;
 import com.usp.icmc.labes.fsm.testing.PairTestSimpleDissimilarity;
@@ -146,7 +147,7 @@ public class FsmTestCaseSimilarityUtils {
 			FsmTestCase tci = testList.get(i);
 			for (int j = i+1; j < testList.size(); j++) {
 				FsmTestCase tcj = testList.get(j);
-				pairsTest.add(new PairTestSimpleDissimilarity(tci, tcj));
+				pairsTest.add(new PairTestDissimilarityNit(tci, tcj));
 			}
 		}
 		return pairsTest;
@@ -172,7 +173,7 @@ public class FsmTestCaseSimilarityUtils {
 		return tcNit.size();
 	}
 
-	public double calcNdt(FsmTestCase tci, FsmTestCase tcj) {
+	public double calcNdtAvgLen(FsmTestCase tci, FsmTestCase tcj) {
 		Set<FsmTransition> intersection = new HashSet<FsmTransition>();
 		intersection.addAll(tci.getPath());
 		intersection.retainAll(tcj.getPath());
