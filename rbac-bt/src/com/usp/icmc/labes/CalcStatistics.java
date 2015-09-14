@@ -52,7 +52,9 @@ public class CalcStatistics {
 	}
 
 	private static void statsPrioritization(String[] args) {
-		File outList = new File(args[0]);
+//		String argStr = args[0];
+		String argStr = "/home/damasceno/Dropbox/run2015-09-13_16-56-24/conformanceTest.run2015-09-13_16-56-24.out";
+		File outList = new File(argStr);
 		File statSummary = new File(outList.getParentFile(),outList.getName()+".statSummary.prtz.txt");
 		
 		try {
@@ -101,6 +103,8 @@ public class CalcStatistics {
 
 			Mean mean = new Mean();
 			
+			meth.remove("NONE");
+			
 			for (String testName  : name) {
 				bw.write("TestName\tPercent\t");
 				for (String prtz : meth) bw.write(prtz+"\t");
@@ -109,7 +113,7 @@ public class CalcStatistics {
 					bw.write(testName); bw.write("\t");
 					bw.write(Integer.toString(perc)); bw.write("\t");
 					for (String prtz : meth) {
-						if(prtz.equals("NONE") && stats.get(testName).containsKey("NONE") && stats.get(testName).get("NONE").containsKey(100)){
+						if(perc == 100){
 							double[] values = new double[stats.get(testName).get("NONE").get(100).size()];
 							for (int i = 0; i < values.length; i++)  values[i] = stats.get(testName).get("NONE").get(100).get(i);
 							bw.write(Double.toString(mean.evaluate(values))+"\t");
@@ -127,7 +131,6 @@ public class CalcStatistics {
 
 			}
 			
-			bw.write("\n\n");
 			bw.close();
 		} catch (Exception e) {
 			e.printStackTrace();
