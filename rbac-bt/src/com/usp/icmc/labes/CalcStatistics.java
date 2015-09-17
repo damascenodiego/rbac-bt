@@ -48,17 +48,17 @@ public class CalcStatistics {
 	private static RbacUtils rbacUtils = RbacUtils.getInstance();
 
 	public static void main(String[] args) {
-		statsPrioritization(args);
+		statsPrioritizationEffectiveness(args);
 	}
 
-	private static void statsPrioritization(String[] args) {
-//		String argStr = args[0];
-		String argStr = "/home/damasceno/Dropbox/run2015-09-13_16-56-24/conformanceTest.run2015-09-13_16-56-24.out";
+	
+	private static void statsPrioritizationTotMut(String[] args) {
+		String argStr = args[0];
 		File outList = new File(argStr);
 		File statSummary = new File(outList.getParentFile(),outList.getName()+".statSummary.prtz.txt");
 		
 		try {
-			Map<String,Map<String,Map<Integer,List<Double>>>> stats = new HashMap<String,Map<String,Map<Integer,List<Double>>>> ();
+			Map<String,Map<String,Map<Integer,List<Integer>>>> stats = new HashMap<String,Map<String,Map<Integer,List<Integer>>>> ();
 
 			BufferedReader br = new BufferedReader(new FileReader(outList));
 			BufferedWriter bw = new BufferedWriter(new FileWriter(statSummary));
@@ -85,10 +85,11 @@ public class CalcStatistics {
 					testName = mat.replaceAll(".test");
 				}
 				Double testEffectiveness = Double.valueOf(test[3]);
-				stats.putIfAbsent(testName, new HashMap<String, Map<Integer,List<Double>>> ());
-				stats.get(testName).putIfAbsent(testPrtzMethod, new HashMap<Integer, List<Double>>());
-				stats.get(testName).get(testPrtzMethod).putIfAbsent(testPrtzFragment,new ArrayList<Double>());
-				stats.get(testName).get(testPrtzMethod).get(testPrtzFragment).add(testEffectiveness);
+				int mutants = (int)(Integer.valueOf(test[1])*testEffectiveness);
+				stats.putIfAbsent(testName, new HashMap<String, Map<Integer,List<Integer>>> ());
+				stats.get(testName).putIfAbsent(testPrtzMethod, new HashMap<Integer, List<Integer>>());
+				stats.get(testName).get(testPrtzMethod).putIfAbsent(testPrtzFragment,new ArrayList<Integer>());
+				stats.get(testName).get(testPrtzMethod).get(testPrtzFragment).add(mutants);
 
 				if(!name.contains(testName)) name.add(testName);
 				if(!meth.contains(testPrtzMethod)) meth.add(testPrtzMethod);
@@ -141,8 +142,102 @@ public class CalcStatistics {
 		
 	}
 
+	
+	
+	private static void statsPrioritizationEffectiveness(String[] args) {
+		Median calc = new Median();
+		
+//		String argStr = args[0];
+		String argStr = "/home/damasceno/Dropbox/run2015-09-13_16-56-24/conformanceTest.run2015-09-13_16-56-24.out";
+		File outList = new File(argStr);
+		File statSummary = new File(outList.getParentFile(),outList.getName()+".statSummary.prtz.txt");
+		
+		try {
+			Map<String,Map<String,Map<Integer,List<Double>>>> stats = new HashMap<String,Map<String,Map<Integer,List<Double>>>> ();
+
+			BufferedReader br = new BufferedReader(new FileReader(outList));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(statSummary));
+			List<String> name = new ArrayList<String>();
+			List<String> meth = new ArrayList<String>();
+			List<Integer> fragment = new ArrayList<Integer>();
+			END: while (br.ready()) {
+				Pattern notTestStats = Pattern.compile("^[a-zA-Z0-9_-_]*$");
+				Pattern testPrtzFragmentPattern = Pattern.compile("\\.test\\.([a-zA-Z]+)\\.test\\.([0-9]+)\\.test");
+				String line = br.readLine();
+				while(line.equals(" ") || line.isEmpty() || notTestStats.matcher(line).matches()){
+					line = br.readLine();
+					if(!br.ready()) break END;
+				}
+				String test[] = line.split("\t");
+				Matcher mat = testPrtzFragmentPattern.matcher(test[2]);
+				String testPrtzMethod = "NONE";
+				String testName = test[2];
+				Integer testPrtzFragment = 100;
+				if(mat.find()) {
+//					System.out.println(mat.groupCount());
+					testPrtzMethod = mat.group(1);
+					testPrtzFragment = Integer.valueOf(mat.group(2));
+					testName = mat.replaceAll(".test");
+				}
+				Double testEffectiveness = Double.valueOf(test[3]);
+				stats.putIfAbsent(testName, new HashMap<String, Map<Integer,List<Double>>> ());
+				stats.get(testName).putIfAbsent(testPrtzMethod, new HashMap<Integer, List<Double>>());
+				stats.get(testName).get(testPrtzMethod).putIfAbsent(testPrtzFragment,new ArrayList<Double>());
+				stats.get(testName).get(testPrtzMethod).get(testPrtzFragment).add(testEffectiveness);
+
+				if(!name.contains(testName)) name.add(testName);
+				if(!meth.contains(testPrtzMethod)) meth.add(testPrtzMethod);
+				if(!fragment.contains(testPrtzFragment)) fragment.add(testPrtzFragment);
+				
+			}
+			br.close();
+			
+			Collections.sort(name);
+			Collections.sort(meth);
+			Collections.sort(fragment);
+
+			meth.remove("NONE");
+			
+			for (String testName  : name) {
+				bw.write("TestName\tPercent\t");
+				for (String prtz : meth) bw.write(prtz+"\t");
+				bw.write("\n");
+				for (Integer perc  : fragment) {
+					bw.write(testName); bw.write("\t");
+					bw.write(Integer.toString(perc)); bw.write("\t");
+					for (String prtz : meth) {
+						if(perc == 100){
+							double[] values = new double[stats.get(testName).get("NONE").get(100).size()];
+							for (int i = 0; i < values.length; i++)  values[i] = stats.get(testName).get("NONE").get(100).get(i);
+							bw.write(Double.toString(calc.evaluate(values))+"\t");
+						}else if(stats.get(testName).containsKey(prtz) && stats.get(testName).get(prtz).containsKey(perc)) {
+							double[] values = new double[stats.get(testName).get(prtz).get(perc).size()];
+							for (int i = 0; i < values.length; i++)  values[i] = stats.get(testName).get(prtz).get(perc).get(i);
+							bw.write(Double.toString(calc.evaluate(values))+"\t");
+						} else{
+							bw.write("-\t");
+						}
+					}
+					bw.write("\n");
+				}	
+				bw.write("\n\n");
+
+			}
+			
+			bw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		
+
+		
+	}
+
 	private static void statsSelection(String[] args) {
-		File outList = new File(args[0]);
+//		String argStr = args[0];
+		String argStr = "/home/damasceno/Dropbox/run2015-09-05_15-44-55/conformanceTest.run2015-09-05_15-44-55.out";
+		File outList = new File(argStr);
 		File statSummary = new File(outList.getParentFile(),outList.getName()+".statSummary.txt");
 		try {
 			//			Map<String,List<Double>> stats = new HashMap<String,List<Double>>();
