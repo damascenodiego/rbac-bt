@@ -73,32 +73,26 @@ public class RbacSupportingSystemFunctions {
 			policy.getUserRoleActivation().add(new UserRoleActivation(user, role));
 			return true;
 		}else{
-			RbacPolicy p = null;
-			if(policy instanceof RbacPolicy) {
-				p = (RbacPolicy) policy;
-			}else if(policy instanceof RbacAcut) {
-				p = ((RbacAcut) policy).getPolicy();
-			}
-			p.getProperties().clear();
+			policy.getProperties().clear();
 			RbacMutableElement reason = null;
 			RbacFaultType faultType = null;
 			if(!nextDuIsValid){
 				faultType = RbacFaultType.DuFailed;
 				reason = utils.getDu(policy, user);
-				utils.failedDueTo(p,faultType,reason);
+				utils.failedDueTo(policy,faultType,reason);
 
 			}
 			if(!nextDrIsValid){
 				faultType = RbacFaultType.DrFailed;
 				reason = utils.getDr(policy, role);
-				utils.failedDueTo(p,faultType,reason);
+				utils.failedDueTo(policy,faultType,reason);
 
 			}
 			if(!dsdValid){
 				faultType = RbacFaultType.DsodFailed;
 				List<DSoDConstraint> reasonList = utils.getDSoD(policy, role);
 				for (RbacMutableElement rbacMutableElement : reasonList) {
-					utils.failedDueTo(p,faultType,rbacMutableElement);
+					utils.failedDueTo(policy,faultType,rbacMutableElement);
 				}
 
 			}
@@ -136,6 +130,7 @@ public class RbacSupportingSystemFunctions {
 			policy.getUserRoleActivation().remove(ua);
 			return true;
 		}
+		policy.getProperties().clear();
 		return false;
 	}
 

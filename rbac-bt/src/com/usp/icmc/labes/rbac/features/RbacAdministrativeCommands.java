@@ -131,30 +131,24 @@ public class RbacAdministrativeCommands {
 			policy.getUserRoleAssignment().add(new UserRoleAssignment(user,role));
 			return true;
 		}else{
-			RbacPolicy p = null;
-			if(policy instanceof RbacPolicy) {
-				p = (RbacPolicy) policy;
-			}else if(policy instanceof RbacAcut) {
-				p = ((RbacAcut) policy).getPolicy();
-			}
-			p.getProperties().clear();
+			policy.getProperties().clear();
 			RbacMutableElement reason = null;
 			RbacFaultType faultType = null;
 			if(!nextSuIsValid){
 				faultType = RbacFaultType.SuFailed;
 				reason = utils.getSu(policy, user);
-				utils.failedDueTo(p,faultType,reason);
+				utils.failedDueTo(policy,faultType,reason);
 			}
 			if(!nextSrIsValid){
 				faultType = RbacFaultType.SrFailed;
 				reason = utils.getSr(policy, role);
-				utils.failedDueTo(p,faultType,reason);
+				utils.failedDueTo(policy,faultType,reason);
 			}
 			if(!ssdValid){
 				faultType = RbacFaultType.SsodFailed;
 				List<SSoDConstraint> reasonList = utils.getSSoD(policy, role);
 				for (RbacMutableElement rbacMutableElement : reasonList) {
-					utils.failedDueTo(p,faultType,rbacMutableElement);
+					utils.failedDueTo(policy,faultType,rbacMutableElement);
 				}
 			}
 			
@@ -193,6 +187,8 @@ public class RbacAdministrativeCommands {
 			policy.getPermissionRoleAssignment().removeAll(utils.getPermissionRoleAssignmentWithPermission(policy, prms));
 			return true;
 		}
+		policy.getProperties().clear();
+
 		return false;
 	}
 
@@ -246,6 +242,8 @@ public class RbacAdministrativeCommands {
 			policy.getPermissionRoleAssignment().remove(pr);
 			return true;
 		}
+		policy.getProperties().clear();
+
 		return false;
 
 	}

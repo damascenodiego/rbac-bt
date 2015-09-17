@@ -95,8 +95,8 @@ public class FsmTestSuiteIterator{
 
 				for (RbacFaultType faultType: RbacFaultType.values()) {
 					tr.getProperties().putIfAbsent(faultType, new HashSet<>());
-					if(!acut.getPolicy().getProperties().containsKey(faultType)) continue;
-					((Set) tr.getProperties().get(faultType)).addAll((Set) acut.getPolicy().getProperties().get(faultType));
+					if(!acut.getProperties().containsKey(faultType)) continue;
+					((Set) tr.getProperties().get(faultType)).addAll((Set) acut.getProperties().get(faultType));
 				}
 			}
 			acut.reset();

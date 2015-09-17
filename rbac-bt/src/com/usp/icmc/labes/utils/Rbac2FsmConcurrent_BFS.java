@@ -1,7 +1,6 @@
 package com.usp.icmc.labes.utils;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,12 +22,14 @@ import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.fsm.FsmTransition;
 import com.usp.icmc.labes.rbac.acut.RbacAcut;
 import com.usp.icmc.labes.rbac.acut.RbacRequest;
-import com.usp.icmc.labes.rbac.acut.RbacRequestActivateUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestAssignUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeactivateUR;
-import com.usp.icmc.labes.rbac.acut.RbacRequestDeassignUR;
+import com.usp.icmc.labes.rbac.model.Dr;
+import com.usp.icmc.labes.rbac.model.Du;
+import com.usp.icmc.labes.rbac.model.RbacMutableElement;
 import com.usp.icmc.labes.rbac.model.Role;
+import com.usp.icmc.labes.rbac.model.Sr;
+import com.usp.icmc.labes.rbac.model.Su;
 import com.usp.icmc.labes.rbac.model.User;
+import com.usp.icmc.labes.utils.RbacUtils.RbacFaultType;
 
 public class Rbac2FsmConcurrent_BFS {
 
@@ -71,6 +72,7 @@ public class Rbac2FsmConcurrent_BFS {
 						for (RbacRequest in : rqs) {
 							localAcut.reset(u);
 							FsmState origin = u;
+							localAcut.getProperties().clear();
 							boolean out = localAcut.request(in);
 							FsmState destination = RbacUtils.getInstance().rbacToFsmState(localAcut);
 							
@@ -78,8 +80,41 @@ public class Rbac2FsmConcurrent_BFS {
 							FsmTransition transition = new FsmTransition(origin, in.toString(), (out? "grant" : "deny"), destination);
 							
 							if(!out) {
-								Properties trProp = (Properties) localAcut.getPolicy().getProperties().clone();
+								Properties trProp = (Properties) localAcut.getProperties().clone();
 								transition.setProperties(trProp);
+//								if(!transition.getProperties().isEmpty()) {
+//									//				Enumeration<Object> keys = t.getProperties().keys();
+//									//				while (keys.hasMoreElements()) {
+//									for (RbacFaultType faultType: RbacFaultType.values()) {
+//										User usr = null;
+//										Role r = null;
+//										if(!transition.getProperties().containsKey(faultType)) continue;
+//										Set<RbacMutableElement> fEls = (Set<RbacMutableElement>) transition.getProperties().get(faultType);
+//										for (RbacMutableElement el : fEls) {
+//											if(el instanceof Du){
+//												usr = ((Du)el).getUser();
+//												if(!transition.getInput().contains(usr.getName())) {
+//													System.err.println("ERROR!!!"+origin+" "+in+" "+destination);
+//												}
+//											}else if(el instanceof Dr){
+//												r= ((Dr)el).getRole();
+//												if(!transition.getInput().contains(r.getName())) {
+//													System.err.println("ERROR!!!"+origin+" "+in+" "+destination);
+//												}
+//											}else if(el instanceof Su){
+//												usr= ((Su)el).getUser();
+//												if(!transition.getInput().contains(usr.getName())) {
+//													System.err.println("ERROR!!!"+origin+" "+in+" "+destination);
+//												}
+//											}else if(el instanceof Sr){
+//												r= ((Sr)el).getRole();
+//												if(!transition.getInput().contains(r.getName())) {
+//													System.err.println("ERROR!!!"+origin+" "+in+" "+destination);
+//												}
+//											}
+//										}
+//									}
+//								}
 							}
 							
 							generatedTrs.put(transition,destination);

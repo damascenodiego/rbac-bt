@@ -116,7 +116,7 @@ public class RbacUtils {
 		return total<constr.getCardinality();
 	}
 
-	public void failedDueTo(RbacPolicy p, RbacFaultType faultType, RbacMutableElement reason) {
+	public void failedDueTo(RbacTuple p, RbacFaultType faultType, RbacMutableElement reason) {
 		synchronized (p.getProperties()) {
 			p.getProperties().putIfAbsent(faultType, new HashSet<RbacMutableElement>());
 			((Set)p.getProperties().get(faultType)).add(reason);	

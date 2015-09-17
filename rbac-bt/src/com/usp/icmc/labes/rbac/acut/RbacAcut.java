@@ -3,6 +3,7 @@ package com.usp.icmc.labes.rbac.acut;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Properties;
 
 import com.usp.icmc.labes.fsm.FsmState;
 import com.usp.icmc.labes.rbac.features.RbacAdministrativeCommands;
@@ -45,6 +46,8 @@ public class RbacAcut implements RbacTuple{
 	private RbacReviewFunctions rev = RbacReviewFunctions.getInstance();
 	private RbacAdvancedReviewFunctions adv = RbacAdvancedReviewFunctions.getInstance();
 
+	private Properties properties;
+	
 	public RbacAcut(RbacAcut acut2) {
 		this(acut2.getPolicy());
 	}
@@ -56,6 +59,7 @@ public class RbacAcut implements RbacTuple{
 		userRoleAssignment = new ArrayList<UserRoleAssignment>();
 		userRoleActivation= new ArrayList<UserRoleActivation>();
 		permissionRoleAssignment = new ArrayList<PermissionRoleAssignment>();
+		properties = new Properties();
 	}
 
 	@Override
@@ -300,6 +304,10 @@ public class RbacAcut implements RbacTuple{
 
 	public void setPolicy(RbacPolicy policy) {
 		this.policy = policy;
+	}
+		
+	public Properties getProperties() {
+		return properties;
 	}
 	
 }

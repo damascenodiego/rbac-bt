@@ -1,6 +1,7 @@
 package com.usp.icmc.labes.rbac.model;
 
 import java.util.List;
+import java.util.Properties;
 
 public interface RbacTuple {
 	List<ActivationHierarchy> getActivationHierarchy();
@@ -17,4 +18,5 @@ public interface RbacTuple {
 	List<User> getUser();
 	List<UserRoleActivation> getUserRoleActivation();
 	List<UserRoleAssignment> getUserRoleAssignment();
+	Properties getProperties();
 }
