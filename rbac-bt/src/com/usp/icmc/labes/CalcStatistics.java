@@ -145,10 +145,10 @@ public class CalcStatistics {
 	
 	
 	private static void statsPrioritizationEffectiveness(String[] args) {
-		Median calc = new Median();
+		Mean calc = new Mean();
 		
 //		String argStr = args[0];
-		String argStr = "/home/damasceno/Dropbox/run2015-09-13_16-56-24/conformanceTest.run2015-09-13_16-56-24.out";
+		String argStr = "/home/damasceno/Dropbox/run2015-09-17_21-21-41/conformanceTest.run2015-09-17_21-21-41.out";
 		File outList = new File(argStr);
 		File statSummary = new File(outList.getParentFile(),outList.getName()+".statSummary.prtz.txt");
 		
@@ -160,6 +160,7 @@ public class CalcStatistics {
 			List<String> name = new ArrayList<String>();
 			List<String> meth = new ArrayList<String>();
 			List<Integer> fragment = new ArrayList<Integer>();
+			int greater = 0;
 			END: while (br.ready()) {
 				Pattern notTestStats = Pattern.compile("^[a-zA-Z0-9_-_]*$");
 				Pattern testPrtzFragmentPattern = Pattern.compile("\\.test\\.([a-zA-Z]+)\\.test\\.([0-9]+)\\.test");
@@ -184,15 +185,18 @@ public class CalcStatistics {
 				stats.get(testName).putIfAbsent(testPrtzMethod, new HashMap<Integer, List<Double>>());
 				stats.get(testName).get(testPrtzMethod).putIfAbsent(testPrtzFragment,new ArrayList<Double>());
 				stats.get(testName).get(testPrtzMethod).get(testPrtzFragment).add(testEffectiveness);
+				if(greater<stats.get(testName).get(testPrtzMethod).get(testPrtzFragment).size())
+					greater=stats.get(testName).get(testPrtzMethod).get(testPrtzFragment).size();
 
 				if(!name.contains(testName)) name.add(testName);
 				if(!meth.contains(testPrtzMethod)) meth.add(testPrtzMethod);
 				if(!fragment.contains(testPrtzFragment)) fragment.add(testPrtzFragment);
 				
 			}
+			System.out.println(greater);
 			br.close();
 			
-			Collections.sort(name);
+//			Collections.sort(name);
 			Collections.sort(meth);
 			Collections.sort(fragment);
 
