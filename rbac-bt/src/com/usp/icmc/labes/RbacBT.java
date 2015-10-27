@@ -57,7 +57,6 @@ public class RbacBT {
 	private static final String 	RBAC2FSM_PARAMETER 		= "r2f";
 	private static final String 	RBAC_MUTATION_PARAMETER = "rmut";
 	private static final String 	OUTPUT_PARAMETER 		= "o";
-	private static final String 	KISS_PARAMETER 			= "kiss";
 	private static final String 	DOT_PARAMETER 			= "dot";
 	private static final String 	KK_PARAMETER 			= "kk";
 
@@ -67,7 +66,7 @@ public class RbacBT {
 	private static final String Q_SET_PARAMETER = "qset";
 	private static final String P_SET_PARAMETER = "pset";
 	private static final String TT_PARAMETER = "tt";
-	private static final String FSMCONV_PARAMETER = "fsmConv";
+//	private static final String FSMCONV_PARAMETER = "fsmConv";
 
 	private static final String CONFORMANCETEST_PARAMETER = "ct";
 	private static final String SUT_SPEC_CT_PARAMETER = "spec";
@@ -168,7 +167,7 @@ public class RbacBT {
 		Option qSetOption = new Option(Q_SET_PARAMETER, true, "Generate Q Set (State cover) given an fsm");
 		Option pSetOption = new Option(P_SET_PARAMETER, true, "Generate P Set (Transition cover) given an fsm") ;
 		Option ttSetOption = new Option(TT_PARAMETER, true, "Generate Transition Tour given an fsm") ;
-		Option fsm2SetOption = new Option(FSMCONV_PARAMETER, true, "Convert FSM file to other formats (default: .kiss)") ;
+//		Option fsm2SetOption = new Option(FSMCONV_PARAMETER, true, "Convert FSM file to other formats (default: .kk)") ;
 		Option randomTestOption = new Option(RANDOMTEST_PARAMETER, true, "Generate a random test suite given an FSM") ;
 
 		Option testPrtzOption = new Option(TESTPRTZ_PARAMETER, true, "Prioritize a test suite") ;
@@ -182,7 +181,7 @@ public class RbacBT {
 		grp.addOption(qSetOption);
 		grp.addOption(pSetOption);
 		grp.addOption(ttSetOption);
-		grp.addOption(fsm2SetOption);
+//		grp.addOption(fsm2SetOption);
 		grp.addOption(runTestOption);
 		grp.addOption(testPrtzOption);
 		grp.addOption(testCharactsOption);
@@ -193,10 +192,9 @@ public class RbacBT {
 		options.addOptionGroup(grp);
 
 		OptionGroup grpFsmFormat = new OptionGroup();
-		grpFsmFormat.addOption(new Option(KISS_PARAMETER, 		"Writes fsm in .kiss format."));
 		grpFsmFormat.addOption(new Option(FSM_PARAMETER, 		"Writes fsm in .fsm format. (DEFAULT)"));
 		grpFsmFormat.addOption(new Option(DOT_PARAMETER, 		"Writes fsm in .dot format."));
-		grpFsmFormat.addOption(new Option(KK_PARAMETER, 		"Writes fsm in .kk format (Clean KISS format)."));
+		grpFsmFormat.addOption(new Option(KK_PARAMETER, 		"Writes fsm in .kk format (KISS format)."));
 		options.addOptionGroup(grpFsmFormat);
 
 		options.addOption(OUTPUT_PARAMETER, true, 		"Sets the file/directory destination.");
