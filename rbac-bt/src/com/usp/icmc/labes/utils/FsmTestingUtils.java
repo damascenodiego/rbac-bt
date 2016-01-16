@@ -238,6 +238,7 @@ public class FsmTestingUtils {
 		List<FsmTestCase> testList = new ArrayList<>();
 		testList.addAll(testSuite.getTestCases());
 		for (FsmTestCase testCase : testList) {
+			acut.reset();
 			for (FsmTransition tr: testCase.getPath()) {
 				rqMap.putIfAbsent(tr.getInput(), rbacUtils.createRbacRequest(tr.getInput(),acut));
 
@@ -259,7 +260,6 @@ public class FsmTestingUtils {
 				}
 //				System.out.println(tr);
 			}
-			acut.reset();
 		}
 
 		return testSuite;

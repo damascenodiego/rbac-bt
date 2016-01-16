@@ -31,7 +31,6 @@ import com.usp.icmc.labes.rbac.model.UserRoleAssignment;
 public class PairTestRbacSimilarity extends PairTestSimilarity {
 
 	public PairTestRbacSimilarity(FsmTestCase tci, FsmTestCase tcj, RbacAcut acut) {
-		double avgij = (tci.getPath().size()+tcj.getPath().size())/2.0;
 		//		double dss = 1-FsmTestCaseSimilarityUtils.getInstance().calcJaccardSimilarity(tci,tcj);
 		double dss = FsmTestCaseSimilarityUtils.getInstance().calcNdtAvgLen(tci,tcj);
 		if(tci.getPath().size()<tcj.getPath().size()){
@@ -42,8 +41,8 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 			this.test01 = tci;
 		}
 		if(!(dss==0)){
-			double[] ra_i = calcRA(acut,tci,avgij);
-			double[] ra_j = calcRA(acut,tcj,avgij);
+			double[] ra_i = calcRA(acut,tci);
+			double[] ra_j = calcRA(acut,tcj);
 
 			double appValue = 0;
 			for (double d : ra_i) appValue += d;
@@ -61,7 +60,7 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 
 	}
 
-	double[] calcRA(RbacAcut acut, FsmTestCase tci, double avgij) {
+	double[] calcRA(RbacAcut acut, FsmTestCase tci) {
 		Set<RbacMutableElement>  notMatch = new HashSet<>();
 		notMatch.addAll(acut.getPolicy().getUserRoleAssignment());
 		notMatch.addAll(acut.getPolicy().getPermissionRoleAssignment());
@@ -101,7 +100,7 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 
 		double pad = ((double)totalMutableElements-totalNotMatching)/totalMutableElements;
 		double as = 0;
-		as += ((double)urMatches)/avgij;
+		as += ((double)urMatches);
 		if(acutProps.containsKey(RbacFaultType.SuFailed)) as += ((Set) acutProps.get(RbacFaultType.SuFailed)).size();
 		if(acutProps.containsKey(RbacFaultType.SrFailed)) as += ((Set) acutProps.get(RbacFaultType.SrFailed)).size();
 		if(acutProps.containsKey(RbacFaultType.SsodFailed)) as += ((Set) acutProps.get(RbacFaultType.SsodFailed)).size();
