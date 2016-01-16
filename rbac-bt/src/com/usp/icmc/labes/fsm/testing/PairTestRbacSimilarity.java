@@ -110,8 +110,8 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 		if(acutProps.containsKey(RbacFaultType.DsodFailed)) ac += ((Set) acutProps.get(RbacFaultType.DsodFailed)).size();
 		//TODO AhFailed	if(acutProps.containsKey(RbacFaultType.AhFailed)) as += ((Set) acutProps.get(RbacFaultType.AhFailed)).size();
 		double pr = 0;
-		//TODO IhFailed	if(acutProps.containsKey(RbacFaultType.AhFailed)) as += ((Set) acutProps.get(RbacFaultType.AhFailed)).size();
-		//TODO PRFailed	if(acutProps.containsKey(RbacFaultType.AhFailed)) as += ((Set) .get(RbacFaultType.AhFailed)).size();
+		//TODO IhFailed	if(acutProps.containsKey(RbacFaultType.IhFailed)) pr += ((Set) acutProps.get(RbacFaultType.IhFailed)).size();
+		//TODO PRFailed	if(acutProps.containsKey(RbacFaultType.PRFailed)) pr += ((Set) acutProps.get(RbacFaultType.PRFailed)).size();
 
 		//		System.err.println(pad+" "+as+" "+ac+" "+pr);
 //		acut.getPolicy().getProperties().clear();
