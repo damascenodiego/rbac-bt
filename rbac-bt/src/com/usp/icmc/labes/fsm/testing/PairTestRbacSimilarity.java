@@ -79,28 +79,28 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
 
 		Properties acutProps = new Properties();
-		
+
 		for (FsmTransition tr: tci.getPath()) {
 			rqMap.putIfAbsent(tr.getInput(), RbacUtils.getInstance().createRbacRequest(tr.getInput(),acut));
 			RbacRequest rq = rqMap.get(tr.getInput());
-//			acut.request(rqMap.get(tr.getInput()));
-//			for (Object obj: acut.getPolicy().getProperties().keySet()) {
+			//			acut.request(rqMap.get(tr.getInput()));
+			//			for (Object obj: acut.getPolicy().getProperties().keySet()) {
 			for (RbacFaultType faultType: RbacFaultType.values()) {
-//				tr.getProperties().putIfAbsent(obj, acut.getPolicy().getProperties().get(obj));
-//				((Set) tr.getProperties().get(obj)).addAll((Set) tr.getProperties().get(obj));
+				//				tr.getProperties().putIfAbsent(obj, acut.getPolicy().getProperties().get(obj));
+				//				((Set) tr.getProperties().get(obj)).addAll((Set) tr.getProperties().get(obj));
 				acutProps.putIfAbsent(faultType, new HashSet<>());
 				((Set) acutProps.get(faultType)).addAll((Set) tr.getProperties().get(faultType));
 			}
 			removeMatching(notMatch,rq);
 			urMatches+=calcMatchingUR(rq,acut.getPolicy());
 		}
-//		acut.reset();
+		//		acut.reset();
 
 		int totalNotMatching = notMatch.size();
 
 		double pad = ((double)totalMutableElements-totalNotMatching)/totalMutableElements;
 		double as = 0;
-		as += ((double)urMatches);
+		//		as += ((double)urMatches);
 		if(acutProps.containsKey(RbacFaultType.SuFailed)) as += ((Set) acutProps.get(RbacFaultType.SuFailed)).size();
 		if(acutProps.containsKey(RbacFaultType.SrFailed)) as += ((Set) acutProps.get(RbacFaultType.SrFailed)).size();
 		if(acutProps.containsKey(RbacFaultType.SsodFailed)) as += ((Set) acutProps.get(RbacFaultType.SsodFailed)).size();
@@ -114,7 +114,7 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 		//TODO PRFailed	if(acutProps.containsKey(RbacFaultType.PRFailed)) pr += ((Set) acutProps.get(RbacFaultType.PRFailed)).size();
 
 		//		System.err.println(pad+" "+as+" "+ac+" "+pr);
-//		acut.getPolicy().getProperties().clear();
+		//		acut.getPolicy().getProperties().clear();
 
 		double [] ra = {pad, as, ac,pr};
 		return ra;
