@@ -75,7 +75,7 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 
 		int totalMutableElements = notMatch.size();
 
-		int urMatches = 0;
+		Set<UserRoleAssignment> urMatching = new HashSet<>();
 		Map<String, RbacRequest> rqMap = new HashMap<String, RbacRequest>();
 
 		Properties acutProps = new Properties();
@@ -92,7 +92,7 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 				((Set) acutProps.get(faultType)).addAll((Set) tr.getProperties().get(faultType));
 			}
 			removeMatching(notMatch,rq);
-			urMatches+=calcMatchingUR(rq,acut.getPolicy());
+			calcMatchingUR(rq,acut.getPolicy(),urMatching);
 		}
 		//		acut.reset();
 
@@ -100,7 +100,7 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 
 		double pad = ((double)totalMutableElements-totalNotMatching)/totalMutableElements;
 		double as = 0;
-		//		as += ((double)urMatches);
+		as += ((double)urMatching.size());
 		if(acutProps.containsKey(RbacFaultType.SuFailed)) as += ((Set) acutProps.get(RbacFaultType.SuFailed)).size();
 		if(acutProps.containsKey(RbacFaultType.SrFailed)) as += ((Set) acutProps.get(RbacFaultType.SrFailed)).size();
 		if(acutProps.containsKey(RbacFaultType.SsodFailed)) as += ((Set) acutProps.get(RbacFaultType.SsodFailed)).size();
@@ -121,12 +121,10 @@ public class PairTestRbacSimilarity extends PairTestSimilarity {
 
 	}
 
-	private int calcMatchingUR(RbacRequest rq, RbacPolicy policy) {
-		int totMatch = 0;
+	private void calcMatchingUR(RbacRequest rq, RbacPolicy policy, Set<UserRoleAssignment> urMatching) {
 		for (UserRoleAssignment ur : policy.getUserRoleAssignment()) {
-			if(ur.getRole().equals(rq.getRole()) || ur.getUser().equals(rq.getUser())) totMatch++;
+			if(ur.getRole().equals(rq.getRole()) && ur.getUser().equals(rq.getUser())) urMatching.add(ur);
 		}
-		return totMatch;
 	}
 
 	private void removeMatching(Set<RbacMutableElement> notMatch, RbacRequest rq) {
