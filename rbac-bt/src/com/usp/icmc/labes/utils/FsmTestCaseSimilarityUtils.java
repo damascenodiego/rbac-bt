@@ -59,7 +59,7 @@ public class FsmTestCaseSimilarityUtils {
 		
 		List<PairTestSimilarity> distMatrix = generateDistMatrix(testList);
 
-		List<FsmTestCase> l = sortBertolinoAlgorithm(distMatrix,testList);
+		List<FsmTestCase> l = sortCartaxoAlgorithm(distMatrix);
 		testSuite.getTestCases().clear();
 		testSuite.getTestCases().addAll(l);
 	}
@@ -71,47 +71,66 @@ public class FsmTestCaseSimilarityUtils {
 
 		List<PairTestSimilarity> distMatrix = generateDistMatrixDamasceno(pol,testList);
 
-		List<FsmTestCase> l = sortBertolinoAlgorithm(distMatrix,testList);
+		List<FsmTestCase> l = sortCartaxoAlgorithm(distMatrix);
 		testSuite.getTestCases().clear();
 		testSuite.getTestCases().addAll(l);
 	}
 
 	private List<FsmTestCase> sortBertolinoAlgorithm(List<PairTestSimilarity> distMatrix, List<FsmTestCase> testList) {
-			List<FsmTestCase> s = new ArrayList<FsmTestCase>();
-			for (int k = 0; k < testList.size(); k++)  s.add(testList.get(k));
-			Collections.sort(distMatrix);
-			List<FsmTestCase> l = new ArrayList<FsmTestCase>();
-			PairTestSimilarity gtSim = distMatrix.get(0);
-			if(!l.contains(gtSim.getTestLonger())) 	l.add(gtSim.getTestLonger());
-			if(!l.contains(gtSim.getTestShorter())) l.add(gtSim.getTestShorter());
-			s.remove(gtSim.getTestLonger());
-			s.remove(gtSim.getTestShorter());
-//			distMatrix.remove(gtSim);
-			Map<FsmTestCase,Double> tmpMap = new HashMap<FsmTestCase,Double>();
-			while (!s.isEmpty()) {
-				tmpMap.clear();
-				for (FsmTestCase tcS : s) {
-					tmpMap.put(tcS, 0.0);
-					for (FsmTestCase tcL : l) {
-						for (PairTestSimilarity pair : distMatrix) {
-							if(pair.hasTest(tcL) && pair.hasTest(tcS)){
-								tmpMap.put(tcS, tmpMap.get(tcS)+pair.getSimilarity());
-							}
+		List<FsmTestCase> s = new ArrayList<FsmTestCase>();
+		for (int k = 0; k < testList.size(); k++)  s.add(testList.get(k));
+		Collections.sort(distMatrix);
+		List<FsmTestCase> l = new ArrayList<FsmTestCase>();
+		PairTestSimilarity gtSim = distMatrix.get(0);
+		if(!l.contains(gtSim.getTestLonger())) 	l.add(gtSim.getTestLonger());
+		if(!l.contains(gtSim.getTestShorter())) l.add(gtSim.getTestShorter());
+		s.remove(gtSim.getTestLonger());
+		s.remove(gtSim.getTestShorter());
+//		distMatrix.remove(gtSim);
+		Map<FsmTestCase,Double> tmpMap = new HashMap<FsmTestCase,Double>();
+		while (!s.isEmpty()) {
+			tmpMap.clear();
+			for (FsmTestCase tcS : s) {
+				tmpMap.put(tcS, 0.0);
+				for (FsmTestCase tcL : l) {
+					for (PairTestSimilarity pair : distMatrix) {
+						if(pair.hasTest(tcL) && pair.hasTest(tcS)){
+							tmpMap.put(tcS, tmpMap.get(tcS)+pair.getSimilarity());
 						}
 					}
-				}	
-				FsmTestCase selTest = getMaxDist(tmpMap,s);
-				l.add(selTest);
-				s.remove(selTest);
-				if(s.size() == 2 ){
-					l.add(s.get(0));
-					l.add(s.get(1));
-					s.remove(0);
-					s.remove(0);
 				}
+			}	
+			FsmTestCase selTest = getMaxDist(tmpMap,s);
+			l.add(selTest);
+			s.remove(selTest);
+			if(s.size() == 2 ){
+				l.add(s.get(0));
+				l.add(s.get(1));
+				s.remove(0);
+				s.remove(0);
 			}
-			return l;
 		}
+		return l;
+	}
+
+	
+	private List<FsmTestCase> sortCartaxoAlgorithm(List<PairTestSimilarity> distMatrix) {
+		Collections.sort(distMatrix);
+		List<FsmTestCase> l = new ArrayList<FsmTestCase>();
+		Set<FsmTestCase> included = new HashSet<FsmTestCase>();
+		for (PairTestSimilarity pairTestSimilarity : distMatrix) {
+			if(!included.contains(pairTestSimilarity.getTestLonger())){
+				l.add(pairTestSimilarity.getTestLonger());
+				included.add(pairTestSimilarity.getTestLonger());
+			}
+			if(!included.contains(pairTestSimilarity.getTestShorter())){
+				l.add(pairTestSimilarity.getTestShorter());
+				included.add(pairTestSimilarity.getTestShorter());
+			}
+		}
+		included.clear();
+		return l;
+	}
 
 	private FsmTestCase getMaxDist(Map<FsmTestCase, Double> tmpMap, List<FsmTestCase> s) {
 		double greater = 0.0;
