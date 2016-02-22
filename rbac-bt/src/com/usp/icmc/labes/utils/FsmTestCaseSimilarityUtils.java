@@ -76,6 +76,7 @@ public class FsmTestCaseSimilarityUtils {
 		testSuite.getTestCases().addAll(l);
 	}
 
+	// TODO performance issues
 	private List<FsmTestCase> sortBertolinoAlgorithm(List<PairTestSimilarity> distMatrix, List<FsmTestCase> testList) {
 		List<FsmTestCase> s = new ArrayList<FsmTestCase>();
 		for (int k = 0; k < testList.size(); k++)  s.add(testList.get(k));
@@ -113,7 +114,6 @@ public class FsmTestCaseSimilarityUtils {
 		return l;
 	}
 
-	
 	private List<FsmTestCase> sortCartaxoAlgorithm(List<PairTestSimilarity> distMatrix) {
 		Collections.sort(distMatrix);
 		List<FsmTestCase> l = new ArrayList<FsmTestCase>();
