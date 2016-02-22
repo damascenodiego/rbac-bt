@@ -122,8 +122,7 @@ public class FsmTestCaseSimilarityUtils {
 			if(!included.contains(pairTestSimilarity.getTestLonger())){
 				l.add(pairTestSimilarity.getTestLonger());
 				included.add(pairTestSimilarity.getTestLonger());
-			}
-			if(!included.contains(pairTestSimilarity.getTestShorter())){
+			}else if(!included.contains(pairTestSimilarity.getTestShorter())){
 				l.add(pairTestSimilarity.getTestShorter());
 				included.add(pairTestSimilarity.getTestShorter());
 			}
