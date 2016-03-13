@@ -1,0 +1,10 @@
+"Policy"	"Method"	"APFD.RBAC"	"APFD.Simple"	"APFD.Random"
+"1"	"ExperiencePointsv2"	"W"	0.973	0.97	0.97
+"2"	"user11roles2_v2"	"W"	0.646	0.641	0.638
+"3"	"Masood2009P2v2"	"W"	0.811	0.788	0.797
+"4"	"ExperiencePointsv2"	"HSI"	0.96	0.967	0.966
+"5"	"user11roles2_v2"	"HSI"	0.706	0.676	0.675
+"6"	"Masood2009P2v2"	"HSI"	0.797	0.772	0.777
+"7"	"ExperiencePointsv2"	"SPY"	0.974	0.969	0.97
+"8"	"user11roles2_v2"	"SPY"	0.922	0.794	0.856
+"9"	"Masood2009P2v2"	"SPY"	0.819	0.794	0.801

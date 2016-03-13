@@ -1,0 +1,7 @@
+"Policy"	"Method"	"APFD.RBAC"	"APFD.Simple"	"APFD.Random"
+"1"	"Masood2010Example1"	"W"	0.964	0.857	0.95
+"2"	"SeniorTraineeDoctor"	"W"	0.969	0.874	0.965
+"3"	"Masood2010Example1"	"HSI"	0.952	0.726	0.917
+"4"	"SeniorTraineeDoctor"	"HSI"	0.921	0.778	0.959
+"5"	"Masood2010Example1"	"SPY"	0.916	0.785	0.907
+"6"	"SeniorTraineeDoctor"	"SPY"	0.962	0.826	0.957

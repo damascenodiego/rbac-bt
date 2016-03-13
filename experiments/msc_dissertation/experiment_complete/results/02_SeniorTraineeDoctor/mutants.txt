@@ -1,0 +1,17 @@
+./Dr_DECREMENT/SeniorTraineeDoctor_Dr_DECREMENT_0.rbac
+./Dr_DECREMENT/SeniorTraineeDoctor_Dr_DECREMENT_1.rbac
+./Dr_INCREMENT/SeniorTraineeDoctor_Dr_INCREMENT_0.rbac
+./Dr_INCREMENT/SeniorTraineeDoctor_Dr_INCREMENT_1.rbac
+./Du_DECREMENT/SeniorTraineeDoctor_Du_DECREMENT_0.rbac
+./Du_DECREMENT/SeniorTraineeDoctor_Du_DECREMENT_1.rbac
+./Du_INCREMENT/SeniorTraineeDoctor_Du_INCREMENT_0.rbac
+./Du_INCREMENT/SeniorTraineeDoctor_Du_INCREMENT_1.rbac
+./Sr_DECREMENT/SeniorTraineeDoctor_Sr_DECREMENT_0.rbac
+./Sr_INCREMENT/SeniorTraineeDoctor_Sr_INCREMENT_0.rbac
+./Sr_INCREMENT/SeniorTraineeDoctor_Sr_INCREMENT_1.rbac
+./Ss_DECREMENT/SeniorTraineeDoctor_Ss_DECREMENT_0.rbac
+./Ss_INCREMENT/SeniorTraineeDoctor_Ss_INCREMENT_0.rbac
+./Su_DECREMENT/SeniorTraineeDoctor_Su_DECREMENT_0.rbac
+./Su_INCREMENT/SeniorTraineeDoctor_Su_INCREMENT_0.rbac
+./Su_INCREMENT/SeniorTraineeDoctor_Su_INCREMENT_1.rbac
+./UR_REPLACE_R/SeniorTraineeDoctor_UR_REPLACE_R_0.rbac

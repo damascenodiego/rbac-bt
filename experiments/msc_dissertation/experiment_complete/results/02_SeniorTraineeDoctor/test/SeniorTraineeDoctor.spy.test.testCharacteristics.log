@@ -1,0 +1,4 @@
+testSuite	noResets	testSuiteLength	testSuiteLengthNoRst	minLength	avgLength	maxLength	sdLength	varLength	
+SeniorTraineeDoctor.spy.test	751	5841	5090	2	7.0	32	3.6587090342910837	13.386151797603196	
+testSuite	noResets	testSuiteLength	testSuiteLengthNoRst	minLength	avgLength	maxLength	sdLength	varLength	
+SeniorTraineeDoctor.spy.test	751	5841	5090	2	7.0	32	3.6587090342910837	13.386151797603196	

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<FSM initialState="1159" name="">
+  <inputs>
+    <input name="AC(u1,r1)"/>
+    <input name="AC(u2,r1)"/>
+    <input name="AS(u1,r1)"/>
+    <input name="AS(u2,r1)"/>
+    <input name="DC(u1,r1)"/>
+    <input name="DC(u2,r1)"/>
+    <input name="DS(u1,r1)"/>
+    <input name="DS(u2,r1)"/>
+  </inputs>
+  <outputs>
+    <output name="deny"/>
+    <output name="grant"/>
+  </outputs>
+  <states>
+    <state name="1153"/>
+    <state name="1154"/>
+    <state name="1155"/>
+    <state name="1157"/>
+    <state name="1158"/>
+    <state name="1159"/>
+    <state name="1166"/>
+    <state name="1167"/>
+  </states>
+  <transitions>
+    <transition from="1153" in="AC(u1,r1)" out="deny" to="1153"/>
+    <transition from="1153" in="AC(u2,r1)" out="deny" to="1153"/>
+    <transition from="1153" in="AS(u1,r1)" out="deny" to="1153"/>
+    <transition from="1153" in="AS(u2,r1)" out="grant" to="1157"/>
+    <transition from="1153" in="DC(u1,r1)" out="grant" to="1155"/>
+    <transition from="1153" in="DC(u2,r1)" out="deny" to="1153"/>
+    <transition from="1153" in="DS(u1,r1)" out="grant" to="1154"/>
+    <transition from="1153" in="DS(u2,r1)" out="deny" to="1153"/>
+    <transition from="1154" in="AC(u1,r1)" out="deny" to="1154"/>
+    <transition from="1154" in="AC(u2,r1)" out="deny" to="1154"/>
+    <transition from="1154" in="AS(u1,r1)" out="grant" to="1155"/>
+    <transition from="1154" in="AS(u2,r1)" out="grant" to="1158"/>
+    <transition from="1154" in="DC(u1,r1)" out="deny" to="1154"/>
+    <transition from="1154" in="DC(u2,r1)" out="deny" to="1154"/>
+    <transition from="1154" in="DS(u1,r1)" out="deny" to="1154"/>
+    <transition from="1154" in="DS(u2,r1)" out="deny" to="1154"/>
+    <transition from="1155" in="AC(u1,r1)" out="grant" to="1153"/>
+    <transition from="1155" in="AC(u2,r1)" out="deny" to="1155"/>
+    <transition from="1155" in="AS(u1,r1)" out="deny" to="1155"/>
+    <transition from="1155" in="AS(u2,r1)" out="grant" to="1159"/>
+    <transition from="1155" in="DC(u1,r1)" out="deny" to="1155"/>
+    <transition from="1155" in="DC(u2,r1)" out="deny" to="1155"/>
+    <transition from="1155" in="DS(u1,r1)" out="grant" to="1154"/>
+    <transition from="1155" in="DS(u2,r1)" out="deny" to="1155"/>
+    <transition from="1157" in="AC(u1,r1)" out="deny" to="1157"/>
+    <transition from="1157" in="AC(u2,r1)" out="deny" to="1157"/>
+    <transition from="1157" in="AS(u1,r1)" out="deny" to="1157"/>
+    <transition from="1157" in="AS(u2,r1)" out="deny" to="1157"/>
+    <transition from="1157" in="DC(u1,r1)" out="grant" to="1159"/>
+    <transition from="1157" in="DC(u2,r1)" out="deny" to="1157"/>
+    <transition from="1157" in="DS(u1,r1)" out="grant" to="1158"/>
+    <transition from="1157" in="DS(u2,r1)" out="grant" to="1153"/>
+    <transition from="1158" in="AC(u1,r1)" out="deny" to="1158"/>
+    <transition from="1158" in="AC(u2,r1)" out="grant" to="1166"/>
+    <transition from="1158" in="AS(u1,r1)" out="grant" to="1159"/>
+    <transition from="1158" in="AS(u2,r1)" out="deny" to="1158"/>
+    <transition from="1158" in="DC(u1,r1)" out="deny" to="1158"/>
+    <transition from="1158" in="DC(u2,r1)" out="deny" to="1158"/>
+    <transition from="1158" in="DS(u1,r1)" out="deny" to="1158"/>
+    <transition from="1158" in="DS(u2,r1)" out="grant" to="1154"/>
+    <transition from="1159" in="AC(u1,r1)" out="grant" to="1157"/>
+    <transition from="1159" in="AC(u2,r1)" out="grant" to="1167"/>
+    <transition from="1159" in="AS(u1,r1)" out="deny" to="1159"/>
+    <transition from="1159" in="AS(u2,r1)" out="deny" to="1159"/>
+    <transition from="1159" in="DC(u1,r1)" out="deny" to="1159"/>
+    <transition from="1159" in="DC(u2,r1)" out="deny" to="1159"/>
+    <transition from="1159" in="DS(u1,r1)" out="grant" to="1158"/>
+    <transition from="1159" in="DS(u2,r1)" out="grant" to="1155"/>
+    <transition from="1166" in="AC(u1,r1)" out="deny" to="1166"/>
+    <transition from="1166" in="AC(u2,r1)" out="deny" to="1166"/>
+    <transition from="1166" in="AS(u1,r1)" out="grant" to="1167"/>
+    <transition from="1166" in="AS(u2,r1)" out="deny" to="1166"/>
+    <transition from="1166" in="DC(u1,r1)" out="deny" to="1166"/>
+    <transition from="1166" in="DC(u2,r1)" out="grant" to="1158"/>
+    <transition from="1166" in="DS(u1,r1)" out="deny" to="1166"/>
+    <transition from="1166" in="DS(u2,r1)" out="grant" to="1154"/>
+    <transition from="1167" in="AC(u1,r1)" out="deny" to="1167"/>
+    <transition from="1167" in="AC(u2,r1)" out="deny" to="1167"/>
+    <transition from="1167" in="AS(u1,r1)" out="deny" to="1167"/>
+    <transition from="1167" in="AS(u2,r1)" out="deny" to="1167"/>
+    <transition from="1167" in="DC(u1,r1)" out="deny" to="1167"/>
+    <transition from="1167" in="DC(u2,r1)" out="grant" to="1159"/>
+    <transition from="1167" in="DS(u1,r1)" out="grant" to="1166"/>
+    <transition from="1167" in="DS(u2,r1)" out="grant" to="1155"/>
+  </transitions>
+  <failures>
+    <failure constraint="Du [user=user(u1), dynamicConstr=1]" transition="1153 -- AC(u1,r1) / deny -&gt; 1153" type="DuFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1153 -- AC(u1,r1) / deny -&gt; 1153" type="DrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1153 -- AC(u2,r1) / deny -&gt; 1153" type="DrFailed"/>
+    <failure constraint="Su [user=user(u1), staticConstr=1]" transition="1153 -- AS(u1,r1) / deny -&gt; 1153" type="SuFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1153 -- DC(u2,r1) / deny -&gt; 1153" type="DrFailed"/>
+    <failure constraint="Du [user=user(u1), dynamicConstr=1]" transition="1153 -- DS(u2,r1) / deny -&gt; 1153" type="DuFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1153 -- DS(u2,r1) / deny -&gt; 1153" type="DrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1154 -- AC(u1,r1) / deny -&gt; 1154" type="DrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1154 -- DC(u1,r1) / deny -&gt; 1154" type="DrFailed"/>
+    <failure constraint="Su [user=user(u1), staticConstr=1]" transition="1154 -- DS(u1,r1) / deny -&gt; 1154" type="SuFailed"/>
+    <failure constraint="Su [user=user(u2), staticConstr=1]" transition="1154 -- DS(u2,r1) / deny -&gt; 1154" type="SuFailed"/>
+    <failure constraint="Su [user=user(u2), staticConstr=1]" transition="1155 -- AC(u2,r1) / deny -&gt; 1155" type="SuFailed"/>
+    <failure constraint="Su [user=user(u1), staticConstr=1]" transition="1155 -- AS(u1,r1) / deny -&gt; 1155" type="SuFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1155 -- AS(u1,r1) / deny -&gt; 1155" type="SrFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1155 -- DC(u2,r1) / deny -&gt; 1155" type="SrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1155 -- DC(u2,r1) / deny -&gt; 1155" type="DrFailed"/>
+    <failure constraint="Su [user=user(u2), staticConstr=1]" transition="1155 -- DS(u2,r1) / deny -&gt; 1155" type="SuFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1155 -- DS(u2,r1) / deny -&gt; 1155" type="SrFailed"/>
+    <failure constraint="Du [user=user(u1), dynamicConstr=1]" transition="1157 -- AC(u1,r1) / deny -&gt; 1157" type="DuFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1157 -- AC(u1,r1) / deny -&gt; 1157" type="DrFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1157 -- AC(u2,r1) / deny -&gt; 1157" type="SrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1157 -- AC(u2,r1) / deny -&gt; 1157" type="DrFailed"/>
+    <failure constraint="Su [user=user(u1), staticConstr=1]" transition="1157 -- AS(u1,r1) / deny -&gt; 1157" type="SuFailed"/>
+    <failure constraint="Su [user=user(u2), staticConstr=1]" transition="1157 -- AS(u2,r1) / deny -&gt; 1157" type="SuFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1157 -- AS(u2,r1) / deny -&gt; 1157" type="SrFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1157 -- DC(u2,r1) / deny -&gt; 1157" type="SrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1157 -- DC(u2,r1) / deny -&gt; 1157" type="DrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1158 -- AC(u1,r1) / deny -&gt; 1158" type="DrFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1158 -- AS(u2,r1) / deny -&gt; 1158" type="SrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1158 -- AS(u2,r1) / deny -&gt; 1158" type="DrFailed"/>
+    <failure constraint="Su [user=user(u2), staticConstr=1]" transition="1158 -- DC(u1,r1) / deny -&gt; 1158" type="SuFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1158 -- DC(u1,r1) / deny -&gt; 1158" type="SrFailed"/>
+    <failure constraint="Du [user=user(u2), dynamicConstr=1]" transition="1158 -- DC(u2,r1) / deny -&gt; 1158" type="DuFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1158 -- DC(u2,r1) / deny -&gt; 1158" type="DrFailed"/>
+    <failure constraint="Du [user=user(u1), dynamicConstr=1]" transition="1158 -- DS(u1,r1) / deny -&gt; 1158" type="DuFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1158 -- DS(u1,r1) / deny -&gt; 1158" type="DrFailed"/>
+    <failure constraint="Su [user=user(u1), staticConstr=1]" transition="1159 -- AS(u1,r1) / deny -&gt; 1159" type="SuFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1159 -- AS(u1,r1) / deny -&gt; 1159" type="SrFailed"/>
+    <failure constraint="Su [user=user(u2), staticConstr=1]" transition="1159 -- AS(u2,r1) / deny -&gt; 1159" type="SuFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1159 -- AS(u2,r1) / deny -&gt; 1159" type="SrFailed"/>
+    <failure constraint="Su [user=user(u1), staticConstr=1]" transition="1159 -- DC(u1,r1) / deny -&gt; 1159" type="SuFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1159 -- DC(u1,r1) / deny -&gt; 1159" type="SrFailed"/>
+    <failure constraint="Su [user=user(u2), staticConstr=1]" transition="1159 -- DC(u2,r1) / deny -&gt; 1159" type="SuFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1159 -- DC(u2,r1) / deny -&gt; 1159" type="SrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1166 -- AC(u1,r1) / deny -&gt; 1166" type="DrFailed"/>
+    <failure constraint="Du [user=user(u2), dynamicConstr=1]" transition="1166 -- AC(u2,r1) / deny -&gt; 1166" type="DuFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1166 -- AC(u2,r1) / deny -&gt; 1166" type="DrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1166 -- DC(u1,r1) / deny -&gt; 1166" type="DrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1166 -- DS(u1,r1) / deny -&gt; 1166" type="DrFailed"/>
+    <failure constraint="Du [user=user(u2), dynamicConstr=1]" transition="1167 -- AC(u2,r1) / deny -&gt; 1167" type="DuFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1167 -- AC(u2,r1) / deny -&gt; 1167" type="DrFailed"/>
+    <failure constraint="Su [user=user(u1), staticConstr=1]" transition="1167 -- AS(u1,r1) / deny -&gt; 1167" type="SuFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1167 -- AS(u1,r1) / deny -&gt; 1167" type="SrFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1167 -- AS(u2,r1) / deny -&gt; 1167" type="SrFailed"/>
+    <failure constraint="Dr [role=role(r1), dynamicConstr=1]" transition="1167 -- AS(u2,r1) / deny -&gt; 1167" type="DrFailed"/>
+    <failure constraint="Su [user=user(u2), staticConstr=1]" transition="1167 -- DC(u1,r1) / deny -&gt; 1167" type="SuFailed"/>
+    <failure constraint="Sr [role=role(r1), staticConstr=2]" transition="1167 -- DC(u1,r1) / deny -&gt; 1167" type="SrFailed"/>
+  </failures>
+</FSM>

@@ -1,0 +1,4 @@
+testSuite	noResets	testSuiteLength	testSuiteLengthNoRst	minLength	avgLength	maxLength	sdLength	varLength	
+SeniorTraineeDoctor.w.test	2528	14704	12176	2	5.0	8	1.540590056283302	2.3734177215189876	
+testSuite	noResets	testSuiteLength	testSuiteLengthNoRst	minLength	avgLength	maxLength	sdLength	varLength	
+SeniorTraineeDoctor.w.test	2528	14704	12176	2	5.0	8	1.540590056283302	2.3734177215189876	

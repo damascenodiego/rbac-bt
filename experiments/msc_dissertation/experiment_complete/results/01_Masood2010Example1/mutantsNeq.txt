@@ -1,0 +1,4 @@
+./Dr_DECREMENT/Masood2010Example1_Dr_DECREMENT_0.rbac
+./Dr_INCREMENT/Masood2010Example1_Dr_INCREMENT_0.rbac
+./Du_DECREMENT/Masood2010Example1_Du_DECREMENT_0.rbac
+./Du_DECREMENT/Masood2010Example1_Du_DECREMENT_1.rbac
