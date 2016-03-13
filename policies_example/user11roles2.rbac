@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<RBAC name="user11roles2">
+   <users>
+      <user name="U0"/>
+      <user name="U1"/>
+      <user name="U2"/>
+      <user name="U3"/>
+      <user name="U4"/>
+      <user name="U5"/>
+      <user name="U6"/>
+      <user name="U7"/>
+      <user name="U8"/>
+      <user name="U9"/>
+      <user name="U10"/>
+      <user name="U11"/>
+   </users>
+   <roles>
+      <role name="R0"/>
+      <role name="R1"/>
+      <role name="R2"/>
+   </roles>
+   <permissions>
+      <permission name="P0"/>
+      <permission name="P1"/>
+      <permission name="P2"/>
+      <permission name="P3"/>
+      <permission name="P4"/>
+   </permissions>
+   <SuConstraints>
+      <Su cardinality="2" user="U1"/>
+      <Su cardinality="2" user="U0"/>
+   </SuConstraints>
+   <SrConstraints>
+      <Sr cardinality="9" role="R0"/>
+      <Sr cardinality="10" role="R1"/>
+   </SrConstraints>
+   <DuConstraints/>
+   <DrConstraints>
+      <Dr cardinality="3" role="R2"/>
+      <Dr cardinality="9" role="R1"/>
+      <Dr cardinality="7" role="R0"/>
+   </DrConstraints>
+   <URAssignments>
+      <AS role="R1" user="U1"/>
+      <AS role="R2" user="U0"/>
+      <AS role="R2" user="U1"/>
+      <AS role="R2" user="U2"/>
+   </URAssignments>
+   <URActivations/>
+   <PRAssignments/>
+   <SSoDConstraints>
+   </SSoDConstraints>
+   <DSoDConstraints/>
+</RBAC>
