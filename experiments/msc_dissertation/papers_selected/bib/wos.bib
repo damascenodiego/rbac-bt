@@ -1,0 +1,738 @@
+@inbook{
+   author = {Al-Shaer, Ehab and Marrero, Will and El-Atawy, Adel and ElBadawi, Khalid and Ieee},
+   title = {Network Configuration in A Box: Towards End-to-End Verification of Network Reachability and Security},
+   booktitle = {2009 17th Ieee International Conference on Network Protocols},
+   series = {IEEE International Conference on Network Protocols Proceedings},
+   pages = {123-132},
+   note = {Times Cited: 10
+Icnp 2009
+17th IEEE International Conference on Network Protocols
+Oct 13-16, 2009
+Plainsboro, NJ
+Ieee
+10},
+   abstract = {Recent studies show that configurations of network access control is one of the most complex and error prone network management tasks. For this reason, network misconfiguration becomes the main source for network unreachablility and vulnerability problems. In this paper, we present a novel approach that models the global end-to-end behavior of access control configurations of the entire network including routers, IPSec, firewalls, and NAT for unicast and multicast packets. Our model represents the network as a state machine where the packet header and location determines the state. The transitions in this model are determined by packet header information, packet location, and policy semantics for the devices being modeled. We encode the semantics of access control policies with Boolean functions using binary decision diagrams (BDDs). We then use computation tree logic (CTL) and symbolic model checking to investigate all future and past states of this packet in the network and verify network reachability and security requirements. Thus, our contributions in this work is the global encoding for network configurations that allows for general reachability and security property-based verification using CTL model checking. We have implemented our approach in a tool called ConfigChecker. While evaluating ConfigChecker, we modeled and verified network configurations with thousands of devices and millions of configuration rules, thus demonstrating the scalability of this approach.},
+   ISBN = {1092-1648
+978-1-4244-4635-3},
+   DOI = {10.1109/icnp.2009.5339690},
+   url = {<Go to ISI>://WOS:000274777900013},
+   year = {2009},
+   type = {Book Section}
+}
+
+@article{
+   author = {Ayala, Ana Medina and Andersson, Sean B. and Belta, Calin},
+   title = {Formal Synthesis of Control Policies for Continuous Time Markov Processes From Time-Bounded Temporal Logic Specifications},
+   journal = {Ieee Transactions on Automatic Control},
+   volume = {59},
+   number = {9},
+   pages = {2568-2573},
+   note = {Times Cited: 0
+0},
+   abstract = {We consider the control synthesis problem for continuous-time Markov decision processes (CTMDPs), whose expected behaviors are measured by the satisfaction of Continuous Stochastic Logic (CSL) formulas. We present an extension of the CSL for CTMDPs involving sequential task specifications with continuous time constraints on the execution of those tasks. We then exploit model checking and time-bounded reachability algorithms to solve the CSL control synthesis problem. To illustrate the feasibility and effectiveness of our approach, we apply our methods to generate the optimal rate constants of a coupled set of biochemical reactions.},
+   ISSN = {0018-9286},
+   DOI = {10.1109/tac.2014.2309033},
+   url = {<Go to ISI>://WOS:000342924100030},
+   year = {2014},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Ball, Thomas and Bjorner, Nikolaj and Gember, Aaron and Itzhaky, Shachar and Karbyshev, Aleksandr and Sagiv, Mooly and Schapira, Michael and Valadarsky, Asaf},
+   title = {VeriCon: Towards Verifying Controller Programs in Software-Defined Networks},
+   journal = {Acm Sigplan Notices},
+   volume = {49},
+   number = {6},
+   pages = {282-293},
+   note = {Times Cited: 0
+35th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI)
+Jun 09-11, 2014
+Edinburgh, SCOTLAND
+Assoc Comp Machinery Special Interest Grp Programming Languages; NSF
+0},
+   abstract = {Software-defined networking (SDN) is a new paradigm for operating and managing computer networks. SDN enables logically-centralized control over network devices through a "controller" software that operates independently from the network hardware, and can be viewed as the network operating system. Network operators can run both inhouse and third-party SDN programs (often called applications) on top of the controller, e. g., to specify routing and access control policies. SDN opens up the possibility of applying formal methods to prove the correctness of computer networks. Indeed, recently much effort has been invested in applying finite state model checking to check that SDN programs behave correctly. However, in general, scaling these methods to large networks is challenging and, moreover, they cannot guarantee the absence of errors. We present VeriCon, the first system for verifying that an SDN program is correct on all admissible topologies and for all possible (infinite) sequences of network events. VeriCon either confirms the correctness of the controller program on all admissible network topologies or outputs a concrete counterexample. VeriCon uses first-order logic to specify admissible network topologies and desired network-wide invariants, and then implements classical Floyd-Hoare-Dijkstra deductive verification using Z3. Our preliminary experience indicates that VeriCon is able to rapidly verify correctness, or identify bugs, for a large repertoire of simple core SDN programs. VeriCon is compositional, in the sense that it verifies the correctness of execution of any single network event w.r.t. the specified invariant, and can thus scale to handle large programs. To relieve the burden of specifying inductive invariants from the programmer, VeriCon includes a separate procedure for inferring invariants, which is shown to be effective on simple controller programs. We view VeriCon as a first step en route to practical mechanisms for verifying network-wide invariants of SDN programs.},
+   ISSN = {0362-1340},
+   DOI = {10.1145/2594291.2594317},
+   url = {<Go to ISI>://WOS:000344455800031},
+   year = {2014},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Belhaouari, Hakim and Konopacki, Pierre and Laleau, Regine and Frappier, Marc and Cesames},
+   title = {A Design by Contract Approach to Verify Access Control Policies},
+   journal = {2012 17th International Conference on Engineering of Complex Computer Systems (Iceccs)},
+   pages = {263-272},
+   note = {Times Cited: 1
+IEEE 17th International Conference on Engineering of Complex Computer Systems (ICECCS)
+Jul 18-20, 2012
+Ecole Normale Superieure, Paris, FRANCE
+IEEE; IEEE Comp Soc; Ctr Excellence Syst Architecture, Management, Econ & Strategy (CESAMES); Engn Complex Syst; Ecole Polytech
+1
+978-2-9541-8100-4},
+   abstract = {In the security domain, access control (AC) consists in specifying who can access to what and how, with the four well-known concepts of permission, prohibition, obligation and separation of duty. In this paper, we focus on role-based access control (RBAC) models and more precisely on the verification of formal RBAC models. We propose a solution for this verification issue, based on the use of the Tamago platform. In Tamago, functional contracts can be defined with pre/postconditions and deterministic automata. The Tamago platform provides tools for static verifications of these contracts, generation of test scenarios from the abstract contracts and monitoring facilities for dynamic analyses. We have extended the platform to take into account AC aspects. AC rules, expressed in a subset of (EBSEC)-S-3, a process algebra-based language, are translated into pre and post conditions of new security contracts. We have also adapted the test case generator to derive suitable test scenarios and the monitoring framework by adding a new security component.},
+   DOI = {10.1109/iceccs.2012.4},
+   url = {<Go to ISI>://WOS:000315026500027},
+   year = {2012},
+   type = {Journal Article}
+}
+
+@inbook{
+   author = {Bielova, Nataliia and Massacci, Fabio},
+   title = {Do You Really Mean What You Actually Enforced? Edit Automata Revisited},
+   booktitle = {Formal Aspects in Security and Trust},
+   editor = {Degano, P. and Guttman, J. and Martinelli, F.},
+   series = {Lecture Notes in Computer Science},
+   volume = {5491},
+   pages = {287-301},
+   note = {Times Cited: 1
+Massacci, Fabio/C-2662-2012
+Massacci, Fabio/0000-0002-1091-8486
+5th International Workshop on Formal Aspects in Security and Trust
+Oct 09-10, 2008
+Malaga, SPAIN
+Ifip wg 1 7
+1},
+   abstract = {In the landmark paper on the theoretical side of Polymer, Ligatti and his co-authors have identified a new class of enforcement mechanisms based on the notion of edit automata, that can transform sequences and enforce more than simple safety properties. We show that there is a gap between the edit automata that one can possibly write (e.g. by Ligatti himself in his running example) and the edit automata that are actually constructed according the theorems from Ligatii's IJIS paper and IC follow-up papers by Talhi et al. "Ligatti's automata" are just a particular kind of edit automata. Thus, we re-open a question which seemed to have received a definitive answer: you have written your security enforcement mechanism (aka your edit automata); does it really enforce the security policy you wanted?},
+   ISBN = {0302-9743
+978-3-642-01464-2},
+   url = {<Go to ISI>://WOS:000266239700019},
+   year = {2009},
+   type = {Book Section}
+}
+
+@article{
+   author = {Bielova, Nataliia and Massacci, Fabio},
+   title = {Do you really mean what you actually enforced?},
+   journal = {International Journal of Information Security},
+   volume = {10},
+   number = {4},
+   pages = {239-254},
+   note = {Times Cited: 1
+Massacci, Fabio/C-2662-2012
+Massacci, Fabio/0000-0002-1091-8486
+1},
+   abstract = {In their works on the theoretical side of Polymer, Ligatti and his co-authors have identified a new class of enforcement mechanisms based on the notion of edit automata that can transform sequences and enforce more than simple safety properties. We show that there is a gap between the edit automata that one can possibly write (e.g., by Ligatti et al in their IJIS running example) and the edit automata that are actually constructed according the theorems from Ligatti's IJIS paper or from Talhi et al. "Ligatti's automata" are just a particular kind of edit automata. Thus, we re-open a question which seemed to have received a definitive answer: you have written your security enforcement mechanism (aka your edit automata); does it really enforce the security policy you wanted?.},
+   ISSN = {1615-5262},
+   DOI = {10.1007/s10207-011-0137-2},
+   url = {<Go to ISI>://WOS:000293960400004},
+   year = {2011},
+   type = {Journal Article}
+}
+
+@book{
+   author = {Brandao, D. and da Cunha, M. J. and Pinotti, M. and Ieee},
+   title = {Fieldbus control system project support tool based on experimental analysis and modeling of communication bus},
+   series = {2004 IEEE International Conference on Industrial Technology},
+   note = {Times Cited: 0
+Icit
+IEEE International Conference on Industrial Technology (ICIT)
+Dec 08-10, 2004
+Hammamet, TUNISIA
+Ieee
+0},
+   abstract = {The evaluation of a fieldbus system performance controlling a given process is very important on the project phase; this information leads to a precise forecast of the delivered communication services level that will available on the operational condition. This paper proposes a modeling technique of the Medium Access Control (MAC) mechanism for the Foundation Fieldbus (FF) protocol that can be used for the building of a fieldbus project support tool. The MAC simulation model is implemented on a real-time state machine algorithm that communicates with simulated fieldbus nodes to properly close the necessaries communication loops. All the MAC and communication simulations are PC-based and performed over the National Instruments LabVIEW (TM) platform, the proposed model can be considered hybrid because it is based both on technical FF specification and on experimental data acquired from the communication bus of a commercial fieldbus system. The validation and verification of the model is also shown on the paper.},
+   pages = {787-792},
+   ISBN = {0-7803-8662-0},
+   url = {<Go to ISI>://WOS:000231537500140},
+   year = {2004},
+   type = {Book}
+}
+
+@article{
+   author = {Bugliesi, Michele and Calzavara, Stefano and Focardi, Riccardo and Squarcina, Marco and Ieee},
+   title = {Gran: model checking grsecurity RBAC policies},
+   journal = {2012 Ieee 25th Computer Security Foundations Symposium (Csf)},
+   pages = {126-138},
+   note = {Times Cited: 0
+25th IEEE Computer Security Foundations Symposium (CSF)
+Jun 25-27, 2012
+Harvard Univ, Cambridge, MA
+IEEE; IEEE Comp Soc Tech Comm Secur & Privacy; Harvard Sch Engn & Appl Sci; Microsoft Res
+0
+978-0-7695-4718-3},
+   abstract = {Role-based Access Control (RBAC) is one of the most widespread security mechanisms in use today. Given the growing complexity of policy languages and access control systems, verifying that such systems enforce the desired invariants is recognized as a security problem of crucial importance. In the present paper, we develop a framework for the formal verification of grsecurity, an access control system developed on top of Unix/Linux systems. The verification problem in grsecurity presents much of the complexity of modern RBAC systems, due to the presence of policy state changes that may arise both from explicit administrative primitives supported by grsecurity, and as the result of the interaction with the underlying operating system facilities. We develop a formal semantics for grsecurity's RBAC system, based on a labelled transition system, and a sound abstraction of that semantics providing a bounded approximation, amenable to model checking. We report on the result of the experimental analysis conducted with gran, the model checker we implemented based on our abstract semantics, on existing public servers running grsecurity to implement their RBAC systems.},
+   ISSN = {1063-6900},
+   DOI = {10.1109/csf.2012.29},
+   url = {<Go to ISI>://WOS:000309007800009},
+   year = {2012},
+   type = {Journal Article}
+}
+
+@misc{
+   author = {Carey, M. J. and Parris, E. S. and Bridle, J. S.},
+   title = {Speaker verification e.g. for financial transactions on telephone|having decision on verification based on poll of word probability comparisons with world models},
+   publisher = {Ensigma Ltd; Uk Sec for Defence; Sec State Defence Government},
+   note = {0},
+   ISBN = {GB2248513-A; WO9206468-A; AU9186496-A; ZA9107886-A; GB2248513-B; AU665745-B; US5526465-A},
+   url = {<Go to ISI>://DIIDW:1992116824},
+   type = {Patent}
+}
+
+@misc{
+   author = {Chow, P. K. and Karighattam, K.},
+   title = {Network state localized diagnostics testing performing method for use in station of home phoneline networking alliance network, involves providing test mode bit as one of set of bits in network state and control register},
+   publisher = {Advanced Micro Devices Inc},
+   note = {0},
+   ISBN = {US7280484-B1},
+   url = {<Go to ISI>://DIIDW:2008A44970},
+   type = {Patent}
+}
+
+@misc{
+   author = {Crowns, S. and Clarke, J. M.},
+   title = {Method for detecting and assessing customer network impacting event to identify fault indicators, involves using captured impact information to create baselines and establish thresholds, and providing alerts when threshold is violated},
+   publisher = {Cisco Technology Inc},
+   note = {0},
+   ISBN = {US2013290224-A1},
+   url = {<Go to ISI>://DIIDW:2013T77563},
+   type = {Patent}
+}
+
+@article{
+   author = {De Oliveira, M. C. F. and Turine, M. A. S. and Masiero, P. C.},
+   title = {A statechart-based model for hypermedia applications},
+   journal = {Acm Transactions on Information Systems},
+   volume = {19},
+   number = {1},
+   pages = {28-52},
+   note = {Times Cited: 19
+Ferreira de Oliveira, Maria Cristina/D-9257-2011; Masiero, Paulo Cesar/E-5882-2011
+Ferreira de Oliveira, Maria Cristina/0000-0002-4729-5104; Masiero, Paulo Cesar/0000-0002-2541-4045
+19},
+   abstract = {This paper presents a formal definition for HMBS (Hypermedia Model Based on Statecharts). HMBS uses the structure and execution semantics of statecharts to specify both the structural organization and the browsing semantics of hypermedia applications. Statecharts are an extension of finite-state machines and the model is thus a generalization of hypergraph-based hypertext models. Some of the most important features of HMBS are its ability to model hierarchy and synchronization of information; provision of mechanisms for specifying access structures, navigational contexts, access control, multiple tailored versions, and hierarchical views. Analysis of the underlying statechart machine allows verification of page reachability, valid paths, and other properties, thus providing mechanisms to support authors in the development of structured applications.},
+   ISSN = {1046-8188},
+   DOI = {10.1145/366836.366869},
+   url = {<Go to ISI>://WOS:000167964000002},
+   year = {2001},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Demri, Stephane},
+   title = {LTL over integer periodicity constraints},
+   journal = {Theoretical Computer Science},
+   volume = {360},
+   number = {1-3},
+   pages = {96-123},
+   note = {Times Cited: 7
+7},
+   abstract = {Periodicity constraints are used in many logical formalisms, in fragments of Presburger LTL, in calendar logics, and in logics for access control, to quote a few examples. In the paper, we introduce the logic PLTLmod, an extension of Linear-Time Temporal Logic LTL with past-time operators whose atomic formulae are defined from a first-order constraint language dealing with periodicity. Although the underlying constraint language is a fragment of Presburger arithmetic shown to admit a PSPACE-complete satisfiability problem, we establish that PLTLmod model-checking and satisfiability problems remain in PSPACE as plain LTL (full Presburger LTL is known to be highly undecidable). This is particularly interesting for dealing with periodicity constraints since the language of PLTLmod has a language more concise than existing languages and the temporalization of our first-order language of periodicity constraints has the same worst case complexity as the underlying constraint language. Finally, we show examples of introduction the quantification in the logical language that provide to PLTLmod, EXPSPACE-complete problems. As another application, we establish that the equivalence problem for extended single-string automata, known to express the equality of time granularities, is PSPACE-complete by designing a reduction from QBF and by using our results for PLTLmod. (C) 2006 Elsevier B.V. All rights reserved.},
+   ISSN = {0304-3975},
+   DOI = {10.1016/j.tcs.2006.02.019},
+   url = {<Go to ISI>://WOS:000240053000005},
+   year = {2006},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Deng, Juan and Brooks, Ricahrd and Taiber, Joachim and Ieee},
+   title = {Security Automata Integrated XACML and Security Validation},
+   journal = {Ieee Southeastcon 2010: Energizing Our Future},
+   pages = {338-343},
+   note = {Times Cited: 1
+IEEE SoutheastCon 2010 Conference on Energizing Our Future
+Mar 18-21, 2010
+Concord, NC
+IEEE Reg 3; IEEE Charlotte Sect; IEEE NC Council
+1
+978-1-4244-5853-0},
+   abstract = {Extensible Access Control Markup Language is an OASIS ratified standard that defines and enforces control policies. XACML bases access control on static user or resource attributes, which fails for a large class of security policies. Security automata specify security policies that base decisions on changing user or resource states. This paper extends XACML to support security automata. We demonstrate the extended XACML on a location-aware application for connected vehicles. We analyze the security of the extended XACML system. We secure the system with TLS and verify the system security using the Failure Divergence Refinement (FDR) and Casper tools.},
+   ISSN = {1091-0050},
+   url = {<Go to ISI>://WOS:000287373300081},
+   year = {2010},
+   type = {Journal Article}
+}
+
+@inbook{
+   author = {Duan, Bin and Liu, Bing and Ieee},
+   title = {Design of security state machine of access control for control object based on IEC 61850},
+   booktitle = {2006 Power Engineering Society General Meeting, Vols 1-9},
+   series = {IEEE Power Engineering Society General Meeting},
+   pages = {2168-2170},
+   note = {Times Cited: 0
+General Meeting of the Power-Engineering-Society
+Jun 18-22, 2006
+Montreal, CANADA
+Power Engn Soc
+0},
+   abstract = {Access control with identity authentication becomes crucial for critical circuit breaker operation in the substation automation system. According to IEC 61850, the implementation of access control policy depends on a virtual access view. But the standard only defines a concept to resolve the access control problem; neither the virtual access view nor the password verification procedure has proposed implementation measures. This paper designs security management of IED data and security state machine of access control for control object, to realize identity authentication and to generate the virtual access view. At last, this paper describes operation Sequence with access security in order to introduce the application of this access control method.},
+   ISBN = {1932-5517
+978-1-4244-0492-6},
+   url = {<Go to ISI>://WOS:000247080002111},
+   year = {2006},
+   type = {Book Section}
+}
+
+@article{
+   author = {Geepalla, Emsaieb and Bordbar, Behzad and Okano, Kozo},
+   title = {Verification of Spatio-Temporal Role Based Access Control using Timed Automata},
+   journal = {2012 Ieee 3rd International Conference on Networked Embedded Systems for Every Application (Nesea)},
+   note = {Times Cited: 0
+Ueyama, J Hughes, D Lee, K
+IEEE 3rd International Conference on Networked Embedded Systems for Every Application (NESEA)
+Dec 13-14, 2012
+Liverpool, ENGLAND
+IEEE; IEEE Comp Soc; Distributed Thought
+0
+978-1-4673-4721-1},
+   abstract = {The verification of Spatio-Temporal Role Based Access Control policies (STRBAC) during the early development life cycle improves the security of the software. It helps to identify inconsistencies in the Access Control policies before proceeding to other phases where the cost of fixing defects is augmented. This paper proposes a formal method for an automatic analysis of STRBAC policies. It ensures that the policies are consistent and conflict-free. The method proposed in this paper makes the use of Timed Automata to verify the STRBAC policies. This is done by translating the STRBAC model into Timed Automata, and then the produced Timed Automata is implemented and verified using the model checker UPPAAL. This paper presents a security query expressed using TCTL to detect inconsistency caused due to the interaction between STRBAC policies. With the help of an example, this paper shows how we convert STRBAC model to Timed Automata models and verify the resulting models using the UPPAAL to identify an erroneous design.},
+   ISSN = {2162-9153},
+   url = {<Go to ISI>://WOS:000319471300016},
+   year = {2012},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Guo, Yunchuan and Yin, Lihua and Li, Chao and Ieee},
+   title = {Automatically Verifying STRAC Policy},
+   journal = {2014 Ieee Conference on Computer Communications Workshops (Infocom Wkshps)},
+   pages = {141-142},
+   note = {Times Cited: 0
+IEEE Conference on Computer Communications (INFOCOM)
+Apr 27-may 02, 2014
+Toronto, CANADA
+Ieee
+0
+978-1-4799-3088-3},
+   abstract = {In the IoT (Internet of Things), inconsistent ACP (Access Control Policies) would cause disastrous consequences, for example, fire disasters and failures of cardiac pacemakers, as a result, ACP should be verified before they are applied. Tediousness and error-proneness of manual verifications make automatic and formal verification necessary. In this paper, timed automata is presented to formally model the STRAC (Spatio-Temporal Access Control based on Reputation, one policy for the IoT) policies and CTL (Computation Tree Logic) is adopted to describe the properties that should be satisfied by these policies. Then model checker UPPAAL is proposed to automatically verify whether STRAC policies conform to security properties. Experiment results show that our approach is effective.},
+   ISSN = {2159-4228},
+   url = {<Go to ISI>://WOS:000343582700037},
+   year = {2014},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Hong, Yu and Huang, Song and Hu, Bin and Yao, Yi and Ieee},
+   title = {Using Labeled Transition System Model in Software Access Control Politics Testing},
+   journal = {Proceedings of the 2012 Second International Conference on Instrumentation & Measurement, Computer, Communication and Control (Imccc 2012)},
+   pages = {680-683},
+   note = {Times Cited: 0
+2nd International Conference on Instrumentation and Measurement, Computer, Communication and Control (IMCCC)
+Dec 08-10, 2012
+Harbin Inst Technol, Harbin, PEOPLES R CHINA
+IEEE Harbin Sect; IEEE IM Soc, Beijing & Harbin Joint Chapter; IEEE Comp Soc; IEEE
+0
+978-0-7695-4935-4},
+   abstract = {Access control model is widely used in access control politics testing, it usually consists of three hierarchy fields: roles, permissions and contexts. But the relations information between the three fields is not taken into consideration intact when building the access control models. Because of the information is leaking, engineers has to use random testing or pairwise testing when using access control model, they has to exchange test coverage for test efficiency. Some researchers extended the original access control model with rules, priority and status in order to complementary the missing information, but due to the structure disadvantage of original access control model, few works showed promising result. This paper presents a method using labeled transition system model in formalizing software access control politics though several examples, the method can formalize key information like rules, priority and status along with roles, permissions and contexts into model. This paper also briefly introduces how to use labeled transition system model in security test cases automatic generating.},
+   DOI = {10.1109/imccc.2012.165},
+   url = {<Go to ISI>://WOS:000324691100159},
+   year = {2012},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Huang, Jyh-Win and Hou, Ting-Wei},
+   title = {A cost-effective add-on-value card-assisted firewall over Taiwan's NHIVPN framework},
+   journal = {Medical Informatics and the Internet in Medicine},
+   volume = {32},
+   number = {2},
+   pages = {103-116},
+   note = {Times Cited: 0
+0},
+   abstract = {Besides the overall budget for building the infrastructure of a healthcare- service- based virtual private network (VPN) in Taiwan, two issues were considered critical for its acceptance by the country's 17,000 plus medical institutions. One was who was to pay for the network (ADSL or modem) connection fee; the other was who was to pay for the firewall/ anti- virus software. This paper addresses the second issue by proposing an efficient freeware firewall, named card- assisted firewall (CAF), for NHI VPN edge-hosts, which is also an add-on-value application of the National Healthcare IC card that every insurant and medical professional has. The innovative concept is that any NHI VPN site (edge- host) can establish diversified secure- authenticated connections with other sites only by an authentication mechanism, which requires a NHI Java card state machine and the Access Control List of the host. It is different from two- factor authentication cards in four ways: (1) a PIN code is not a must; (2) it requires authentication with the remote IC card Data Centre; (3) the NHI cards are already available, no modification is needed, and there is no further cost for the deployment of the cards; (4) although the cards are in the reader, the communication cannot start unless the cards are in the corresponding states; i.e. the states allow communication. An implementation, on a Microsoft Windows XP platform, demonstrated the system's feasibility over an emulation of the NHI VPN framework. It maintained a high line speed, the driver took up 39 KB of disk space, installation was simple, not requiring any extra hardware or software, and the average packet processing time of the CAF driver measured was 0.3084 ms. The average overhead in comparing the Access Control List predefined routing in card, in an FTP testing experiment, was 5.7 mu s (receiving) and 8 mu s (sending).},
+   ISSN = {1463-9238},
+   DOI = {10.1080/14639230601135497},
+   url = {<Go to ISI>://WOS:000248007000003},
+   year = {2007},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Kong, Weiqiang and Ogata, Kazuhiro and Futatsugi, Kokichi},
+   title = {Specification and verification of workflows with RBAC mechanism and SoD constraints},
+   journal = {International Journal of Software Engineering and Knowledge Engineering},
+   volume = {17},
+   number = {1},
+   pages = {3-32},
+   note = {Times Cited: 5
+17th International Conference on Software Engineering and Knowledge Engineering
+2005
+Taipei, TAIWAN
+5},
+   abstract = {Security considerations such as role based access control (RBAC) mechanism and seperation of duty (SoD) constraints are important and integral to workflow systems. Since the definition of workflows with these security considerations is a complicated and error prone process rigorous verification techniques are desirable for uncovering logical errors and assuring correctness. We propose the use of an equation based method - the OTS/CafeOBJ method to model specify and verify workflows with such security considerations. Specifically, a workflow with the security considerations, is modeled as an OTS, a kind of transition system; the OTS is then specified in CafeOBJ , an algebraic specification language. We verify that the OTS has desired safety and liveness properties by using the CafeOBJ system as an interactive theorem prover. A case study on a sample workflow that deals with travel expense reimbursement is used to demonstrate our method.},
+   ISSN = {0218-1940},
+   DOI = {10.1142/s0218194007003124},
+   url = {<Go to ISI>://WOS:000250862700002},
+   year = {2007},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Krishna, P. Venkata and Misra, Sudip and Joshi, Dheeraj and Gupta, Anant and Obaidat, Mohammad S.},
+   title = {Secure socket layer certificate verification: a learning automata approach},
+   journal = {Security and Communication Networks},
+   volume = {7},
+   number = {11},
+   pages = {1712-1718},
+   note = {Times Cited: 0
+0},
+   abstract = {With the rapid evolution of the Internet, security has become a major area of concern and, consequently, an interesting research area. Different applications transmit sensitive information over the Internet, which creates increased chances for attackers to look into every piece of data, unless it is secured using secure socket layer (SSL) certificate. However, the present SSL certificates too face challenges because of various attacks, and these certificates need to be verified before transmitting information. In this paper, we show how the concepts of learning automata (LA) can be used to verify SSL certificates. The proposed LA-based system can detect safe or unsafe SSL certificates. The LA reward/penalty scheme is used to build the trust value for SSL certificates. Copyright (c) 2013 John Wiley & Sons, Ltd.},
+   ISSN = {1939-0114},
+   DOI = {10.1002/sec.867},
+   url = {<Go to ISI>://WOS:000344322100006},
+   year = {2014},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Luo, Bo and Lee, Dongwon and Lee, Wang-Chien and Liu, Peng},
+   title = {QFilter: rewriting insecure XML queries to secure ones using non-deterministic finite automata},
+   journal = {Vldb Journal},
+   volume = {20},
+   number = {3},
+   pages = {397-415},
+   note = {Times Cited: 3
+3},
+   abstract = {In this paper, we ask whether XML access control can be supported when underlying (XML or relational) storage system does not provide adequate security features and propose three alternative solutions-primitive, pre-processing, and post-processing. Toward that scenario, in particular, we advocate a scalable and effective pre-processing approach, called QFilter. QFilter is based on non-deterministic finite automata (NFA) and rewrites user's queries such that parts violating access control rules are pre-pruned. Through analysis and experimental validation, we show that (1) QFilter guarantees that only permissible portion of data is returned to the authorized users, (2) such access controls can be efficiently enforced without relying on security features of underlying storage system, and (3) such independency makes QFilter capable of many emerging applications, such as in-network access control and access control outsourcing.},
+   ISSN = {1066-8888},
+   DOI = {10.1007/s00778-010-0202-x},
+   url = {<Go to ISI>://WOS:000290802400005},
+   year = {2011},
+   type = {Journal Article}
+}
+
+@inbook{
+   author = {Marchand, Herve and Dubreil, Jeremy and Jeron, Thierry},
+   title = {Automatic Testing of Access Control for Security Properties},
+   booktitle = {Testing of Software and Communication Systems, Proceedings},
+   editor = {Nunez, M. and Baker, P. and Merayo, M. G.},
+   series = {Lecture Notes in Computer Science},
+   volume = {5826},
+   pages = {113-128},
+   note = {Times Cited: 0
+21st IFIP International Conference on Testing of Communicating Systems/9th International Workshop on Formal Approaches to Testing of Software (TESTCOM/FATES 2009)
+Nov 02-04, 2009
+Eindhoven, NETHERLANDS
+Ifip wg6 1
+0},
+   abstract = {In this work, we investigate the combination of controller synthesis and test generation techniques for the testing of open, partially observable systems with respect to security policies. We consider two kinds of properties: integrity properties and confidentiality properties. We assume that the behavior of the system is modeled by a labeled transition system and assume the existence of a black-box implementation. We first outline a method allowing to automatically compute an ideal access control ensuring these two kinds of properties. Then, we show how to derive testers that test the conformance of the implementation with respect to its specification, the correctness of the real access control that has been composed with the implementation in order to ensure a security property, and the security property itself.},
+   ISBN = {0302-9743
+978-3-642-05030-5},
+   url = {<Go to ISI>://WOS:000276634800008},
+   year = {2009},
+   type = {Book Section}
+}
+
+@article{
+   author = {Masood, Ammar and Bhatti, Rafae and Ghafoor, Arif and Mathur, Aditya},
+   title = {Scalable and Effective Test Generation for Role-Based Access Control Systems},
+   journal = {Ieee Transactions on Software Engineering},
+   volume = {35},
+   number = {5},
+   pages = {654-668},
+   note = {Times Cited: 8
+10},
+   abstract = {Conformance testing procedures for generating tests from the finite state model representation of Role-Based Access Control (RBAC) policies are proposed and evaluated. A test suite generated using one of these procedures has excellent fault detection ability but is astronomically large. Two approaches to reduce the size of the generated test suite were investigated. One is based on a set of six heuristics and the other directly generates a test suite from the finite state model using random selection of paths in the policy model. Empirical studies revealed that the second approach to test suite generation, combined with one or more heuristics, is most effective in the detection of both first-order mutation and malicious faults and generates a significantly smaller test suite than the one generated directly from the finite state models.},
+   ISSN = {0098-5589},
+   DOI = {10.1109/tse.2009.35},
+   url = {<Go to ISI>://WOS:000270154300005},
+   year = {2009},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Masood, Ammar and Ghafoor, Arif and Mathur, Aditya},
+   title = {Conformance Testing of Temporal Role-Based Access Control Systems},
+   journal = {Ieee Transactions on Dependable and Secure Computing},
+   volume = {7},
+   number = {2},
+   pages = {144-158},
+   note = {Times Cited: 4
+4},
+   abstract = {We propose an approach for conformance testing of implementations required to enforce access control policies specified using the Temporal Role-Based Access Control (TRBAC) model. The proposed approach uses Timed Input-Output Automata (TIOA) to model the behavior specified by a TRBAC policy. The TIOA model is transformed to a deterministic se-FSA model that captures any temporal constraint by using two special events Set and Exp. The modified W-method and integer-programming-based approach are used to construct a conformance test suite from the transformed model. The conformance test suite so generated provides complete fault coverage with respect to the proposed fault model for TRBAC specifications.},
+   ISSN = {1545-5971},
+   DOI = {10.1109/tdsc.2008.41},
+   url = {<Go to ISI>://WOS:000277888200003},
+   year = {2010},
+   type = {Journal Article}
+}
+
+@misc{
+   author = {McLaughlin, E. and Bustany, M. and Lucas, M. C.},
+   title = {Data transceiver operating at different data rates},
+   publisher = {Hewlett-Packard Co; Hewlett-Packard Dev Co Lp},
+   note = {0},
+   ISBN = {EP967758-A; EP967758-A2; JP11355385-A; US6269104-B1; EP967758-B1; DE69928603-E; JP3745162-B2; DE69928603-T2},
+   url = {<Go to ISI>://DIIDW:2000055777},
+   type = {Patent}
+}
+
+@article{
+   author = {Mondal, Samrat and Sural, Shamik and Atluri, Vijayalakshmi},
+   title = {Security analysis of GTRBAC and its variants using model checking},
+   journal = {Computers & Security},
+   volume = {30},
+   number = {2-3},
+   pages = {128-147},
+   note = {Times Cited: 0
+Sural, Shamik/C-1394-2011
+14th ACM Symposium on Access Control Models and Technologies
+Jun 03-05, 2009
+Stresa, ITALY
+1},
+   abstract = {Security analysis is a formal verification technique to ascertain certain desirable guarantees on the access control policy specification. Given a set of access control policies, a general safety requirement in such a system is to determine whether a desirable property is satisfied in all the reachable states. Such an analysis calls for the use of formal verification techniques. While formal analysis on traditional Role Based Access Control (RBAC) has been done to some extent, recent extensions to RBAC lack such an analysis. In this paper, we consider the temporal RBAC extensions and propose a formal technique using timed automata to perform security analysis by analyzing both safety and liveness properties. Using safety properties one ensures that something bad never happens while liveness properties show that some good state is also achieved. GTRBAC is a well accepted generalized temporal RBAC model which can handle a wide range of temporal constraints while specifying different access control policies. Analysis of such a model involves a process of mapping a GTRBAC based system into a state transition system. Different reduction rules are proposed to simplify the modeling process depending upon the constraints supported by the system. The effect of different constraints on the modeling process is also studied. (C) 2010 Elsevier Ltd. All rights reserved.},
+   ISSN = {0167-4048},
+   DOI = {10.1016/j.cose.2010.09.002},
+   url = {<Go to ISI>://WOS:000288411600005},
+   year = {2011},
+   type = {Journal Article}
+}
+
+@book{
+   author = {Mondal, Samrat and Sural, Shamik and Atluri, Vijayalakshmi and Acm},
+   title = {Towards Formal Security Analysis of GTRBAC using Timed Automata},
+   series = {Sacmat'09: Proceedings of the 14th Acm Symposium on Access Control Models and Technologies},
+   note = {Times Cited: 3
+14th ACM Symposium on Access Control Models and Technologies
+Jun 03-05, 2009
+Stresa, ITALY
+3},
+   abstract = {An access control system is often viewed as a state transition system. Given a set of access control policies, a general safety requirement in such a system is to determine whether a desirable property is satisfied in all the reachable states. Such an analysis calls for formal verification. While formal analysis on traditional RBAC has been done to some extent, the extensions of RBAC lack such an analysis. In this paper, we propose a formal technique to perform security analysis on the Generalized Temporal RBAC (GTRBAC) model which can be used to express a wide range of temporal constraints on different RBAC components like role, user and permission. In the proposed approach, at first the GTRBAC system is mapped to a state transition system built using timed automata. Characteristics of each role, user and permission are captured with the help of timed automata. A single global clock is used to express the various temporal constraints supported in a GTRBAC model. Next, a set of safety and liveness properties is specified using computation tree logic (CTL). Model checking based formal verification is then done to verify the properties against the model to determine if the system is secure with respect to a given set of access control policies. Both time and space analysis has been done for studying the performance of the approach under different configurations.},
+   pages = {33-42},
+   ISBN = {978-1-60558-537-6},
+   url = {<Go to ISI>://WOS:000270112300004},
+   year = {2009},
+   type = {Book}
+}
+
+@book{
+   author = {Mondal, Samrat and Surat, Shamik},
+   title = {Security Analysis of Temporal-RBAC using Timed Automata},
+   series = {Fourth International Symposium on Information Assurance and Security, Proceedings},
+   note = {Times Cited: 6
+4th International Symposium on Information Assurance and Security
+Sep 08-10, 2008
+Napoli, ITALY
+Second Univ Degli Studi Napoli, Dipart Ingegner Dell Informaz; Int Commun Sci & Technol Assoc; Ctr REs & Telecommun Exptl NETworked Comm
+6},
+   abstract = {Role Based Access Control (RBAC) is arguably the most common access control mechanism today due to its applicability at various levels of authorization in a system. Timevaring nature of access control in RBAC administered system is often implemented through Temporal-RBAC - an extension of RBAC in the temporal domain. In this paper we propose an initial approach towards verification of securio, properties of a Temporal-RBAC system. Each role is mapped to a timed automaton. A controller automaton is used to activate and deactivate various roles. Security properties are specified using Computation Tree Logic (CTL) and are verified with the help of a model checking tool named Uppaal. We have specifically considered reachability, safety and liveness properties to show the usefulness of our approach.},
+   pages = {37-40},
+   ISBN = {978-0-7695-3324-7},
+   url = {<Go to ISI>://WOS:000260404200007},
+   year = {2008},
+   type = {Book}
+}
+
+@misc{
+   author = {Richardson, R. B.},
+   title = {Method for authenticating device e.g. processor using operating speed, involves comparing results of capability of device with prestored results of other device, for authentication},
+   publisher = {Richardson R B; Uniloc USA Inc},
+   note = {0},
+   ISBN = {US2007126550-A1; US7987362-B2},
+   url = {<Go to ISI>://DIIDW:2007813219},
+   type = {Patent}
+}
+
+@book{
+   author = {Rohloff, K. and Lafortune, S. and Ieee, Ieee},
+   title = {The control and verification of similar agents operating in a broadcast network environment},
+   series = {42nd Ieee Conference on Decision and Control, Vols 1-6, Proceedings},
+   note = {Times Cited: 0
+42nd IEEE Conference on Decision and Control
+Dec 09-12, 2003
+Maui, HI
+IEEE; SIAM; Control Syst Soc; SICE; Informs; Honeywell Lab; Natl Instruments; XEROX; MathWorks
+0},
+   abstract = {We explore issues related to the control and verification of similar agents that interact through events broadcast over a network. The similar agents are modeled as discrete-event systems that have identical structure. System events are partitioned into global and private events that respectively affect all agents or exactly one agent. We show how the state explosion problem inherent to many concurrent systems is not as problematic in this setting. We give a procedure to test if these systems are globally deadlock-free or nonblocking. We explore control and verification problems related to both local and global specifications on these systems. For each module there is exactly one controller and all controllers enforce the same control policy. Necessary and sufficient conditions for achieving local and global specifications in this setting are identified.},
+   pages = {2673-2679},
+   ISBN = {0-7803-7924-1},
+   url = {<Go to ISI>://WOS:000189434100461},
+   year = {2003},
+   type = {Book}
+}
+
+@article{
+   author = {Rohloff, Kurt and Lafortune, Stephane},
+   title = {The verification and control of interacting similar discrete-event systems},
+   journal = {Siam Journal on Control and Optimization},
+   volume = {45},
+   number = {2},
+   pages = {634-667},
+   note = {Times Cited: 5
+5},
+   abstract = {This paper explore issues related to the control and veri. cation of similar module systems in the discrete-event systems framework. Similar module systems are distributed systems comprised of subsystem modules that exhibit isomorphic local behavior coordinated on global event occurrences. When given a global model of these systems, it is shown how to decompose the global model into the component subsystems in polynomial time. It is also shown how to perform various veri. cation tasks for these interacting systems while mitigating common state explosion difficulties by taking advantage of the special similar module system structure. Control properties of the similar module systems are also discussed. It is assumed that the local modules are supervised by exactly one local controller and the controllers enforce the same local control policy. Necessary and sufficient conditions for achieving local and global control specifications in this setting are identified.},
+   ISSN = {0363-0129},
+   DOI = {10.1137/040610209},
+   url = {<Go to ISI>://WOS:000238838000013},
+   year = {2006},
+   type = {Journal Article}
+}
+
+@inbook{
+   author = {Roy, A. and Gopinath, K.},
+   title = {Improved probabilistic models for 802.11 protocol verification},
+   booktitle = {Computer Aided Verification< Proceedings},
+   editor = {Etessami, K. and Rajamani, S. K.},
+   series = {Lecture Notes in Computer Science},
+   volume = {3576},
+   pages = {239-252},
+   note = {Times Cited: 2
+17th International Conference on Computer Aided Verification
+Jul 06-10, 2005
+Edinburgh, SCOTLAND
+IBM; Microsoft; Weizmann Inst, John VonNeumann Minerva Ctr Verificat React Syst; Jasper Design Automat; Synopsys; Cadence Design Syst
+2},
+   abstract = {The IEEE 802.11 protocol is a popular standard for wireless local area networks. Its medium access control layer (MAC) is a carrier sense multiple access with collision avoidance (CSMA/CA) design and includes an exponential backoff mechanism that makes it a possible target for probabilistic model checking. In this work, we identify ways to increase the scope of application of probabilistic model checking to the 802.11 MAC. Current techniques model only specialized cases of minimum size. To work around this problem, we identify properties of the protocol that can be used to simplify the models and make verification feasible. Using these observations, we present generalized probabilistic timed automata models that are independent of the number of stations. We optimize these through a novel abstraction technique while preserving probabilistic reachability measures. We substantiate our claims of a significant reduction due to our optimization with results from using the probabilistic model checker PRISM.},
+   ISBN = {0302-9743
+3-540-27231-3},
+   url = {<Go to ISI>://WOS:000230755800024},
+   year = {2005},
+   type = {Book Section}
+}
+
+@article{
+   author = {Sarrouh, Nadim and Ieee},
+   title = {Formal Modeling of Trust-Based Access Control in Dynamic Coalitions},
+   journal = {2013 Ieee 37th Annual Computer Software and Applications Conference Workshops (Compsacw)},
+   pages = {224-229},
+   note = {Times Cited: 0
+IEEE 37th Annual Computer Software and Applications Conference (COMPSAC)
+Jul 22-26, 2013
+Kyoto, JAPAN
+IEEE; IEEE Comp Soc; Informat Proc Soc Japan; Korean Inst Informat Scientists & Engineers; CCF; Tateisi Sci & Technol Fdn; Kyoto Univ; Iowa State Univ Sci & Technol
+0
+978-0-7695-4987-3},
+   abstract = {Modern networking technologies, such as Cloud or SOA, enable cooperations and individuals to form dynamic coalitions for temporary sharing of resources and information in order to achieve a common goal. In recent years the need for a formal understanding of the structures, the dynamic aspects and the processes of these coalitions has grown. In my ongoing thesis I propose a formal framework based on the abstract state machine (ASM) formalism in order to grasp and characterize dynamic coalitions in general and privacy-sensitive dynamic coalitions in particular. The ASM formalism allows for a structural description of dynamic coalitions as well as for a formalization of the inherent processes by means of ASM-runs, thereby enabling simulation, testing, and verification possibilities for the design of supporting architectures. This paper shows how the CoreASM-toolset is used to develop an abstract model of dynamic coalitions and extended to integrate trust-based access control mechanisms in order to enforce privacy aspects in highly dynamic coalitions. Finally an ongoing case study is introduced and first insights to the usability of the proposed model are given.},
+   DOI = {10.1109/compsacw.2013.30},
+   url = {<Go to ISI>://WOS:000331223100038},
+   year = {2013},
+   type = {Journal Article}
+}
+
+@inbook{
+   author = {Tang, Zhuo and Zhang, Shaohua and Li, Kenli and Feng, Benming},
+   title = {Security Analysis and Validation for Access Control in Multi-domain Environment Based on Risk},
+   booktitle = {Information Security Practice and Experience, Proceedings},
+   editor = {Kwak, J. and Deng, R. H. and Won, Y. and Wang, G.},
+   series = {Lecture Notes in Computer Science},
+   volume = {6047},
+   pages = {201-216},
+   note = {Times Cited: 1
+6th International Conference on Information Security Practice and Experience
+May 12-13, 2010
+Soonchunhyang Univ, Seoul, SOUTH KOREA
+Korea Internet & Security Agcy; Elect & Telecommun Res Inst; Korea Inst Informat Security & Cryptography; Korea Commun Commiss
+1},
+   abstract = {Access control system is often described as a state transition system. Given a set of access control policies, a general safety requirement in such a system is to determine whether a desirable property is satisfied in all the reachable states. In this paper, we propose to use security analysis techniques to maintain desirable security properties in the Multi-domain Environment based on risk model (MDR(2)BAC). We give a precise definition of security analysis problems in MDR(2)BAC, which is more general than safety analysis that is studied in single-domain. We show the process of dynamic permission adjustment in multi-domain environment, and illustrate two classes of problems in the process which can be reduced to similar analysis in the RT[<-,boolean AND] role-based trust-management language, thereby establishing an interesting relationship between MDR(2)BAC and the RT framework. The reduction gives efficient algorithms for answering most kinds of queries in the two stages of dynamic adjustment permissions.},
+   ISBN = {0302-9743
+978-3-642-12826-4},
+   url = {<Go to ISI>://WOS:000279047800015},
+   year = {2010},
+   type = {Book Section}
+}
+
+@book{
+   author = {Tiwari, Navneet},
+   title = {VHDL MODELING OF RECEIVER UNIT OF ETHERNET MAC LAYER},
+   series = {Icmee 2009: Proceedings of the 2009 International Conference on Mechanical and Electronics Engineering},
+   note = {Times Cited: 0
+International Conference on Mechanical and Electronics Engineering (ICMEE 2009)
+Jul 24-26, 2009
+Chennai, INDIA
+Int Assoc Comp Sci & Informat Technol
+0},
+   abstract = {Ethernet is one of the Local Area Network (LAN) technology designed specifically for high speed, broadband networks where high performance is critical to its operation. Ethernet is dominated by IEEE 802.3 standard. It is a recent technology that is currently being integrated into commercial networks, especially where high bandwidth is necessary to support applications such as video conferencing, multimedia and large data transfer. The IEEE 802.3 standard defines the CSMA/CD, Physical and Medium Access Control (MAC) layer of wired Ethernet The Receiver Unit of Ethernet MAC layer consist five different module i.e. Rx State Machine, SFD Detector, Rx Buffer, Address Matching Logic, FCS Checker. This paper consist the simulation waveform of each module of Receiver Section of MAC layer using VHDL. The VHDL (Very High Speed Hardware Description Language) is defined in IEEE as a tool of creation of electronics system because it supports the development, verification, synthesis and testing of hardware design, the communication of hardware design data and the maintenance, modification and procurement of hardware [7]. VHDL is frequently used for simulation and synthesis of electronic design. The speed and efficiency of the hardware in a Ethernet MAC unit determines the throughput of data onto the network, hence directly affecting the performance of LAN. Therefore the modeling of the Receiver Section of MAC unit is extremely important.},
+   pages = {139-143},
+   ISBN = {978-981-4289-78-8},
+   url = {<Go to ISI>://WOS:000272866100025},
+   year = {2009},
+   type = {Book}
+}
+
+@inbook{
+   author = {Ulusoy, Alphan and Marrazzo, Michael and Oikonomopoulos, Konstantinos and Hunter, Ryan and Belta, Calin and Ieee},
+   title = {Temporal Logic Control for an Autonomous Quadrotor in a Nondeterministic Environment},
+   booktitle = {2013 Ieee International Conference on Robotics and Automation},
+   series = {IEEE International Conference on Robotics and Automation ICRA},
+   pages = {331-336},
+   note = {Times Cited: 0
+Icra
+IEEE International Conference on Robotics and Automation (ICRA)
+May 06-10, 2013
+Karlsruhe, GERMANY
+Ieee
+0},
+   abstract = {We present an experimental setup for automatic deployment of a quadrotor in an environment with known topology and nondeterministically changing properties. The missions are specified as rich, temporal logic statements about the satisfaction of the properties. The main objective is to be able to synthesize, test, and evaluate control policies for complex aerial missions. Our testbed consists of quadrotors, a motion capture system that provides precise and continuous position information of the quadrotor, projectors that can emulate dynamically changing environments, physical obstacles, and computers that control the quadrotor, the motion capture system, and the projectors. Our computational approach is hierarchical. At the bottom level, we partition the environment and construct an abstraction in the form of a finite transition system such that the quadrotor can execute its transitions by using low level feedback controllers. At the top level, we draw inspiration from LTL model checking and use a value iteration algorithm to determine an optimal control policy that guarantees the satisfaction of the specification under nondeterministically changing properties. We illustrate the approach for the particular case of a surveillance mission in a city-like environment.},
+   ISBN = {1050-4729
+978-1-4673-5641-1; 978-1-4673-5643-5},
+   url = {<Go to ISI>://WOS:000337617300049},
+   year = {2013},
+   type = {Book Section}
+}
+
+@article{
+   author = {Ulusoy, Alphan and Wongpiromsarn, Tichakorn and Belta, Calin},
+   title = {Incremental controller synthesis in probabilistic environments with temporal logic constraints},
+   journal = {International Journal of Robotics Research},
+   volume = {33},
+   number = {8},
+   pages = {1130-1144},
+   note = {Times Cited: 0
+0},
+   abstract = {In this paper, we consider automatic computation of optimal control strategies for a robot interacting with a set of independent uncontrollable agents in a graph-like environment. The mission specification is given as a syntactically co-safe Linear Temporal Logic formula over some properties that hold at the vertices of the environment. The robot is assumed to be a deterministic transition system, while the agents are probabilistic Markov models. The goal is to control the robot such that the probability of satisfying the mission specification is maximized. We propose a computationally efficient incremental algorithm based on the fact that temporal logic verification is computationally cheaper than synthesis. We present several case studies where we compare our approach to the classical non-incremental approach in terms of computation time and memory usage.},
+   ISSN = {0278-3649},
+   DOI = {10.1177/0278364913519000},
+   url = {<Go to ISI>://WOS:000342793100006},
+   year = {2014},
+   type = {Journal Article}
+}
+
+@inbook{
+   author = {Wolter, Christian and Miseldine, Philip and Meinel, Christoph},
+   title = {Verification of Business Process Entailment Constraints Using SPIN},
+   booktitle = {Engineering Secure Software and Systems, Proceedings},
+   editor = {Massacci, F. and Redwine, S. T. and Zannone, N.},
+   series = {Lecture Notes in Computer Science},
+   volume = {5429},
+   pages = {1-15},
+   note = {Times Cited: 6
+1st International Symposium on Engineering Secure Software and Systems
+Feb 04-06, 2009
+Leuven, BELGIUM
+Acm sigsac; acm sigsoft; ieee tcse
+6},
+   abstract = {The verification of access controls is essential for providing secure systems. Model checking is an automated technique used for verifying finite state machines. The properties to be verified are usually expressed as formula in temporal logic. In this paper we present an approach to verify access control security properties of a security annotated business process model. To this end we utilise a security enhanced BPMN notation to define access control properties. To enhance the usability the complex and technical details are hidden from the process modeller by using an automatic translation of the process model into a process meta language (Promela) based on Coloured Petri net (CPN) semantics. The model checker SPIN is used for the process model verification and a trace file is written to provide visual feedback to the modeller on the abstraction level of the verified process model. As a proof of concept the described translation methodology is implemented as a plug-in for the free web-based BPMN modelling tool Oryx.},
+   ISBN = {0302-9743
+978-3-642-00198-7},
+   url = {<Go to ISI>://WOS:000264553700001},
+   year = {2009},
+   type = {Book Section}
+}
+
+@article{
+   author = {Wongpiromsarn, Tichakorn and Ulusoy, Alphan and Belta, Calin and Frazzoli, Emilio and Rus, Daniela and Japan, Ieee Robotics Society of},
+   title = {Incremental Temporal Logic Synthesis of Control Policies for Robots Interacting with Dynamic Agents},
+   journal = {2012 Ieee/Rsj International Conference on Intelligent Robots and Systems (Iros)},
+   pages = {229-236},
+   note = {Times Cited: 1
+25th IEEE\RSJ International Conference on Intelligent Robots and Systems (IROS)
+Oct 07-12, 2012
+Algarve, PORTUGAL
+IEEE Robot & Automat Soc (RAS); IEEE Ind Elect Soc (IES); Robot Soc Japan (RSJ); Soc Instrument & Control Engineers (SICE); New technol Fdn (NTF); Inst Control Robot & Syst (ICROS); IEEE; Adept MobileRobots; Willow Garage; Aldebaran Robot; Natl Instruments; Reflexxes GmbH; Schunk Intec S L U
+1
+978-1-4673-1736-8},
+   abstract = {We consider the synthesis of control policies from temporal logic specifications for robots that interact with multiple dynamic environment agents. Each environment agent is modeled by a Markov chain whereas the robot is modeled by a finite transition system (in the deterministic case) or Markov decision process (in the stochastic case). Existing results in probabilistic verification are adapted to solve the synthesis problem. To partially address the state explosion issue, we propose an incremental approach where only a small subset of environment agents is incorporated in the synthesis procedure initially and more agents are successively added until we hit the constraints on computational resources. Our algorithm runs in an anytime fashion where the probability that the robot satisfies its specification increases as the algorithm progresses.},
+   ISSN = {2153-0858},
+   url = {<Go to ISI>://WOS:000317042700036},
+   year = {2012},
+   type = {Journal Article}
+}
+
+@article{
+   author = {Yang, Zong-Han and Chen, Yan-Ting and Fan, Chih-Peng},
+   title = {DESIGN AND VERIFICATION OF HIGH-THROUGHPUT IEEE 802.11 MAC-LAYER HARDWARE IP WITH FPGA PLATFORM},
+   journal = {Journal of the Chinese Institute of Engineers},
+   volume = {33},
+   number = {4},
+   pages = {551-562},
+   note = {Times Cited: 0
+0},
+   abstract = {The development of a high-throughput and low-cost medium access control (MAC) layer design is a very important issue for wireless local area network (WLAN) communication. In this paper, the proposed MAC-layer hardware architecture is simplified by using a small number of finite state machines (FSMs) and a low-latency parallel processing architecture. The FSMs on both the transmitter (TX) and receiver (RX) sides can be operated at low power. In the MAC-layer receiver, an efficient low-complexity timestamp controller is proposed for fast timing synchronization. We implement the distributed coordination function (DCF) of the MAC protocol in IEEE 802.11a/b/g standards within the ad-hoc configuration. The proposed MAC-layer hardware is implemented with Xilinx XC4VLX60 FPGA, the hardware area needs 5944 slices, and the effective throughput is 147.6 Mbps. With TSMC 0.18 mu m CMOS process, the effective throughput at the maximum working frequency 83.3 MHz is 299.88 Mbps, which is larger than the standard IEEE 802.11 g requirement, i.e. 54 Mbps.},
+   ISSN = {0253-3839},
+   DOI = {10.1080/02533839.2010.9671643},
+   url = {<Go to ISI>://WOS:000279580100007},
+   year = {2010},
+   type = {Journal Article}
+}
+
