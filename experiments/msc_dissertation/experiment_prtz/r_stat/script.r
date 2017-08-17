@@ -118,7 +118,7 @@ for(pol_id in unique(tab_test$"policy")){
     #wilcox.test(table_cols$damasc-table_cols$random, alternative="g")
     
     x <- wilcox.test(table_cols$cartax,table_cols$random, paired=TRUE)
-    write(paste(pol_id,method_id,"Simple/Ramdom",x$p.value,sep = "\t"),file=outFile,append=TRUE)
+    write(paste(pol_id,method_id,"Simple/Random",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     #wilcox.test(table_cols$cartax-table_cols$random, alternative="g")
     
     #break
@@ -188,7 +188,7 @@ for(pol_id in unique(tab_subset$"policy")){
     #wilcox.test(table_cols$damasc-table_cols$random, alternative="g")
     
     x <- wilcox.test(table_cols$cartax,table_cols$random, paired=TRUE)
-    write(paste(pol_id,method_id,"Simple/Ramdom",x$p.value,sep = "\t"),file=outFile,append=TRUE)
+    write(paste(pol_id,method_id,"Simple/Random",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     #wilcox.test(table_cols$cartax-table_cols$random, alternative="g")
     
     #break
