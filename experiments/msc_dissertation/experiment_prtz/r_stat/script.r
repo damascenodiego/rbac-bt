@@ -63,7 +63,7 @@ tab_test$V4 <- tab_test$V5
 tab_test$V5 <- tab_test$V6
 tab_test$V6 <- tab_test$V7
 tab_test$V7 <- NULL
-names(tab_test) <- c("policy", "mutants", "method", "prtz", "percent", "effectiveness")
+names(tab_test) <- c("policy", "mutants", "method", "Prioritization", "percent", "effectiveness")
 tab_test$"testsuite" <- "set"
 
 
@@ -71,16 +71,16 @@ tab_test$"testsuite" <- "set"
 for(pol_id in unique(tab_test$"policy")){
   for(method_id in unique(tab_test$"method")){
     #message (paste(pol_id,method_id,sep=" ")) 
-    test_cartax <- tab_test[((tab_test$"policy"==pol_id) & (tab_test$"method"==method_id) & (tab_test$"prtz"=="cartax")),]
-    test_damasc <- tab_test[((tab_test$"policy"==pol_id) & (tab_test$"method"==method_id) & (tab_test$"prtz"=="damasc")),]
-    test_random <- tab_test[((tab_test$"policy"==pol_id) & (tab_test$"method"==method_id) & (tab_test$"prtz"=="random")),]
+    test_cartax <- tab_test[((tab_test$"policy"==pol_id) & (tab_test$"method"==method_id) & (tab_test$"Prioritization"=="cartax")),]
+    test_damasc <- tab_test[((tab_test$"policy"==pol_id) & (tab_test$"method"==method_id) & (tab_test$"Prioritization"=="damasc")),]
+    test_random <- tab_test[((tab_test$"policy"==pol_id) & (tab_test$"method"==method_id) & (tab_test$"Prioritization"=="random")),]
     test_random <- addRepCol(test_random,600,600)
-    test_random <- aggregate(test_random[["effectiveness"]], by=list(test_random$policy, test_random$mutants, test_random$method, test_random$prtz, test_random$percent, test_random$testsuite, test_random$rep),  
+    test_random <- aggregate(test_random[["effectiveness"]], by=list(test_random$policy, test_random$mutants, test_random$method, test_random$Prioritization, test_random$percent, test_random$testsuite, test_random$rep),  
                              function(x)mean(x, na.rm=TRUE))
     test_random <- test_random[,c(1,2,3,4,5,8,6)]
-    names(test_random) <- c("policy", "mutants", "method","prtz", "percent", "effectiveness","testsuite")
+    names(test_random) <- c("policy", "mutants", "method","Prioritization", "percent", "effectiveness","testsuite")
     table_cols <- test_cartax
-    table_cols$"prtz" <- NULL
+    table_cols$"Prioritization" <- NULL
     table_cols$"effectiveness" <- NULL
     table_cols$"cartax" <- test_cartax$"effectiveness"
     table_cols$"damasc" <- test_damasc$"effectiveness"
@@ -89,21 +89,35 @@ for(pol_id in unique(tab_test$"policy")){
     table_cols <- table_cols[,c(1,2,3,4,6,7,8,5)]
     
     summary_damasc <- summarySE(test_damasc, measurevar="effectiveness", groupvars=c("percent"))
-    summary_damasc$prtz <- "RBAC"
+    summary_damasc$Prioritization <- "RBAC"
     
     summary_cartax <- summarySE(test_cartax, measurevar="effectiveness", groupvars=c("percent"))
-    summary_cartax$prtz <- "Simple"
+    summary_cartax$Prioritization <- "Simple"
     
     summary_random <- summarySE(test_random, measurevar="effectiveness", groupvars=c("percent"))
-    summary_random$prtz <- "Random"
+    summary_random$Prioritization <- "Random"
     
     summary <- rbind(summary_random,summary_cartax,summary_damasc)
     
+    title_lab = paste(pol_id,toupper(method_id),sep=" - ")
+    #print(filename)
+    x_lab="Test Suite %"
+    y_lab="% Effectiveness"
+    leg_lab="Prioritization"
+    
     # Standard error of the mean
-    plot <- ggplot(summary, aes(x=percent, y=effectiveness,colour=prtz)) + 
-      geom_errorbar(aes(ymin=effectiveness-se, ymax=effectiveness+se), width=.1) +
+    plot <- ggplot(summary, aes(x=percent, y=effectiveness,group=Prioritization,color=Prioritization)) +
+      geom_errorbar(aes(ymin=effectiveness-ci, ymax=effectiveness+ci), width=.1) +
       geom_line() +
-      geom_point()
+      geom_point(aes(shape=Prioritization, color=Prioritization))+
+      scale_shape_manual(values=c(4,25,24))+
+      #theme(panel.grid.major = element_line(colour = "darkgray")) + theme(panel.background = element_rect(fill = "white")) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5)) +
+      scale_color_manual(values=c("#FF0000", "#00FF00" , "#0000FF"))+
+      scale_y_continuous(limits=c(0, 1.0)) +
+      scale_x_continuous(limits=c(0, 100)) +
+      labs(title = title_lab, x = x_lab, y = y_lab, color = leg_lab)
     
     print(plot)
     filename <- paste(pol_id,method_id,"test.pdf",sep="_")
@@ -132,49 +146,66 @@ tab_subset <- read.table("./out_subset_frag.log", sep="\t", header=FALSE) #tempc
 tab_subset$V3 <- data.frame(do.call('rbind', strsplit(as.character(tab_subset$V3),'.',fixed=TRUE)))$X2
 tab_subset$V5 <- NULL
 tab_subset$V6 <- NULL
-names(tab_subset) <- c("policy", "mutants", "method","prtz", "percent", "effectiveness")
+names(tab_subset) <- c("policy", "mutants", "method","Prioritization", "percent", "effectiveness")
 tab_subset$"testsuite" <- "subset"
 
 
 for(pol_id in unique(tab_subset$"policy")){
   for(method_id in unique(tab_subset$"method")){
-    #message (paste(pol_id,method_id,sep=" ")) 
-    test_cartax <- tab_subset[((tab_subset$"policy"==pol_id) & (tab_subset$"method"==method_id) & (tab_subset$"prtz"=="cartax")),]
-    test_damasc <- tab_subset[((tab_subset$"policy"==pol_id) & (tab_subset$"method"==method_id) & (tab_subset$"prtz"=="damasc")),]
-    test_random <- tab_subset[((tab_subset$"policy"==pol_id) & (tab_subset$"method"==method_id) & (tab_subset$"prtz"=="random")),]
+    #message (paste(pol_id,method_id,sep=" "))
+    test_cartax <- tab_subset[((tab_subset$"policy"==pol_id) & (tab_subset$"method"==method_id) & (tab_subset$"Prioritization"=="cartax")),]
+    test_damasc <- tab_subset[((tab_subset$"policy"==pol_id) & (tab_subset$"method"==method_id) & (tab_subset$"Prioritization"=="damasc")),]
+    test_random <- tab_subset[((tab_subset$"policy"==pol_id) & (tab_subset$"method"==method_id) & (tab_subset$"Prioritization"=="random")),]
     #break
     test_random <- addRepCol(test_random,200,6000)
-    test_random <- aggregate(test_random[["effectiveness"]], by=list(test_random$policy, test_random$mutants, test_random$method, test_random$prtz, test_random$percent, test_random$testsuite, test_random$rep),  
+    test_random <- aggregate(test_random[["effectiveness"]], by=list(test_random$policy, test_random$mutants, test_random$method, test_random$Prioritization, test_random$percent, test_random$testsuite, test_random$rep),
                              function(x)mean(x, na.rm=TRUE))
     test_random <- test_random[,c(1,2,3,4,5,8,6)]
-    names(test_random) <- c("policy", "mutants", "method","prtz", "percent", "effectiveness","testsuite")
-    #break      
+    names(test_random) <- c("policy", "mutants", "method","Prioritization", "percent", "effectiveness","testsuite")
+    #break
     table_cols <- test_cartax
-    table_cols$"prtz" <- NULL
+    table_cols$"Prioritization" <- NULL
     table_cols$"effectiveness" <- NULL
     table_cols$"cartax" <- test_cartax$"effectiveness"
     table_cols$"damasc" <- test_damasc$"effectiveness"
     table_cols$"random" <- test_random$"effectiveness"
-    
+
     table_cols <- table_cols[,c(1,2,3,4,6,7,8,5)]
-    
+
     summary_damasc <- summarySE(test_damasc, measurevar="effectiveness", groupvars=c("percent"))
-    summary_damasc$prtz <- "RBAC"
-    
+    summary_damasc$Prioritization <- "RBAC"
+
     summary_cartax <- summarySE(test_cartax, measurevar="effectiveness", groupvars=c("percent"))
-    summary_cartax$prtz <- "Simple"
-    
+    summary_cartax$Prioritization <- "Simple"
+
     summary_random <- summarySE(test_random, measurevar="effectiveness", groupvars=c("percent"))
-    summary_random$prtz <- "Random"
-    
+    summary_random$Prioritization <- "Random"
+
     summary <- rbind(summary_random,summary_cartax,summary_damasc)
+
+    summary$model <- factor(summary$model, levels=c("RBAC", "Random", "Simple"))
     
+    
+    title_lab = paste(pol_id,toupper(method_id),sep=" - ")
+    #print(filename)
+    x_lab="Test Suite %"
+    y_lab="% Effectiveness"
+    leg_lab="Prioritization"
+
     # Standard error of the mean
-    plot <- ggplot(summary, aes(x=percent, y=effectiveness,colour=prtz)) + 
-      geom_errorbar(aes(ymin=effectiveness-se, ymax=effectiveness+se), width=.1) +
+    plot <- ggplot(summary, aes(x=percent, y=effectiveness,group=Prioritization,color=Prioritization)) +
+      geom_errorbar(aes(ymin=effectiveness-ci, ymax=effectiveness+ci), width=.1) +
       geom_line() +
-      geom_point()
-    
+      geom_point(aes(shape=Prioritization, color=Prioritization))+
+      scale_shape_manual(values=c(4,25,24))+
+      #theme(panel.grid.major = element_line(colour = "darkgray")) + theme(panel.background = element_rect(fill = "white")) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5)) +
+      scale_color_manual(values=c("#FF0000", "#00FF00" , "#0000FF"))+
+      scale_y_continuous(limits=c(0, 1.0)) +
+      scale_x_continuous(limits=c(0, 100)) +
+      labs(title = title_lab, x = x_lab, y = y_lab, color = leg_lab)
+
     print(plot)
     filename <- paste(pol_id,method_id,"test","subset_2528_test.pdf",sep="_")
     ggsave(filename)
