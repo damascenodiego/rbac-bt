@@ -183,9 +183,6 @@ for(pol_id in unique(tab_subset$"policy")){
 
     summary <- rbind(summary_random,summary_cartax,summary_damasc)
 
-    summary$model <- factor(summary$model, levels=c("RBAC", "Random", "Simple"))
-    
-    
     title_lab = paste(pol_id,toupper(method_id),sep=" - ")
     #print(filename)
     x_lab="Test Suite %"
