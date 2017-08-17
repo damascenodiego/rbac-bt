@@ -76,7 +76,7 @@ for(pol_id in unique(tab_test$"policy")){
     test_random <- tab_test[((tab_test$"policy"==pol_id) & (tab_test$"method"==method_id) & (tab_test$"prtz"=="random")),]
     test_random <- addRepCol(test_random,600,600)
     test_random <- aggregate(test_random[["effectiveness"]], by=list(test_random$policy, test_random$mutants, test_random$method, test_random$prtz, test_random$percent, test_random$testsuite, test_random$rep),  
-                             function(x)median(x, na.rm=TRUE))
+                             function(x)mean(x, na.rm=TRUE))
     test_random <- test_random[,c(1,2,3,4,5,8,6)]
     names(test_random) <- c("policy", "mutants", "method","prtz", "percent", "effectiveness","testsuite")
     table_cols <- test_cartax
@@ -130,8 +130,8 @@ for(pol_id in unique(tab_test$"policy")){
 
 tab_subset <- read.table("./out_subset_frag.log", sep="\t", header=FALSE) #tempcol <- data.frame(do.call('rbind', strsplit(as.character(tab_subset$V3),'.',fixed=TRUE)))
 tab_subset$V3 <- data.frame(do.call('rbind', strsplit(as.character(tab_subset$V3),'.',fixed=TRUE)))$X2
-tab_subset$V4 <- NULL
 tab_subset$V5 <- NULL
+tab_subset$V6 <- NULL
 names(tab_subset) <- c("policy", "mutants", "method","prtz", "percent", "effectiveness")
 tab_subset$"testsuite" <- "subset"
 
@@ -145,7 +145,7 @@ for(pol_id in unique(tab_subset$"policy")){
     #break
     test_random <- addRepCol(test_random,200,6000)
     test_random <- aggregate(test_random[["effectiveness"]], by=list(test_random$policy, test_random$mutants, test_random$method, test_random$prtz, test_random$percent, test_random$testsuite, test_random$rep),  
-                             function(x)median(x, na.rm=TRUE))
+                             function(x)mean(x, na.rm=TRUE))
     test_random <- test_random[,c(1,2,3,4,5,8,6)]
     names(test_random) <- c("policy", "mutants", "method","prtz", "percent", "effectiveness","testsuite")
     #break      
