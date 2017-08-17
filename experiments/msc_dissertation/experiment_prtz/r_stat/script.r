@@ -123,15 +123,15 @@ for(pol_id in unique(tab_test$"policy")){
     filename <- paste(pol_id,method_id,"test.pdf",sep="_")
     ggsave(filename)
     
-    x <- wilcox.test(table_cols$damasc,table_cols$cartax, paired=TRUE)
+    x <- wilcox.test(table_cols$damasc,table_cols$cartax, paired=TRUE, alternative = "greater")
     write(paste(pol_id,method_id,"RBAC/Simple",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     #wilcox.test(table_cols$damasc-table_cols$cartax, alternative="g")
     
-    x <- wilcox.test(table_cols$damasc,table_cols$random, paired=TRUE)
+    x <- wilcox.test(table_cols$damasc,table_cols$random, paired=TRUE, alternative = "greater")
     write(paste(pol_id,method_id,"RBAC/Random",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     #wilcox.test(table_cols$damasc-table_cols$random, alternative="g")
     
-    x <- wilcox.test(table_cols$cartax,table_cols$random, paired=TRUE)
+    x <- wilcox.test(table_cols$cartax,table_cols$random, paired=TRUE, alternative = "greater")
     write(paste(pol_id,method_id,"Simple/Random",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     #wilcox.test(table_cols$cartax-table_cols$random, alternative="g")
     
@@ -207,15 +207,15 @@ for(pol_id in unique(tab_subset$"policy")){
     filename <- paste(pol_id,method_id,"test","subset_2528_test.pdf",sep="_")
     ggsave(filename)
 
-    x <- wilcox.test(table_cols$damasc,table_cols$cartax, paired=TRUE)
+    x <- wilcox.test(table_cols$damasc,table_cols$cartax, paired=TRUE, alternative = "greater")
     write(paste(pol_id,method_id,"RBAC/Simple",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     #wilcox.test(table_cols$damasc-table_cols$cartax, alternative="g")
     
-    x <- wilcox.test(table_cols$damasc,table_cols$random, paired=TRUE)
+    x <- wilcox.test(table_cols$damasc,table_cols$random, paired=TRUE, alternative = "greater")
     write(paste(pol_id,method_id,"RBAC/Random",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     #wilcox.test(table_cols$damasc-table_cols$random, alternative="g")
     
-    x <- wilcox.test(table_cols$cartax,table_cols$random, paired=TRUE)
+    x <- wilcox.test(table_cols$cartax,table_cols$random, paired=TRUE, alternative = "greater")
     write(paste(pol_id,method_id,"Simple/Random",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     #wilcox.test(table_cols$cartax-table_cols$random, alternative="g")
     
