@@ -186,7 +186,7 @@ for(pol_id in unique(tab_test$"policy")){
     
     print(plot)
     filename <- paste(pol_id,method_id,"test.png",sep="_")
-    ggsave(filename)
+  ggsave(filename, width = 20, height = 20, units = "cm", dpi=300)
     
     #write.table(summary,paste(pol_id,"_",method_id,".tab",sep=""),sep="\t",row.names=TRUE)
     write.table(summary,tabData,sep="\t",row.names=FALSE,col.names=FALSE,append = TRUE)
@@ -317,7 +317,7 @@ for(pol_id in unique(tab_subset$"policy")){
     
     print(plot)
     filename <- paste(pol_id,method_id,"test","subset_2528_test.png",sep="_")
-    ggsave(filename)
+    ggsave(filename, width = 20, height = 20, units = "cm", dpi=300)
     
     #write.table(summary,paste(pol_id,"_",method_id,".tab",sep=""),sep="\t",row.names=TRUE)
     write.table(summary,tabData,sep="\t",row.names=FALSE,col.names=FALSE,append = TRUE)
@@ -429,7 +429,7 @@ for(pol_id in unique(summary_apfd$"Policy")){
   
   print(plot)
   filename <- paste(pol_id,"apfd.png",sep="_")
-  ggsave(filename)
+  ggsave(filename, width = 20, height = 20, units = "cm", dpi=300)
 }
 
 summary_apfd_t <- data.frame()
