@@ -9,10 +9,11 @@ unlink(tabData)
 
 write(paste("\"policy\"","\"mutants\"","\"method\"","\"Prioritization\"","\"percent\"","\"testsuite\"","\"N\"","\"effectiveness\"","\"sd\"","\"se\"","\"ci\"",sep = "\t"),file=tabData)
 
-addRepCol <- function(test_in,norows,totrow){
+addRepCol <- function(test_in,norows){
   count=1;
+  totrow <- nrow(test_in)
   for( i in seq(1, totrow, by = norows) ){
-    if (test_in[i,"percent"]>=100) continue
+    if (test_in[i,"percent"]>=100) next
     test_in[i:(i+norows-1),"rep"] <- count  
     count <- count+1
   }
@@ -129,7 +130,7 @@ for(pol_id in unique(tab_test$"policy")){
     test_damasc <- tab_test[((tab_test$"policy"==pol_id) & (tab_test$"method"==method_id) & (tab_test$"Prioritization"=="damasc")),]
     test_random <- tab_test[((tab_test$"policy"==pol_id) & (tab_test$"method"==method_id) & (tab_test$"Prioritization"=="random")),]
     #break
-    test_random <- addRepCol(test_random,600,600)
+    test_random <- addRepCol(test_random,600)
     
     #test_random <- aggregate(test_random[["effectiveness"]], by=list(test_random$policy, test_random$mutants, test_random$method, test_random$Prioritization, test_random$percent, test_random$testsuite, test_random$rep),
     #                         function(x)mean(x, na.rm=TRUE))
@@ -262,24 +263,24 @@ for(pol_id in unique(tab_subset$"policy")){
     test_damasc <- tab_subset[((tab_subset$"policy"==pol_id) & (tab_subset$"method"==method_id) & (tab_subset$"Prioritization"=="damasc")),]
     test_random <- tab_subset[((tab_subset$"policy"==pol_id) & (tab_subset$"method"==method_id) & (tab_subset$"Prioritization"=="random")),]
     #break
-    test_random <- addRepCol(test_random,200,6000)
+    test_random <- addRepCol(test_random,200)
     # test_random <- aggregate(test_random[["effectiveness"]], by=list(test_random$policy, test_random$mutants, test_random$method, test_random$Prioritization, test_random$percent, test_random$testsuite, test_random$rep),
     #                          function(x)mean(x, na.rm=TRUE))
     # test_random <- test_random[,c(1,2,3,4,5,8,6)]
     # names(test_random) <- c("policy", "mutants", "method","Prioritization", "percent", "effectiveness","testsuite")
     #break
-
+    
     summary_damasc <- summarySE(test_damasc, measurevar="effectiveness", groupvars=c("policy", "mutants", "method","Prioritization", "percent","testsuite"))
     summary_damasc$Prioritization <- "RBAC"
-
+    
     summary_cartax <- summarySE(test_cartax, measurevar="effectiveness", groupvars=c("policy", "mutants", "method","Prioritization", "percent","testsuite"))
     summary_cartax$Prioritization <- "Simple"
-
+    
     summary_random <- summarySE(test_random, measurevar="effectiveness", groupvars=c("policy", "mutants", "method","Prioritization", "percent","testsuite"))
     summary_random$Prioritization <- "Random"
-
+    
     summary <- rbind(summary_random,summary_cartax,summary_damasc)
-
+    
     table_cols <- summary_cartax
     table_cols$"Prioritization" <- NULL
     table_cols$"effectiveness" <- NULL
@@ -290,15 +291,15 @@ for(pol_id in unique(tab_subset$"policy")){
     table_cols$"cartax" <- summary_cartax$"effectiveness"
     table_cols$"damasc" <- summary_damasc$"effectiveness"
     table_cols$"random" <- summary_random$"effectiveness"
-
+    
     table_cols <- table_cols[,c(1,2,3,4,6,7,8,5)]
-
+    
     title_lab = paste(pol_id,toupper(method_id),sep=" - ")
     #print(filename)
     x_lab="Test Suite %"
     y_lab="% Effectiveness"
     leg_lab="Prioritization"
-
+    
     # Standard error of the mean
     plot <- ggplot(summary, aes(x=percent, y=effectiveness,group=Prioritization,color=Prioritization)) +
       geom_errorbar(aes(ymin=effectiveness-ci, ymax=effectiveness+ci),color="black", width=1) +
@@ -313,22 +314,22 @@ for(pol_id in unique(tab_subset$"policy")){
       scale_y_continuous(limits=c(0, 1.0)) +
       scale_x_continuous(limits=c(0, 100),breaks=0:100*10) +
       labs(title = title_lab, x = x_lab, y = y_lab, color = leg_lab)
-
+    
     print(plot)
     filename <- paste(pol_id,method_id,"test","subset_2528_test.png",sep="_")
     ggsave(filename)
-
+    
     #write.table(summary,paste(pol_id,"_",method_id,".tab",sep=""),sep="\t",row.names=TRUE)
     write.table(summary,tabData,sep="\t",row.names=FALSE,col.names=FALSE,append = TRUE)
-
+    
     x <- wilcox.test(table_cols$damasc,table_cols$cartax, paired=TRUE, alternative = "greater")
     write(paste(pol_id,method_id,"RBAC/Simple",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     #wilcox.test(table_cols$damasc-table_cols$cartax, alternative="g")
-
+    
     x <- wilcox.test(table_cols$damasc,table_cols$random, paired=TRUE, alternative = "greater")
     write(paste(pol_id,method_id,"RBAC/Random",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     #wilcox.test(table_cols$damasc-table_cols$random, alternative="g")
-
+    
     # x <- wilcox.test(table_cols$cartax,table_cols$random, paired=TRUE, alternative = "greater")
     # write(paste(pol_id,method_id,"Simple/Random",x$p.value,sep = "\t"),file=outFile,append=TRUE)
     # #wilcox.test(table_cols$cartax-table_cols$random, alternative="g")
@@ -337,3 +338,113 @@ for(pol_id in unique(tab_subset$"policy")){
   }
   #break
 }
+
+addSampleCol <- function(test_in){
+  count=1;
+  totrow <- nrow(test_in)
+  for( i in seq(1, totrow, by = 20) ){
+    if (test_in[i,"percent"]>=100) next
+    test_in[i:(i+20-1),"sample"] <- count  
+    count <- count+1
+  }
+  
+  return(test_in)
+}
+apfd <- function(data_in,sampleId){
+  data_tmp <- data_in[((!(data_in$percent==100)) & (data_in$sample==sampleId)),]
+  
+  eff_mut = data_tmp$effectiveness*data_tmp$mutants[1]
+  
+  apfd_n = nrow(data_tmp)
+  apfd_l = data_tmp$mutants[1]
+  apfd_f  = sum(eff_mut)
+  
+  apfd_out = (apfd_f/((apfd_n+1) * apfd_l)) + 1/(2*(apfd_n+1))
+  
+  return(apfd_out)
+  
+}
+
+apfd_policy <- character()
+apfd_method <- character()
+apfd_prioritz <- character()
+apfd_val <- numeric()
+
+apfd_tab <- data.frame(apfd_policy,apfd_method,apfd_prioritz,apfd_val)
+names(apfd_tab) <- c("Policy","Method", "Prioritization" ,"APFD")
+
+tab_test_sampleCol <- addSampleCol(tab_test)
+for(sampleId in unique(tab_test_sampleCol$"sample")){
+  if(is.na(sampleId)) next
+  val <- apfd(tab_test_sampleCol,sampleId)
+  apfd_1st_row <- tab_test_sampleCol[(tab_test_sampleCol$"sample"==sampleId),][1,]
+  
+  apfd_tab <- rbind(apfd_tab,data.frame(
+    "Policy"=apfd_1st_row$policy,
+    "Method"=apfd_1st_row$method,
+    "Prioritization"=apfd_1st_row$Prioritization,
+    "APFD"=val
+  ))
+}
+
+tab_test_sampleCol <- addSampleCol(tab_subset)
+for(sampleId in unique(tab_test_sampleCol$"sample")){
+  if(is.na(sampleId)) next
+  val <- apfd(tab_test_sampleCol,sampleId)
+  apfd_1st_row <- tab_test_sampleCol[(tab_test_sampleCol$"sample"==sampleId),][1,]
+  
+  apfd_tab <- rbind(apfd_tab,data.frame(
+    "Policy"=apfd_1st_row$policy,
+    "Method"=apfd_1st_row$method,
+    "Prioritization"=apfd_1st_row$Prioritization,
+    "APFD"=val
+  ))
+}
+
+apfd_tab$"APFD" <- as.numeric(apfd_tab$"APFD")
+
+apfd_tab$Prioritization <- gsub("damasc", "RBAC", apfd_tab$Prioritization)
+apfd_tab$Prioritization <- gsub("cartax", "Simple", apfd_tab$Prioritization)
+apfd_tab$Prioritization <- gsub("random", "Random", apfd_tab$Prioritization)
+
+apfd_tab$Method <- gsub("w", "W", apfd_tab$Method)
+apfd_tab$Method <- gsub("hsi", "HSI", apfd_tab$Method)
+apfd_tab$Method <- gsub("spy", "SPY", apfd_tab$Method)
+
+summary_apfd  <- summarySE(apfd_tab, measurevar="APFD", groupvars=c("Policy", "Method","Prioritization"),na.rm=TRUE)
+summary_apfd$N <- as.numeric(summary_apfd$N)
+summary_apfd$APFD <- as.numeric(summary_apfd$APFD)
+
+for(pol_id in unique(summary_apfd$"Policy")){
+  plot <- ggplot(data=summary_apfd[(summary_apfd$Policy==pol_id),], aes(x=Method, y=APFD, fill=Prioritization)) +
+    geom_bar(position=position_dodge(.9), colour="black", stat="identity") +
+    geom_errorbar(position=position_dodge(.9), width=.25, aes(ymin=APFD-ci, ymax=APFD+ci)) +
+    coord_cartesian(ylim=c(0,1)) +
+    #scale_fill_manual(values=c("#CCCCCC","#FFFFFF")) +
+    scale_y_continuous(breaks=seq(0,1,by=0.10),limits=c(0, 1.0)) +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5),legend.box.background = element_rect(),legend.position="right") +
+    #geom_hline(yintercept=38) 
+    labs(title = pol_id, x = "Method", y = "Average APFD", color = "Prioritization")
+  
+  print(plot)
+  filename <- paste(pol_id,"apfd.png",sep="_")
+  ggsave(filename)
+}
+
+summary_apfd_t <- data.frame()
+summary_apfd_t <- cbind(summary_apfd[(summary_apfd$"Prioritization"=="RBAC"),])
+summary_apfd_t$N <- NULL
+summary_apfd_t$Prioritization <- NULL
+summary_apfd_t$sd <- NULL
+summary_apfd_t$se <- NULL
+summary_apfd_t$ci <- NULL
+summary_apfd_t$scenario <- NULL
+
+summary_apfd_t <- cbind(summary_apfd_t,summary_apfd[(summary_apfd$"Prioritization"=="Simple"),]$APFD)
+summary_apfd_t <- cbind(summary_apfd_t,summary_apfd[(summary_apfd$"Prioritization"=="Random"),]$APFD)
+
+names(summary_apfd_t) <- c("Policy","Method","RBAC","Simple","Random")
+summary_apfd_t$"Scenario" <- paste(summary_apfd_t$"Policy", summary_apfd_t$"Method", sep=" + ")
+summary_apfd_t <- summary_apfd_t[,c(6,3,4,5)]
+write.table(summary_apfd_t,"apfd.tab",sep="\t",row.names=FALSE, quote=FALSE)
