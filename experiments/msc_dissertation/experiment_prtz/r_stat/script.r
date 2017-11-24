@@ -1,5 +1,6 @@
 library(ggplot2)
 library(reshape2)
+library(effsize)
 
 outFile <- "pval.tab"
 unlink(outFile)
@@ -410,6 +411,143 @@ apfd_tab$Prioritization <- gsub("random", "Random", apfd_tab$Prioritization)
 apfd_tab$Method <- gsub("w", "W", apfd_tab$Method)
 apfd_tab$Method <- gsub("hsi", "HSI", apfd_tab$Method)
 apfd_tab$Method <- gsub("spy", "SPY", apfd_tab$Method)
+
+
+effsiz_pol <- character()
+effsiz_meth <- character()
+effsiz_cmp <- character()
+effsiz_mean_diff <- numeric()
+effsiz_med_diff <- numeric()
+effsiz_d <- numeric()
+effsiz_d_mag <- character()
+effsiz_g <- numeric()
+effsiz_g_mag <- character()
+effsiz_vd <- numeric()
+effsiz_vd_mag <- character()
+
+effsiz_tab <- data.frame(effsiz_pol,effsiz_meth,effsiz_cmp,effsiz_med_diff,effsiz_mean_diff,effsiz_d,effsiz_g,effsiz_vd,effsiz_d_mag,effsiz_g_mag,effsiz_vd_mag)
+names(effsiz_tab) <- c("Policy","Method", "Comparison","Median diff","Mean diff", "Cohen", "Hedges", "VD", "Cohen magnitude", "Hedges magnitude", "VD magnitude" )
+
+# pols_tba <- c("Masood2010Example1","SeniorTraineeDoctor")
+# pols_tba <-  unique(apfd_tab$Policy)
+pols_tba <- c("ExperiencePointsv2", "Masood2009P2v2", "user11roles2_v2")
+for(pol_id in pols_tba){
+  for(method_id in unique(apfd_tab$Method)){
+    
+    ##################
+    # RBAC vs Simple #
+    ##################
+    treatment <- c(apfd_tab[((apfd_tab$Policy==pol_id) & (apfd_tab$Method==method_id) & (apfd_tab$Prioritization=="RBAC")),]$APFD)
+    control <- c(apfd_tab[((apfd_tab$Policy==pol_id) & (apfd_tab$Method==method_id) & (apfd_tab$Prioritization=="Simple")),]$APFD)
+    
+    rbac_data <- treatment
+    simp_data <- control
+    
+    d <- (c(treatment,control))
+    f <- c(rep(c("RBAC"),each=length(treatment)) , rep(c("Simple"),each=length(control)))
+    ## compute Cohen's d
+    ## data and factor
+    effs_d <- cohen.d(d,f)
+    ## compute Hedges' g
+    effs_g <- cohen.d(d,f,hedges=TRUE)
+    ## compute Vargha and Delaney 
+    effs_vd <- VD.A(d,f)
+    
+    effsiz_tab <- rbind(effsiz_tab,data.frame(
+      "Policy"=pol_id,"Method"=method_id,
+      "Comparison"="RBAC/Simple",
+      "Mean diff"=mean(treatment)-mean(control),
+      "Median diff"=median(treatment)-median(control),
+      "Cohen"=effs_d$estimate,
+      "Hedges"=effs_g$estimate,
+      "VD"=effs_vd$estimate,
+      "Cohen magnitude"=effs_d$magnitude,
+      "Hedges magnitude"=effs_g$magnitude,
+      "VD magnitude"=effs_vd$magnitude
+    ))
+    
+    ##################
+    # RBAC vs Random #
+    ##################
+    treatment <- c(apfd_tab[((apfd_tab$Policy==pol_id) & (apfd_tab$Method==method_id) & (apfd_tab$Prioritization=="RBAC")),]$APFD)
+    control <- c(apfd_tab[((apfd_tab$Policy==pol_id) & (apfd_tab$Method==method_id) & (apfd_tab$Prioritization=="Random")),]$APFD)
+    
+    rand_data <- control
+    
+    d <- (c(treatment,control))
+    f <- c(rep(c("RBAC"),each=length(treatment)) , rep(c("Random"),each=length(control)))
+    ## compute Cohen's d
+    ## data and factor
+    effs_d <- cohen.d(d,f)
+    ## compute Hedges' g
+    effs_g <- cohen.d(d,f,hedges=TRUE)
+    ## compute Vargha and Delaney 
+    effs_vd <- VD.A(d,f)    
+    
+    effsiz_tab <- rbind(effsiz_tab,data.frame(
+      "Policy"=pol_id,"Method"=method_id,
+      "Comparison"="RBAC/Random",
+      "Mean diff"=mean(treatment)-mean(control),
+      "Median diff"=median(treatment)-median(control),
+      "Cohen"=effs_d$estimate,
+      "Hedges"=effs_g$estimate,
+      "VD"=effs_vd$estimate,
+      "Cohen magnitude"=effs_d$magnitude,
+      "Hedges magnitude"=effs_g$magnitude,
+      "VD magnitude"=effs_vd$magnitude
+    ))
+    
+    ####################
+    # Random vs Simple #
+    ####################
+    treatment <- c(apfd_tab[((apfd_tab$Policy==pol_id) & (apfd_tab$Method==method_id) & (apfd_tab$Prioritization=="Random")),]$APFD)
+    control <- c(apfd_tab[((apfd_tab$Policy==pol_id) & (apfd_tab$Method==method_id) & (apfd_tab$Prioritization=="Simple")),]$APFD)
+    
+    d <- (c(treatment,control))
+    f <- c(rep(c("Random"),each=length(treatment)) , rep(c("Simple"),each=length(control)))
+    ## compute Cohen's d
+    ## data and factor
+    effs_d <- cohen.d(d,f)
+    ## compute Hedges' g
+    effs_g <- cohen.d(d,f,hedges=TRUE)
+    ## compute Vargha and Delaney 
+    effs_vd <- VD.A(d,f)    
+    
+    effsiz_tab <- rbind(effsiz_tab,data.frame(
+      "Policy"=pol_id,"Method"=method_id,
+      "Comparison"="Random/Simple",
+      "Mean diff"=mean(treatment)-mean(control),
+      "Median diff"=median(treatment)-median(control),
+      "Cohen"=effs_d$estimate,
+      "Hedges"=effs_g$estimate,
+      "VD"=effs_vd$estimate,
+      "Cohen magnitude"=effs_d$magnitude,
+      "Hedges magnitude"=effs_g$magnitude,
+      "VD magnitude"=effs_vd$magnitude
+    ))
+    
+    x_d <- c(rbac_data,simp_data,rand_data)
+    f_d <- c(rep(c("RBAC"),each=length(rbac_data)), rep(c("Simple"),each=length(simp_data)), rep(c("Random"),each=length(rand_data)))
+    x_temp <- data.frame(APFD=x_d,Prioritization=f_d)
+    data_temp  <- melt(x_temp,id.vars = "Prioritization")
+    plot <- ggplot(data_temp, aes(x = value,fill=Prioritization)) + 
+      geom_density(alpha=0.4) + 
+      # scale_fill_grey(start = 0, end = .9) +
+      ggtitle(paste(pol_id,"	",method_id)) + 
+      theme_bw() + 
+      theme(plot.title = element_text(hjust = 0.5)) + 
+      scale_x_continuous(name = "APFD") + 
+      scale_y_continuous(name = "Density")
+    # print(plot)
+    filename <- paste("EffectSize",pol_id,method_id,sep="_")
+    ggsave(paste(filename,"png",sep="."), width = 20, height = 20, units = "cm", dpi=300)
+    
+  }
+}
+    
+rownames(effsiz_tab) <- NULL
+
+write.table(effsiz_tab,"apfd_effsize.tab",sep="\t",row.names=FALSE, quote=FALSE,dec=",")
 
 summary_apfd  <- summarySE(apfd_tab, measurevar="APFD", groupvars=c("Policy", "Method","Prioritization"),na.rm=TRUE)
 summary_apfd$N <- as.numeric(summary_apfd$N)
