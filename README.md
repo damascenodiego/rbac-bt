@@ -7,4 +7,4 @@ It has been developed in the context of the M.Sc. degree project of Carlos Damas
 It supports the conversion of RBAC policies to FSMs, generation of test sequences from RBAC policies described as FSM models, RBAC test prioritization, and test execution.
 
 
-Further information, please contact me via damascenodiego@usp.br
+Further information, please contact me via damascenodiego@alumni.usp.br
